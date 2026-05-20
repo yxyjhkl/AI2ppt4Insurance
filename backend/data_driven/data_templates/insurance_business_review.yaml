@@ -1,0 +1,124 @@
+meeting_type: business_review
+label: "业务对标复盘会"
+description: "先进与落后对标复盘，数据驱动的问题诊断与改进方案"
+
+data_requirements:
+  - field: agency_name
+    label: "机构名称"
+    aliases: ["机构", "营业部", "支公司", "营销服务部", "中支", "分公司", "Agency", "Branch"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: monthly_premium
+    label: "当月保费"
+    aliases: ["保费收入", "当月保费", "FYP", "年化首年保费", "APE", "标准保费", "首年保费", "Premium"]
+    type: currency
+    unit: 万元
+    required: true
+    maps_to_slide: content_table
+    status_thresholds:
+      green: "排名前30%"
+      yellow: "排名30%-70%"
+      red: "排名后30%"
+
+  - field: premium_achievement_rate
+    label: "保费达成率"
+    aliases: ["达成率", "保费达成率", "达成%", "Achievement", "达成比率"]
+    type: percent
+    required: true
+    maps_to_slide: content_table
+    status_thresholds:
+      green: ">=100"
+      yellow: "80-100"
+      red: "<80"
+
+  - field: policy_count
+    label: "承保件数"
+    aliases: ["件数", "承保件数", "保单件数", "长险件数", "PolicyCount"]
+    type: integer
+    required: false
+
+  - field: activity_rate
+    label: "活动率"
+    aliases: ["活动率", "出勤率", "活动量", "Activity"]
+    type: percent
+    required: false
+    maps_to_slide: content_table
+
+  - field: staff_count
+    label: "队伍人数"
+    aliases: ["人力", "队伍人数", "在册人数", "Headcount", "出勤人力"]
+    type: integer
+    required: false
+
+  - field: per_capita_productivity
+    label: "人均产能"
+    aliases: ["人均产能", "人均保费", "人均FYP", "PerCapita"]
+    type: currency
+    unit: 万元
+    required: false
+
+  - field: persistency_13
+    label: "13个月继续率"
+    aliases: ["13J", "13月继续率", "13个月", "Persistency13"]
+    type: percent
+    required: false
+    maps_to_slide: content_table
+
+  - field: persistency_25
+    label: "25个月继续率"
+    aliases: ["25J", "25月继续率", "25个月", "Persistency25"]
+    type: percent
+    required: false
+
+  - field: cost_ratio
+    label: "投产比"
+    aliases: ["投产比", "费差损", "费差溢", "投入产出比", "ROI", "CostRatio"]
+    type: number
+    required: false
+    maps_to_slide: content_two_col
+
+  - field: year_over_year_growth
+    label: "同比增长率"
+    aliases: ["同比增长", "同比增速", "YoY", "同比"]
+    type: percent
+    required: false
+
+  - field: honor_achievement
+    label: "荣誉达成"
+    aliases: ["荣誉", "IDA", "MDRT", "MCI", "Honor", "奖项"]
+    type: text
+    required: false
+    maps_to_slide: content_compare
+
+  - field: issue_description
+    label: "问题描述"
+    aliases: ["问题", "不足", "短板", "差距", "问题分析"]
+    type: text
+    required: false
+
+  - field: improvement_action
+    label: "改进措施"
+    aliases: ["改进", "整改", "措施", "行动方案", "Action"]
+    type: text
+    required: false
+
+table_slides:
+  kpi_dashboard:
+    title: "关键指标仪表盘"
+    fields: ["agency_name", "monthly_premium", "premium_achievement_rate", "policy_count", "year_over_year_growth"]
+  team_kpi:
+    title: "队伍KPI分析"
+    fields: ["agency_name", "activity_rate", "staff_count", "per_capita_productivity"]
+  persistency:
+    title: "继续率与内涵价值"
+    fields: ["agency_name", "persistency_13", "persistency_25"]
+
+compare_slides:
+  honor_board:
+    title: "荣誉展示"
+    left_label: "先进机构"
+    right_label: "落后机构"
+    left_fields: ["agency_name", "honor_achievement"]
+    right_fields: ["agency_name", "issue_description"]

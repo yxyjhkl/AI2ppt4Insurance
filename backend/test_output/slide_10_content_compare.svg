@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <rect y="0" width="1280" height="60" fill="#1e40af"/>
+  <rect y="0" width="6" height="60" fill="#f59e0b"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#ffffff">技术债务清理：Before vs After</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="640" y1="90" x2="640" y2="690" stroke="#e5e7eb" stroke-width="1"/>
+  <rect x="48" y="100" width="580" height="30" rx="4" fill="#ecfdf5"/>
+  <text x="60" y="120" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#059669">Before / 现状</text>
+  <text x="48" y="160" font-family="Microsoft YaHei" font-size="16" fill="#1f2937"><tspan>• 🔴 单体应用 23万行代码，部署周期 2周
+• 🔴 测试覆盖率 23%，线上事故月均 7次
+• 🔴 接口平均响应时间 850ms，P99 达 3.2s</tspan></text>
+  <rect x="658" y="100" width="580" height="30" rx="4" fill="#eff6ff"/>
+  <text x="670" y="120" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#2563eb">After / 目标</text>
+  <text x="658" y="160" font-family="Microsoft YaHei" font-size="16" fill="#1f2937"><tspan>• ✅ 拆分为 47 个微服务，CI/CD 全自动化
+• ✅ 测试覆盖率 82%，线上事故降至月均 1.3次
+• ✅ 接口平均响应时间 120ms，P99 降至 380ms</tspan></text>
+  <rect y="690" width="1280" height="30" fill="#f0f4ff"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">10</text>
+</svg>

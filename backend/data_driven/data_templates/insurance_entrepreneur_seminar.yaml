@@ -1,0 +1,90 @@
+meeting_type: entrepreneur_seminar
+label: "创业说明会（创说会）"
+description: "面向潜在合伙人的事业说明，展现行业前景、收入模型与成长路径"
+
+data_requirements:
+  - field: career_theme
+    label: "事业主题"
+    aliases: ["事业主题", "主题", "邀请主题", "Title"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: industry_data
+    label: "行业数据"
+    aliases: ["行业数据", "行业前景", "行业趋势", "市场数据", "Industry"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: company_intro
+    label: "公司介绍"
+    aliases: ["公司介绍", "公司品牌", "公司文化", "公司实力", "为什么选我们"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: income_model
+    label: "收入模型"
+    aliases: ["收入模型", "薪酬", "收入", "佣金", "Income"]
+    type: text
+    required: true
+    maps_to_slide: content_table
+
+  - field: base_salary
+    label: "基本待遇"
+    aliases: ["基本待遇", "底薪", "津贴", "补贴", "基本收入"]
+    type: currency
+    unit: 元
+    required: false
+
+  - field: commission_rate
+    label: "佣金比例"
+    aliases: ["佣金比例", "佣金率", "提成", "Commission"]
+    type: percent
+    required: false
+
+  - field: career_path
+    label: "成长路径"
+    aliases: ["成长路径", "晋升", "职涯", "培训体系", "Career"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: success_case
+    label: "成功案例"
+    aliases: ["成功案例", "案例", "榜样", "标杆"]
+    type: text
+    required: false
+    maps_to_slide: content_quote
+
+  - field: support_system
+    label: "支持体系"
+    aliases: ["支持体系", "展业支持", "公司支持", "资源"]
+    type: text
+    required: false
+
+  - field: team_culture
+    label: "团队文化"
+    aliases: ["团队文化", "团队氛围", "文化活动", "团队"]
+    type: text
+    required: false
+
+  - field: join_process
+    label: "加入流程"
+    aliases: ["加入流程", "面试流程", "培训安排", "入职流程"]
+    type: text
+    required: false
+
+table_slides:
+  income_table:
+    title: "收入模型一览"
+    fields: ["career_theme", "base_salary", "commission_rate"]
+
+compare_slides:
+  career_compare:
+    title: "事业对比"
+    left_label: "传统职业"
+    right_label: "保险事业"
+    left_fields: ["career_theme"]
+    right_fields: ["career_path", "income_model"]

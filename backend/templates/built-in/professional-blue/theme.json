@@ -1,0 +1,27 @@
+{
+  "name": "Professional Blue",
+  "category": "Report",
+  "description": "Clean, professional design with deep blue primary color. Suitable for business reports and formal presentations.",
+  "colors": {
+    "primary": "#1e40af",
+    "secondary": "#3b82f6",
+    "accent": "#f59e0b",
+    "background": "#ffffff",
+    "text": "#1f2937",
+    "light-bg": "#f0f4ff",
+    "stripe": "#f8fafc"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Microsoft YaHei",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 32,
+    "body-size": 20,
+    "line-height": 1.5
+  }
+}

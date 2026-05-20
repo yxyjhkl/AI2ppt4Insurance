@@ -1,0 +1,96 @@
+meeting_type: underperformer_review
+label: "落后述职会"
+description: "落后机构/个人问题剖析、改进承诺与帮扶方案的专项述职"
+
+data_requirements:
+  - field: reporter_name
+    label: "述职人/机构"
+    aliases: ["述职人", "机构", "姓名", "落后机构", "Name"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: review_period
+    label: "述职周期"
+    aliases: ["述职周期", "周期", "时间段", "Period"]
+    type: text
+    required: true
+
+  - field: premium_gap
+    label: "保费缺口"
+    aliases: ["保费缺口", "差距", "差额", "缺口", "Gap"]
+    type: currency
+    unit: 万元
+    required: true
+    maps_to_slide: content_table
+
+  - field: gap_rate
+    label: "缺口比例"
+    aliases: ["缺口比例", "缺口率", "差比"]
+    type: percent
+    required: false
+
+  - field: ranking_position
+    label: "排名位置"
+    aliases: ["排名", "排名位置", "名次", "Ranking"]
+    type: text
+    required: false
+    maps_to_slide: content_table
+
+  - field: root_cause
+    label: "根本原因"
+    aliases: ["根本原因", "原因分析", "问题根源", "RootCause"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: specific_issues
+    label: "具体问题"
+    aliases: ["具体问题", "问题表现", "短板", "Issues"]
+    type: text
+    required: false
+
+  - field: improvement_commitment
+    label: "改进承诺"
+    aliases: ["改进承诺", "承诺", "整改承诺", "Commitment"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: recovery_target
+    label: "追赶目标"
+    aliases: ["追赶目标", "补救目标", "赶超目标", "RecoveryTarget"]
+    type: currency
+    unit: 万元
+    required: false
+
+  - field: recovery_timeline
+    label: "追赶时间表"
+    aliases: ["追赶时间表", "时间表", "时间节点", "Timeline"]
+    type: text
+    required: false
+
+  - field: support_needed
+    label: "所需支持"
+    aliases: ["所需支持", "需要支持", "帮扶需求", "Support"]
+    type: text
+    required: false
+
+  - field: supervisor_comment
+    label: "主管点评"
+    aliases: ["主管点评", "领导点评", "点评", "Comment"]
+    type: text
+    required: false
+
+table_slides:
+  gap_analysis:
+    title: "差距分析表"
+    fields: ["reporter_name", "premium_gap", "gap_rate", "ranking_position"]
+
+compare_slides:
+  before_after:
+    title: "改进前后对比"
+    left_label: "当前状态"
+    right_label: "追赶目标"
+    left_fields: ["reporter_name", "premium_gap", "specific_issues"]
+    right_fields: ["reporter_name", "recovery_target", "improvement_commitment"]

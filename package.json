@@ -1,0 +1,72 @@
+{
+  "name": "ai-ppt-desktop",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "AI PPT Desktop - AI powered presentation generator",
+  "main": "dist-electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
+    "dev:react": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && electron .",
+    "dev:backend": "cd backend && python -m uvicorn api.main:app --reload --port 8099",
+    "build": "tsc && vite build && electron-builder",
+    "build:react": "vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:all": "npm run build:react && npm run build:electron && electron-builder",
+    "lint": "eslint src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.28.0",
+    "zustand": "^5.0.0",
+    "lucide-react": "^0.460.0",
+    "clsx": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.0",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^9.15.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "^5.6.3",
+    "vite": "^6.0.3",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.aippt.desktop",
+    "productName": "AI PPT Desktop",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "backend/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend"
+      }
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "assets/icons/icon.png"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/icons/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}

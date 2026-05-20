@@ -1,0 +1,89 @@
+meeting_type: product_training
+label: "产品培训"
+description: "产品知识、话术培训与通关考核，提升销售队伍专业能力"
+
+data_requirements:
+  - field: product_name
+    label: "产品名称"
+    aliases: ["产品名称", "产品", "险种", "Product"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: training_date
+    label: "培训日期"
+    aliases: ["培训日期", "日期", "时间", "Date"]
+    type: text
+    required: false
+
+  - field: product_features
+    label: "产品特色"
+    aliases: ["产品特色", "产品特点", "核心卖点", "Features"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: target_customer
+    label: "目标客群"
+    aliases: ["目标客群", "目标客户", "客群画像", "TargetCustomer"]
+    type: text
+    required: true
+    maps_to_slide: content_two_col
+
+  - field: coverage_detail
+    label: "保障详情"
+    aliases: ["保障详情", "保障内容", "保险责任", "Coverage"]
+    type: text
+    required: true
+    maps_to_slide: content_table
+
+  - field: base_premium
+    label: "基础保费"
+    aliases: ["基础保费", "保费", "价格", "Premium"]
+    type: currency
+    unit: 元
+    required: false
+
+  - field: sales_script
+    label: "销售话术"
+    aliases: ["销售话术", "话术", "开场白", "促成话术", "Script"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: common_objections
+    label: "常见异议"
+    aliases: ["常见异议", "异议处理", "拒绝", "Objection"]
+    type: text
+    required: false
+
+  - field: competitive_advantage
+    label: "竞品对比"
+    aliases: ["竞品对比", "竞品", "对比", "优势对比", "Competitor"]
+    type: text
+    required: false
+
+  - field: exam_questions
+    label: "通关考题"
+    aliases: ["通关考题", "考核", "考试", "测试", "Exam"]
+    type: text
+    required: false
+
+  - field: pass_score
+    label: "通关分数线"
+    aliases: ["通关分数线", "及格线", "分数线", "PassScore"]
+    type: integer
+    required: false
+
+table_slides:
+  coverage_table:
+    title: "保障责任一览"
+    fields: ["product_name", "coverage_detail", "base_premium"]
+
+compare_slides:
+  competitor_compare:
+    title: "竞品对比分析"
+    left_label: "我方产品"
+    right_label: "竞品"
+    left_fields: ["product_name", "product_features"]
+    right_fields: ["product_name", "competitive_advantage"]

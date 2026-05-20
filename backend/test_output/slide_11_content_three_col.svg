@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <rect y="0" width="1280" height="60" fill="#1e40af"/>
+  <rect y="0" width="6" height="60" fill="#f59e0b"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#ffffff">2026 年三大战略方向</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="427" y1="90" x2="427" y2="690" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="853" y1="90" x2="853" y2="690" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="52" y="115" font-family="Microsoft YaHei" font-size="18" fill="#1f2937"><text x="40" y="110" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">• 【AI 赋能】</text>
+<text x="40" y="140" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 发布 AI Copilot 功能</text>
+<text x="40" y="170" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 智能数据分析引擎</text>
+<text x="40" y="200" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 自动化测试覆盖率提升至 95%</text>
+<text x="40" y="239" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">• 【生态建设】</text>
+<text x="40" y="269" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 开放平台 API 增至 200+</text>
+<text x="40" y="299" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 合作伙伴达到 50 家</text>
+<text x="40" y="329" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 开发者社区突破 10 万人</text>
+<text x="40" y="368" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">• 【国际化】</text>
+<text x="40" y="398" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 拓展东南亚市场</text>
+<text x="40" y="428" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 产品多语言支持</text>
+<text x="40" y="458" font-family="Microsoft YaHei" font-size="20" fill="#1f2937">· 海外营收占比提升至 20%</text></text>
+  <text x="440" y="115" font-family="Microsoft YaHei" font-size="18" fill="#1f2937"><tspan>• 【生态建设】
+· 开放平台 API 增至 200+
+· 合作伙伴达到 50 家
+· 开发者社区突破 10 万人</tspan></text>
+  <text x="866" y="115" font-family="Microsoft YaHei" font-size="18" fill="#1f2937"></text>
+  <rect y="690" width="1280" height="30" fill="#f0f4ff"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">11</text>
+</svg>

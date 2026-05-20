@@ -1,0 +1,103 @@
+meeting_type: product_seminar
+label: "产品说明会（产说会）"
+description: "面向客户的产品介绍，发掘痛点、展示方案、推动成交"
+
+data_requirements:
+  - field: product_name
+    label: "产品名称"
+    aliases: ["产品名称", "产品", "险种名称", "Product", "保险产品"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: product_slogan
+    label: "产品Slogan"
+    aliases: ["Slogan", "口号", "一句话", "卖点语"]
+    type: text
+    required: false
+    maps_to_slide: cover
+
+  - field: pain_point
+    label: "客户痛点"
+    aliases: ["痛点", "保障缺口", "风险", "客户痛点", "需求"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: product_highlight
+    label: "产品卖点"
+    aliases: ["卖点", "亮点", "核心优势", "产品特色", "Feature"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: coverage_amount
+    label: "保障额度"
+    aliases: ["保障额度", "保额", "保障金额", "Coverage"]
+    type: currency
+    unit: 万元
+    required: false
+
+  - field: annual_premium
+    label: "年交保费"
+    aliases: ["年交保费", "年缴保费", "保费", "价格", "Premium"]
+    type: currency
+    unit: 元
+    required: false
+
+  - field: payment_period
+    label: "交费期间"
+    aliases: ["交费期间", "交费期", "缴费年限", "交几年"]
+    type: text
+    required: false
+
+  - field: company_strength
+    label: "公司实力"
+    aliases: ["公司实力", "偿付能力", "理赔数据", "市场规模", "公司"]
+    type: text
+    required: false
+
+  - field: customer_case
+    label: "客户案例"
+    aliases: ["客户案例", "理赔案例", "案例", "真实案例", "Case"]
+    type: text
+    required: false
+    maps_to_slide: content_quote
+
+  - field: value_added_service
+    label: "增值服务"
+    aliases: ["增值服务", "附加服务", "权益", "服务", "VIP"]
+    type: text
+    required: false
+
+  - field: limited_benefit
+    label: "限时权益"
+    aliases: ["限时权益", "优惠", "活动", "促销", "限时"]
+    type: text
+    required: false
+    maps_to_slide: content_two_col
+
+  - field: purchase_guide
+    label: "购买指引"
+    aliases: ["购买指引", "购买流程", "联系方式", "怎么买"]
+    type: text
+    required: false
+
+  - field: faq
+    label: "常见问题"
+    aliases: ["常见问题", "FAQ", "答疑", "问答"]
+    type: text
+    required: false
+
+table_slides:
+  product_comparison:
+    title: "产品核心参数"
+    fields: ["product_name", "coverage_amount", "annual_premium", "payment_period"]
+
+compare_slides:
+  benefit_comparison:
+    title: "权益对比"
+    left_label: "标准权益"
+    right_label: "限时权益"
+    left_fields: ["product_name", "value_added_service"]
+    right_fields: ["product_name", "limited_benefit"]

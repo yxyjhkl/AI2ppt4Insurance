@@ -1,0 +1,84 @@
+meeting_type: business_launch
+label: "业务启动会（战役启动）"
+description: "战前动员，回顾过往成绩，展望新战役目标，激励团队士气"
+
+data_requirements:
+  - field: campaign_name
+    label: "战役名称"
+    aliases: ["战役名称", "活动名称", "启动会主题", "战役", "Campaign"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: campaign_period
+    label: "战役周期"
+    aliases: ["战役周期", "活动时间", "时间范围", "周期", "Period"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: previous_achievement
+    label: "过往成绩"
+    aliases: ["过往成绩", "上一战果", "历史成绩", "回顾", "成绩回顾"]
+    type: text
+    required: false
+
+  - field: previous_premium
+    label: "上期保费"
+    aliases: ["上期保费", "上季保费", "上月保费", "往期保费"]
+    type: currency
+    unit: 万元
+    required: false
+
+  - field: campaign_target
+    label: "战役目标"
+    aliases: ["战役目标", "总目标", "目标", "Target", "任务目标"]
+    type: currency
+    unit: 万元
+    required: true
+    maps_to_slide: content_table
+
+  - field: team_target
+    label: "团队目标分解"
+    aliases: ["团队目标", "分解目标", "各团队目标", "层级目标"]
+    type: text
+    required: false
+
+  - field: strategy_path
+    label: "策略路径"
+    aliases: ["策略路径", "战法", "达成路径", "策略", "打法"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: incentive_plan
+    label: "激励方案"
+    aliases: ["激励方案", "奖励", "奖项", "激励", "奖金"]
+    type: text
+    required: false
+    maps_to_slide: content_two_col
+
+  - field: commitment_statement
+    label: "承诺表态"
+    aliases: ["承诺", "军令状", "表态", "宣誓"]
+    type: text
+    required: false
+
+  - field: leadership_speech
+    label: "领导动员讲话"
+    aliases: ["领导讲话", "动员讲话", "领导动员"]
+    type: text
+    required: false
+
+table_slides:
+  target_breakdown:
+    title: "目标分解表"
+    fields: ["campaign_name", "campaign_target", "team_target"]
+
+compare_slides:
+  previous_vs_target:
+    title: "往期对比与目标"
+    left_label: "上一战役"
+    right_label: "本次战役目标"
+    left_fields: ["campaign_name", "previous_premium"]
+    right_fields: ["campaign_name", "campaign_target"]

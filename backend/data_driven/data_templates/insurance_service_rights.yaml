@@ -1,0 +1,82 @@
+meeting_type: service_rights
+label: "服务权益说明会"
+description: "向客户介绍增值服务与专属权益，提升客户粘性与满意度"
+
+data_requirements:
+  - field: service_theme
+    label: "服务主题"
+    aliases: ["服务主题", "主题", "权益主题", "Title"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: service_overview
+    label: "服务概述"
+    aliases: ["服务概述", "服务背景", "服务介绍", "概述"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: tier_levels
+    label: "客户层级"
+    aliases: ["客户层级", "会员等级", "VIP等级", "层级", "Tier"]
+    type: text
+    required: true
+    maps_to_slide: content_table
+
+  - field: tier_threshold
+    label: "层级门槛"
+    aliases: ["层级门槛", "保费门槛", "年缴要求", "门槛"]
+    type: currency
+    unit: 万元
+    required: false
+
+  - field: core_rights
+    label: "核心权益"
+    aliases: ["核心权益", "权益内容", "保障权益", "Rights"]
+    type: text
+    required: true
+    maps_to_slide: content_two_col
+
+  - field: health_service
+    label: "健康服务"
+    aliases: ["健康服务", "体检", "就医绿通", "健康管理", "Health"]
+    type: text
+    required: false
+
+  - field: financial_service
+    label: "金融服务"
+    aliases: ["金融服务", "理财", "信托", "资产配置", "Financial"]
+    type: text
+    required: false
+
+  - field: lifestyle_service
+    label: "生活服务"
+    aliases: ["生活服务", "出行", "酒店", "高端生活", "Lifestyle"]
+    type: text
+    required: false
+
+  - field: usage_guide
+    label: "使用指引"
+    aliases: ["使用指引", "如何使用", "激活方式", "使用流程"]
+    type: text
+    required: false
+
+  - field: contact_info
+    label: "联系方式"
+    aliases: ["联系方式", "客服", "热线", "Contact", "电话"]
+    type: text
+    required: false
+
+table_slides:
+  tier_comparison:
+    title: "客户层级与权益对比"
+    fields: ["service_theme", "tier_levels", "tier_threshold"]
+
+compare_slides:
+  rights_compare:
+    title: "权益详情"
+    left_label: "基础权益"
+    right_label: "专属权益"
+    left_fields: ["core_rights", "health_service"]
+    right_fields: ["financial_service", "lifestyle_service"]

@@ -1,0 +1,94 @@
+meeting_type: business_report
+label: "业务述职会"
+description: "业绩汇报、工作述职与能力展示的正式述职演示"
+
+data_requirements:
+  - field: reporter_name
+    label: "述职人"
+    aliases: ["述职人", "姓名", "汇报人", "Name", "报告人"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: report_period
+    label: "述职周期"
+    aliases: ["述职周期", "报告周期", "时间段", "Period"]
+    type: text
+    required: true
+
+  - field: position_title
+    label: "岗位"
+    aliases: ["岗位", "职务", "职级", "Position", "Title"]
+    type: text
+    required: false
+
+  - field: kpi_overview
+    label: "KPI概述"
+    aliases: ["KPI概述", "指标概述", "关键指标", "KPI"]
+    type: text
+    required: true
+    maps_to_slide: content_table
+
+  - field: premium_achieved
+    label: "保费达成"
+    aliases: ["保费达成", "保费完成", "FYP达成"]
+    type: currency
+    unit: 万元
+    required: true
+    maps_to_slide: content_table
+
+  - field: premium_rate
+    label: "保费达成率"
+    aliases: ["保费达成率", "达成率", "完成率"]
+    type: percent
+    required: true
+
+  - field: team_size
+    label: "团队规模"
+    aliases: ["团队规模", "团队人数", "人力", "Headcount"]
+    type: integer
+    required: false
+
+  - field: team_activity
+    label: "团队活动率"
+    aliases: ["团队活动率", "活动率", "出勤率"]
+    type: percent
+    required: false
+
+  - field: key_work_items
+    label: "重点工作"
+    aliases: ["重点工作", "工作事项", "项目", "Work"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: self_evaluation
+    label: "自我评价"
+    aliases: ["自我评价", "自评", "优势", "不足", "Evaluation"]
+    type: text
+    required: false
+
+  - field: team_development
+    label: "团队建设"
+    aliases: ["团队建设", "人才培养", "梯队", "TeamBuilding"]
+    type: text
+    required: false
+
+  - field: next_plan
+    label: "下阶段规划"
+    aliases: ["下阶段规划", "计划", "规划", "下一步", "Plan"]
+    type: text
+    required: false
+
+table_slides:
+  kpi_dashboard:
+    title: "关键KPI达成"
+    fields: ["reporter_name", "premium_achieved", "premium_rate", "team_size", "team_activity"]
+
+compare_slides:
+  target_vs_actual:
+    title: "目标与达成对比"
+    left_label: "设定目标"
+    right_label: "实际达成"
+    left_fields: ["reporter_name", "kpi_overview"]
+    right_fields: ["reporter_name", "premium_achieved"]

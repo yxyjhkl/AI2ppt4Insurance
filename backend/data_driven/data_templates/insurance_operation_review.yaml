@@ -1,0 +1,102 @@
+meeting_type: operation_review
+label: "经营复盘会"
+description: "经营数据分析、问题诊断与改进措施的全方位经营复盘"
+
+data_requirements:
+  - field: review_period
+    label: "复盘周期"
+    aliases: ["复盘周期", "分析周期", "时间段", "周期", "Period"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: agency_name
+    label: "机构名称"
+    aliases: ["机构", "营业部", "支公司", "营销服务部", "中支"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: total_revenue
+    label: "总营收"
+    aliases: ["总营收", "营业收入", "收入", "Revenue", "总保费"]
+    type: currency
+    unit: 万元
+    required: true
+    maps_to_slide: content_table
+
+  - field: revenue_target_rate
+    label: "营收达成率"
+    aliases: ["营收达成率", "达成率", "完成率"]
+    type: percent
+    required: true
+    maps_to_slide: content_table
+
+  - field: operating_cost
+    label: "运营成本"
+    aliases: ["运营成本", "成本", "费用", "Cost", "支出"]
+    type: currency
+    unit: 万元
+    required: false
+
+  - field: profit_margin
+    label: "利润率"
+    aliases: ["利润率", "边际利润", "Profit", "盈利率"]
+    type: percent
+    required: false
+
+  - field: customer_count
+    label: "客户数量"
+    aliases: ["客户数量", "客户数", "新增客户", "存量客户", "Customers"]
+    type: integer
+    required: false
+
+  - field: customer_retention
+    label: "客户留存率"
+    aliases: ["客户留存率", "留存率", "续保率", "Retention"]
+    type: percent
+    required: false
+
+  - field: key_achievement
+    label: "关键成绩"
+    aliases: ["关键成绩", "成绩", "亮点", "Achievement"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: problem_diagnosis
+    label: "问题诊断"
+    aliases: ["问题诊断", "问题", "不足", "短板", "差距分析"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: improvement_plan
+    label: "改进计划"
+    aliases: ["改进计划", "改善方案", "行动方案", "整改措施", "Plan"]
+    type: text
+    required: false
+
+  - field: next_period_target
+    label: "下期目标"
+    aliases: ["下期目标", "下阶段目标", "下一步目标", "NextTarget"]
+    type: currency
+    unit: 万元
+    required: false
+
+table_slides:
+  financial_dashboard:
+    title: "财务经营仪表盘"
+    fields: ["agency_name", "total_revenue", "revenue_target_rate", "profit_margin"]
+
+  customer_metrics:
+    title: "客户经营指标"
+    fields: ["agency_name", "customer_count", "customer_retention"]
+
+compare_slides:
+  achievement_vs_problem:
+    title: "成绩与问题对标"
+    left_label: "关键成绩"
+    right_label: "问题诊断"
+    left_fields: ["agency_name", "key_achievement"]
+    right_fields: ["agency_name", "problem_diagnosis"]

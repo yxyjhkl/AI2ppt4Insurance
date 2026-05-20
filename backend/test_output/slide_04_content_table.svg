@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <rect y="0" width="1280" height="60" fill="#1e40af"/>
+  <rect y="0" width="6" height="60" fill="#f59e0b"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#ffffff">各业务线核心指标对比</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <rect x="48" y="95" width="1200" height="30" rx="4" fill="#1e40af"/>
+  <text x="60" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">业务线</text>
+  <text x="420" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">Q3营收(万)</text>
+  <text x="750" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">Q4营收(万)</text>
+  <text x="1080" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">环比增长</text>
+  <text x="48" y="155" font-family="Microsoft YaHei" font-size="16" fill="#1f2937"><rect x="48" y="190" width="1200" height="36" fill="#f8fafc"/><text x="60" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">SaaS平台</text><text x="420" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">3,200</text><text x="750" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">4,150</text><text x="1080" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">+29.7%</text>
+<rect x="48" y="228" width="1200" height="36" fill="#ffffff"/><text x="60" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">企业定制</text><text x="420" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">2,100</text><text x="750" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">2,850</text><text x="1080" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">+35.7%</text>
+<rect x="48" y="266" width="1200" height="36" fill="#f8fafc"/><text x="60" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">数据服务</text><text x="420" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">1,600</text><text x="750" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">1,420</text><text x="1080" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">-11.3%</text>
+<rect x="48" y="304" width="1200" height="36" fill="#ffffff"/><text x="60" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">技术咨询</text><text x="420" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">800</text><text x="750" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">650</text><text x="1080" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">-18.8%</text>
+<rect x="48" y="342" width="1200" height="36" fill="#f8fafc"/><text x="60" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">培训认证</text><text x="420" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">450</text><text x="750" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">580</text><text x="1080" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">+28.9%</text></text>
+  <rect y="690" width="1280" height="30" fill="#f0f4ff"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">4</text>
+</svg>

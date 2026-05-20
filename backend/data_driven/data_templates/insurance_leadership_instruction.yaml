@@ -1,0 +1,98 @@
+meeting_type: leadership_instruction
+label: "领导会议总结与指示"
+description: "基于领导讲话与会议纪要提炼核心思想，分解为具体指标与行动计划"
+
+data_requirements:
+  - field: meeting_topic
+    label: "会议主题"
+    aliases: ["会议主题", "议题", "主题", "Topic", "会议名称"]
+    type: text
+    required: true
+    maps_to_slide: cover
+
+  - field: meeting_date
+    label: "会议日期"
+    aliases: ["日期", "会议日期", "时间", "Date", "召开时间"]
+    type: text
+    required: false
+    maps_to_slide: cover
+
+  - field: overall_evaluation
+    label: "整体评价"
+    aliases: ["整体评价", "总体评价", "成绩肯定", "问题定性", "评价"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: external_environment
+    label: "外部环境"
+    aliases: ["外部环境", "宏观环境", "行业趋势", "竞争态势", "环境分析"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: strategic_guideline
+    label: "战略方针"
+    aliases: ["战略方针", "指导思想", "核心原则", "战略方向", "方针"]
+    type: text
+    required: true
+    maps_to_slide: content
+
+  - field: target_premium
+    label: "保费目标"
+    aliases: ["保费目标", "目标保费", "指标", "Target", "任务"]
+    type: currency
+    unit: 万元
+    required: true
+    maps_to_slide: content_table
+
+  - field: target_policy_count
+    label: "件数目标"
+    aliases: ["件数目标", "目标件数", "承保件数目标"]
+    type: integer
+    required: false
+
+  - field: target_activity_rate
+    label: "活动率目标"
+    aliases: ["活动率目标", "出勤率目标", "活动量目标"]
+    type: percent
+    required: false
+
+  - field: resource_commitment
+    label: "资源承诺"
+    aliases: ["资源承诺", "资源支持", "人力支持", "财务支持", "政策支持"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: responsibility_assignment
+    label: "责任分配"
+    aliases: ["责任分配", "责任矩阵", "RACI", "分工", "责任人"]
+    type: text
+    required: false
+
+  - field: reward_punishment
+    label: "奖惩机制"
+    aliases: ["奖惩", "考核", "激励", "奖惩机制", "考核标准"]
+    type: text
+    required: false
+    maps_to_slide: content
+
+  - field: mobilization_call
+    label: "动员号召"
+    aliases: ["动员", "号召", "动员令", "号召语"]
+    type: text
+    required: false
+
+table_slides:
+  target_indicator:
+    title: "量化指标分解"
+    fields: ["meeting_topic", "target_premium", "target_policy_count", "target_activity_rate"]
+
+compare_slides:
+  resource_matrix:
+    title: "资源配置"
+    left_label: "资源类型"
+    right_label: "具体内容"
+    left_fields: ["meeting_topic"]
+    right_fields: ["resource_commitment"]

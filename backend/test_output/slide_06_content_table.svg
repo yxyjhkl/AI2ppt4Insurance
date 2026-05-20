@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#ffffff"/>
+  <rect y="0" width="1280" height="60" fill="#1e40af"/>
+  <rect y="0" width="6" height="60" fill="#f59e0b"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#ffffff">季度KPI达成情况矩阵</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <rect x="48" y="95" width="1200" height="30" rx="4" fill="#1e40af"/>
+  <text x="60" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">KPI指标</text>
+  <text x="420" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">目标值</text>
+  <text x="750" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">实际值</text>
+  <text x="1080" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#ffffff">达成率</text>
+  <text x="48" y="155" font-family="Microsoft YaHei" font-size="16" fill="#1f2937"><rect x="48" y="190" width="1200" height="36" fill="#f8fafc"/><text x="60" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">营收增长率</text><text x="420" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">25%</text><text x="750" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">34%</text><text x="1080" y="214" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">136%</text>
+<rect x="48" y="228" width="1200" height="36" fill="#ffffff"/><text x="60" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">用户增长</text><text x="420" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">400万</text><text x="750" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">580万</text><text x="1080" y="252" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">145%</text>
+<rect x="48" y="266" width="1200" height="36" fill="#f8fafc"/><text x="60" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">客户满意度</text><text x="420" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">4.5</text><text x="750" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">4.6</text><text x="1080" y="290" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">102%</text>
+<rect x="48" y="304" width="1200" height="36" fill="#ffffff"/><text x="60" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">技术债务清理</text><text x="420" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">60%</text><text x="750" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">45%</text><text x="1080" y="328" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">75%</text>
+<rect x="48" y="342" width="1200" height="36" fill="#f8fafc"/><text x="60" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">人才密度</text><text x="420" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">80%</text><text x="750" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">72%</text><text x="1080" y="366" font-family="Microsoft YaHei" font-size="14" fill="#1f2937">90%</text></text>
+  <rect y="690" width="1280" height="30" fill="#f0f4ff"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">6</text>
+</svg>
