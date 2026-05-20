@@ -52,10 +52,11 @@ class GenerationPipeline:
                  ai_mode: str = "auto", model: Optional[str] = None,
                  api_key: Optional[str] = None, base_url: Optional[str] = None,
                  canvas_format: str = "16:9", meeting_type: Optional[str] = None,
-                 excel_filepath: Optional[str] = None):
+                 excel_filepath: Optional[str] = None, custom_style: Optional[str] = None):
         self.scene = scene
         self.meeting_type = meeting_type
         self.excel_filepath = excel_filepath
+        self.custom_style = custom_style
         self.template_id = template_id
         self.ai_mode = ai_mode
         self.model = model
@@ -100,6 +101,13 @@ class GenerationPipeline:
             result.mode = "data_driven"
             return await self._data_driven_execute(input_text)
 
+        is_transcript = self._detect_transcript(input_text)
+        if is_transcript and should_use_ai:
+            logger.info("Transcript detected, using transcript pipeline")
+            result.mode = "transcript"
+            result.message = "解析会议转写文本"
+            return await self._transcript_execute(input_text)
+
         should_use_ai = await self._decide_ai_mode()
 
         if should_use_ai:
@@ -121,7 +129,7 @@ class GenerationPipeline:
             return result
 
         result.slides = slides_data
-        result.title = slides_data[0].title or "Untitled Presentation"
+        result.title = (slides_data[0].title if slides_data else "") or "Untitled Presentation"
         svg_contents = self._fill_svg_slides(slides_data)
         result.svg_contents = svg_contents
 
@@ -179,6 +187,10 @@ class GenerationPipeline:
         scene_info = self.SCENE_MAP.get(resolved_scene, {})
         system_prompt = scene_info.get("system_prompt", "You are a professional presentation designer.")
         slide_structure = scene_info.get("slide_structure", "")
+        # 读取 design_requirements 并注入到提示词
+        design_req = scene_info.get("design_requirements", "") or "N/A"
+        # 用户自定义风格要求
+        custom_style_txt = self.custom_style or "无"
 
         planner_prompt = f"""{system_prompt}
 
@@ -207,6 +219,14 @@ VISUAL RULES:
 4. One key idea per slide
 5. Tables MUST use markdown format: column headers and data rows separated by |---
 6. Use 【标签】 prefix for structured business analysis
+
+---
+DESIGN REQUIREMENTS FROM SCENE TEMPLATE:
+{design_req}
+
+---
+USER CUSTOM STYLE REQUEST:
+{custom_style_txt}
 
 ---
 SLIDE STRUCTURE FROM SCENE TEMPLATE:
@@ -511,6 +531,7 @@ async def run_pipeline(input_text: str, scene: str = "report", template_id: str 
                         ai_mode: str = "auto", model: Optional[str] = None,
                         api_key: Optional[str] = None, base_url: Optional[str] = None,
                         canvas_format: str = "16:9", meeting_type: Optional[str] = None,
-                        excel_filepath: Optional[str] = None) -> GenerationResult:
-    pipeline = GenerationPipeline(scene, template_id, ai_mode, model, api_key, base_url, canvas_format, meeting_type, excel_filepath)
+                        excel_filepath: Optional[str] = None,
+                        custom_style: Optional[str] = None) -> GenerationResult:
+    pipeline = GenerationPipeline(scene, template_id, ai_mode, model, api_key, base_url, canvas_format, meeting_type, excel_filepath, custom_style)
     return await pipeline.run(input_text)

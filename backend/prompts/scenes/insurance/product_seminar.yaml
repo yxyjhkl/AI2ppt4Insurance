@@ -21,13 +21,30 @@ system_prompt: |
   - 答疑互动（1页，ending）：常见问题解答+行动号召
   </structure_spec>
 
-  <design_requirements>
+<design_requirements>
   - 配色方案：温暖金色#f59e0b为主色，搭配柔和暖色渐变背景，强调信任感与亲和力
   - 信息呈现：多用对比表格和图标来展示产品优势，减少大段文字
   - 客户案例：使用真实场景，配客户画像（脱敏），更具代入感
   - 语言风格：温暖、专业、真诚，避免强推销话术
   - 行动指引页：大号联系方式+二维码占位符
-  </design_requirements>
+  
+  <visual_constraints>
+    - 每页顶部使用浅色渐变 banner 区，高度 80px
+    - 标题使用 28pt 粗体，正文 16pt
+    - 关键数据使用大号字体突出（如 KPI 数字使用 48pt）
+    - 使用 【标签】格式标注重要信息
+    - 表格使用斑马纹，行高 30px
+    - 列表项使用 ◉ 符号开头
+    - 页面底部保留 40px 边距用于页码
+  </visual_constraints>
+  
+  <content_constraints>
+    - 封面页：主标题 1 行，副标题含公司名和日期
+    - 内容页：最多 5 个要点，每点最多 2 行
+    - 对比页：左右各 3 项，使用对比表格
+    - 最后一页：行动号召 + 大号二维码占位符 + 联系方式
+  </content_constraints>
+</design_requirements>
 
   <constraints>
   - 避免过度销售话术（如"限时""仅剩"等夸大表述需克制），保持专业可信

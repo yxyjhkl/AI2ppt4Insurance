@@ -284,6 +284,9 @@ export function Dashboard() {
   const [promptCategory, setPromptCategory] = useState('report')
   const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null)
 
+  // 用户自定义风格要求
+  const [customStyle, setCustomStyle] = useState('')
+
   const [excelUploading, setExcelUploading] = useState(false)
   const [excelUploadError, setExcelUploadError] = useState('')
   const [excelData, setExcelData] = useState<{
@@ -412,6 +415,7 @@ export function Dashboard() {
         scene: selectedScene,
         meeting_type: selectedScene === 'insurance' ? meetingType : null,
         content: finalContent,
+        custom_style: customStyle || null,
         template: effectiveTemplate,
         model: currentModelId,
         slide_count: config.slideCount,
@@ -839,6 +843,18 @@ export function Dashboard() {
             )}
           </div>
         )}
+      </section>
+
+      {/* 用户自定义风格要求 */}
+      <section className="card p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">自定义风格（可选）</h2>
+        <p className="text-sm text-gray-500">描述你想要的风格，如"商务蓝金配色、适合投影"或"小清新书香风、鼠尾草绿+米白底"</p>
+        <textarea
+          value={customStyle}
+          onChange={(e) => setCustomStyle(e.target.value)}
+          placeholder="例如：配色为深蓝+金色，标题加粗，每页不超过5个要点..."
+          className="input-field h-20 resize-none"
+        />
       </section>
 
       <section className="card p-6 space-y-4">

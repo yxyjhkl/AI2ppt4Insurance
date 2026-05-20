@@ -28,6 +28,7 @@ class GenerateRequest(BaseModel):
     stagger_ms: int = 200
     include_animation: bool = False
     excel_filepath: Optional[str] = None
+    custom_style: Optional[str] = None  # 用户自定义风格要求
 
 
 class SlideResponse(BaseModel):
@@ -85,6 +86,7 @@ async def generate_pptx(req: GenerateRequest):
             canvas_format=req.canvas_format,
             meeting_type=req.meeting_type,
             excel_filepath=req.excel_filepath,
+            custom_style=req.custom_style,
         )
 
         if req.include_animation and result.pptx_bytes:

@@ -23,5 +23,34 @@
     "title-size": 32,
     "body-size": 20,
     "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "margin": {"top": 50, "bottom": 40, "left": 50, "right": 50},
+    "line_spacing": 1.5,
+    "icon_set": "business",
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "body_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": ["#1e40af", "#3b82f6", "#60a5fa", "#93c5fd"],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
   }
 }
