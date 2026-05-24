@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { Copy, Sparkles, Bookmark, Search, X, Save, Trash2 } from 'lucide-react'
-import { promptCategories, addPrompt, removePrompt } from '@/data/prompts'
+import { promptCategories, addPrompt, removePrompt, type Prompt } from '@/data/prompts'
 
 export function PromptLab() {
   const [activeCategory, setActiveCategory] = useState('report')
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [newPrompt, setNewPrompt] = useState({ title: '', content: '', category: 'report' })
-  const [deleteConfirm, setDeleteConfirm] = useState<{ categoryId: string; index: number; title: string } | null>(null)
+  const [deleteConfirm, setDeleteConfirm] = useState<{ categoryId: string; prompt: Prompt } | null>(null)
 
   const prompts = promptCategories.find((c) => c.id === activeCategory)?.prompts || []
 
@@ -68,10 +68,8 @@ export function PromptLab() {
       </div>
 
       <div className="space-y-3">
-        {filtered.map((prompt, i) => {
-          const originalIndex = prompts.findIndex(p => p.title === prompt.title && p.content === prompt.content)
-          return (
-            <div key={i} className="card p-4 group">
+        {filtered.map((prompt) => (
+            <div key={`${prompt.title}-${prompt.content.slice(0, 30)}`} className="card p-4 group">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center space-x-2">
                   <Sparkles className="w-4 h-4 text-yellow-500" />
@@ -90,7 +88,7 @@ export function PromptLab() {
                   </button>
                   <button
                     onClick={() => {
-                      setDeleteConfirm({ categoryId: activeCategory, index: originalIndex, title: prompt.title })
+                      setDeleteConfirm({ categoryId: activeCategory, prompt })
                     }}
                     className="p-1 hover:bg-red-50 rounded"
                     title="删除"
@@ -101,8 +99,7 @@ export function PromptLab() {
               </div>
               <p className="text-sm text-gray-500 leading-relaxed">{prompt.content}</p>
             </div>
-          )
-        })}
+          ))}
       </div>
 
       {showModal && (
@@ -187,7 +184,7 @@ export function PromptLab() {
               </button>
             </div>
             <p className="text-sm text-gray-600 mb-6">
-              确定要删除提示词「{deleteConfirm.title}」吗？此操作无法撤销。
+              确定要删除提示词「{deleteConfirm.prompt.title}」吗？此操作无法撤销。
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -198,7 +195,7 @@ export function PromptLab() {
               </button>
               <button
                 onClick={() => {
-                  removePrompt(deleteConfirm.categoryId, deleteConfirm.index)
+                  removePrompt(deleteConfirm.categoryId, deleteConfirm.prompt)
                   setDeleteConfirm(null)
                 }}
                 className="px-4 py-2 text-sm bg-red-500 text-white hover:bg-red-600 rounded-lg transition-colors"

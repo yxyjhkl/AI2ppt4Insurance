@@ -7,7 +7,6 @@ release/
 *.local
 .env
 __pycache__/
-*/__pycache__/
 *.pyc
 .pytest_cache/
 preview_cache/
@@ -19,7 +18,18 @@ aippt_config.json
 *.enc
 encryption_key.key
 
-# Temporary and backup files
+# Python artifacts
+*.egg-info/
+*.egg/
+.venv/
+venv/
+env/
+.mypy_cache/
+
+# TypeScript build artifacts
+*.tsbuildinfo
+
+# Temporary and backup files (keep only specific patterns)
 backup_*.py
 full_*.py
 test_*.py
@@ -31,13 +41,10 @@ test_progress_frontend.html
 # IDE and temporary
 .codebuddy/
 
-# Documentation we may contain sensitive info
+# Documentation that may contain sensitive info
 CONFIG_GUIDE.md
 TEST_REPORT.md
 
-# Temporary sample files
+# Temporary sample files in backend
 backend/test_*.py
 backend/backup_*.py
-*.txt
-*.txt
-

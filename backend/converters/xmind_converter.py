@@ -3,21 +3,38 @@ import zipfile
 import json
 import os
 
+MAX_XMIND_SIZE = 50 * 1024 * 1024  # 50MB
+MAX_DECOMPRESSED_SIZE = 100 * 1024 * 1024  # 100MB
+
+
+def _safe_zip_read(zf: zipfile.ZipFile, name: str) -> bytes:
+    """Read a zip member safely, checking size to prevent ZIP bombs."""
+    info = zf.getinfo(name)
+    if info.file_size > MAX_DECOMPRESSED_SIZE:
+        raise ValueError(f"XMind content too large: {info.file_size} bytes (max {MAX_DECOMPRESSED_SIZE})")
+    return zf.read(name)
+
+
+def _check_file_size(filepath: str) -> None:
+    if os.path.getsize(filepath) > MAX_XMIND_SIZE:
+        raise ValueError(f"XMind file too large: {os.path.getsize(filepath)} bytes (max {MAX_XMIND_SIZE})")
+
 
 def xmind_to_markdown(filepath: str) -> str:
     """Convert XMind file to markdown outline format."""
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"File not found: {filepath}")
 
+    _check_file_size(filepath)
+
     try:
         with zipfile.ZipFile(filepath, 'r') as zf:
-            # Try content.json first (XMind Zen/2020+)
             if 'content.json' in zf.namelist():
-                content = json.loads(zf.read('content.json'))
+                content = json.loads(_safe_zip_read(zf, 'content.json'))
                 return _parse_json_content(content)
             # Try content.xml (older XMind 8)
             if 'content.xml' in zf.namelist():
-                return _parse_xml_content(zf.read('content.xml'))
+                return _parse_xml_content(_safe_zip_read(zf, 'content.xml'))
             raise ValueError("Unsupported XMind format: no content.json or content.xml found")
     except zipfile.BadZipFile:
         raise ValueError("Invalid XMind file: not a valid ZIP archive")

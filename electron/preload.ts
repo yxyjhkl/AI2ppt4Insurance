@@ -7,13 +7,19 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('dialog:saveFile', filters),
   getBackendUrl: () => ipcRenderer.invoke('app:getBackendUrl'),
   onFileOpened: (callback: (filePath: string) => void) => {
-    ipcRenderer.on('file:opened', (_event, filePath: string) => callback(filePath))
+    const handler = (_event: Electron.IpcRendererEvent, filePath: string) => callback(filePath)
+    ipcRenderer.on('file:opened', handler)
+    return () => { ipcRenderer.removeListener('file:opened', handler) }
   },
   onNewProject: (callback: () => void) => {
-    ipcRenderer.on('menu:new-project', () => callback())
+    const handler = () => callback()
+    ipcRenderer.on('menu:new-project', handler)
+    return () => { ipcRenderer.removeListener('menu:new-project', handler) }
   },
   onBackendStatus: (callback: (status: { status: string; message?: string }) => void) => {
-    ipcRenderer.on('backend:status', (_event, data) => callback(data))
+    const handler = (_event: Electron.IpcRendererEvent, data: { status: string; message?: string }) => callback(data)
+    ipcRenderer.on('backend:status', handler)
+    return () => { ipcRenderer.removeListener('backend:status', handler) }
   },
   getBackendStatus: () => ipcRenderer.invoke('backend:getStatus'),
   removeAllListeners: (channel: string) => {

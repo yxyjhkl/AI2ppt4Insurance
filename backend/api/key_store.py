@@ -43,20 +43,18 @@ def _get_store_path() -> Path:
 def _get_or_create_key() -> bytes:
     """Get encryption key from env or generate and store a new one."""
     global _encryption_key
-    
+
     if _encryption_key is not None:
         return _encryption_key
-    
-    # 尝试从环境变量获取
+
     key_b64 = os.environ.get(KEY_ENV_VAR)
     if key_b64:
         try:
             _encryption_key = base64.urlsafe_b64decode(key_b64.encode())
             return _encryption_key
         except Exception:
-            pass
-    
-    # 尝试从密钥文件加载
+            logger.warning("Failed to decode encryption key from environment variable")
+
     key_file = _get_store_path().parent / "encryption_key.key"
     if key_file.exists():
         try:
@@ -64,73 +62,59 @@ def _get_or_create_key() -> bytes:
                 _encryption_key = f.read()
             return _encryption_key
         except Exception:
-            pass
-    
-    # 生成新密钥
+            logger.warning("Failed to read existing encryption key file")
+
     try:
         from cryptography.fernet import Fernet
         _encryption_key = Fernet.generate_key()
     except ImportError:
-        # Fallback: use simple base64 encoding (not secure, but better than nothing)
-        import secrets
-        _encryption_key = secrets.token_urlsafe(32).encode()
-        logger.warning(
-            "cryptography package not installed - API keys will use weak XOR obfuscation. "
+        logger.error(
+            "cryptography package is REQUIRED for API key encryption. "
             "Install with: pip install cryptography"
         )
-    
-    # 保存密钥
+        raise RuntimeError(
+            "cryptography package is required for API key storage security. "
+            "Install with: pip install cryptography"
+        )
+
     try:
         with open(key_file, "wb") as f:
             f.write(_encryption_key)
-        # 限制文件权限
         if os.name != "nt":
             os.chmod(key_file, 0o600)
-    except Exception:
-        pass
-    
+    except Exception as e:
+        logger.error(f"Failed to write encryption key file: {e}")
+        raise
+
     return _encryption_key
 
 
 def _encrypt_data(data: str) -> str:
     """Encrypt data using the encryption key."""
+    from cryptography.fernet import Fernet
     key = _get_or_create_key()
-    
-    try:
-        from cryptography.fernet import Fernet
-        fernet = Fernet(key)
-        encrypted = fernet.encrypt(data.encode())
-        return base64.urlsafe_b64encode(encrypted).decode()
-    except ImportError:
-        # Fallback: simple XOR encoding (not secure, but better than plaintext)
-        key_bytes = key[:32] if len(key) >= 32 else key.ljust(32, b'\0')
-        data_bytes = data.encode()
-        encrypted = bytes([a ^ b for a, b in zip(data_bytes, key_bytes * (len(data_bytes) // 32 + 1))])
-        return base64.urlsafe_b64encode(encrypted).decode()
+    fernet = Fernet(key)
+    encrypted = fernet.encrypt(data.encode())
+    return base64.urlsafe_b64encode(encrypted).decode()
 
 
 def _decrypt_data(encrypted_data: str) -> str:
     """Decrypt data using the encryption key."""
-    key = _get_or_create_key()
-    
+    from cryptography.fernet import Fernet
     try:
         encrypted_bytes = base64.urlsafe_b64decode(encrypted_data.encode())
     except Exception:
+        logger.warning("Failed to decode encrypted data from base64")
         return ""
-    
+
+    key = _get_or_create_key()
     try:
-        from cryptography.fernet import Fernet
         fernet = Fernet(key)
         decrypted = fernet.decrypt(encrypted_bytes)
         return decrypted.decode()
-    except ImportError:
-        # Fallback: simple XOR decoding
-        key_bytes = key[:32] if len(key) >= 32 else key.ljust(32, b'\0')
-        decrypted = bytes([a ^ b for a, b in zip(encrypted_bytes, key_bytes * (len(encrypted_bytes) // 32 + 1))])
-        try:
-            return decrypted.decode()
-        except Exception:
-            return ""
+    except Exception:
+        logger.warning("Failed to decrypt data - key may have changed or data is corrupted")
+        return ""
 
 
 def _save_store():
@@ -139,36 +123,43 @@ def _save_store():
         data_json = json.dumps(_api_key_store)
         encrypted = _encrypt_data(data_json)
         store_path = _get_store_path()
-        
+
         with open(store_path, "w", encoding="utf-8") as f:
             f.write(encrypted)
-        
-        # 限制文件权限
+
         if os.name != "nt":
             os.chmod(store_path, 0o600)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"Failed to save encrypted API key store: {e}")
 
 
 def _load_store():
     """Load the API key store from encrypted file."""
     global _api_key_store
-    
+
     try:
         store_path = _get_store_path()
         if not store_path.exists():
             return
-        
+
         with open(store_path, "r", encoding="utf-8") as f:
             encrypted = f.read()
-        
+
         decrypted = _decrypt_data(encrypted)
+        if not decrypted:
+            logger.warning("Decrypted store is empty - encryption key may have changed")
+            return
+
         loaded = json.loads(decrypted)
-        
+
         if isinstance(loaded, dict):
             _api_key_store = loaded
-    except Exception:
-        pass
+        else:
+            logger.warning(f"Loaded store is not a dict: {type(loaded)}")
+    except json.JSONDecodeError as e:
+        logger.error(f"Failed to parse API key store JSON: {e}")
+    except Exception as e:
+        logger.error(f"Failed to load API key store: {e}")
 
 
 def _merge_config_keys():

@@ -3,6 +3,7 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 from typing import Optional
 import os
+import re
 import json
 import asyncio
 import shutil
@@ -11,6 +12,12 @@ from utils.compat import to_thread
 router = APIRouter()
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "templates")
+
+_VALID_ID_RE = re.compile(r'^[\w\-\.]+$')
+
+def _validate_template_id(template_id: str) -> None:
+    if not _VALID_ID_RE.match(template_id) or '..' in template_id:
+        raise HTTPException(400, f"无效的模板 ID: {template_id}")
 
 
 @router.get("/")
@@ -62,6 +69,7 @@ def _list_templates_sync():
 
 @router.get("/{template_id}/preview")
 async def get_template_preview(template_id: str):
+    _validate_template_id(template_id)
     from slide_builder.template_preview_svg import get_cached_preview
     paths = [
         os.path.join(TEMPLATES_DIR, "built-in", template_id),
@@ -78,6 +86,7 @@ async def get_template_preview(template_id: str):
 
 @router.get("/{template_id}")
 async def get_template(template_id: str):
+    _validate_template_id(template_id)
     return await to_thread(_get_template_sync, template_id)
 
 def _get_template_sync(template_id: str):
@@ -99,9 +108,7 @@ def _get_template_sync(template_id: str):
 
 @router.delete("/{template_id}")
 async def delete_template(template_id: str):
-    import re
-    if not re.match(r'^[\w\-\.]+$', template_id):
-        raise HTTPException(400, f"无效的模板 ID: {template_id}")
+    _validate_template_id(template_id)
     custom_path = os.path.join(TEMPLATES_DIR, "custom", template_id)
     if not os.path.exists(custom_path):
         raise HTTPException(404, f"模板 {template_id} 不存在或不是自定义模板")
@@ -117,6 +124,9 @@ async def delete_template(template_id: str):
 async def import_template(file: UploadFile = File(...)):
     if not file.filename or not file.filename.endswith(".pptx"):
         raise HTTPException(400, "仅支持 .pptx 文件格式")
+
+    template_name = os.path.splitext(file.filename)[0]
+    _validate_template_id(template_name)
 
     try:
         content = await file.read()

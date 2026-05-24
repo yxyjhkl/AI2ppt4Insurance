@@ -104,7 +104,6 @@ async def test_connectivity(payload: ConnectivityTestRequest):
         logger.warning(f"[连通测试] {provider}: API Key 未填写")
         return ConnectivityTestResponse(ok=False, message="API Key 未填写，请在设置中填入有效的 API Key")
 
-    safe_key = f"{api_key[:6]}...{api_key[-4:]}" if len(api_key) > 10 else "***"
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -123,9 +122,12 @@ async def test_connectivity(payload: ConnectivityTestRequest):
         logger.info(f"[连通测试] 阶段1: TCP连通性检查 -> {host}:{port}")
         t0 = time.time()
         try:
-            import asyncio
             _reader, writer = await asyncio.wait_for(asyncio.open_connection(host, port), timeout=5.0)
-            writer.close()
+            try:
+                writer.close()
+                await writer.wait_closed()
+            except Exception:
+                pass
             logger.info(f"[连通测试] 阶段1 ✅ TCP可达，耗时 {time.time()-t0:.2f}s")
         except asyncio.TimeoutError:
             elapsed = time.time() - t0

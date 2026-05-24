@@ -507,7 +507,7 @@ export function Settings() {
           <div>
             <label className="text-xs text-gray-500 block mb-1">默认幻灯片数量</label>
             <input type="number" className="input-field text-sm" value={genConfig.slideCount}
-              onChange={(e) => updateGenConfig({ slideCount: parseInt(e.target.value) || 10 })}
+              onChange={(e) => updateGenConfig({ slideCount: parseInt(e.target.value, 10) || 10 })}
               min={5} max={50} />
           </div>
           <div>

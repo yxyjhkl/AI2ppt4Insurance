@@ -96,9 +96,12 @@ export function addPrompt(categoryId: string, title: string, content: string): v
   }
 }
 
-export function removePrompt(categoryId: string, index: number): void {
+export function removePrompt(categoryId: string, prompt: Prompt): void {
   const category = promptCategories.find((c) => c.id === categoryId)
-  if (category && index >= 0 && index < category.prompts.length) {
-    category.prompts.splice(index, 1)
+  if (category) {
+    const idx = category.prompts.indexOf(prompt)
+    if (idx !== -1) {
+      category.prompts.splice(idx, 1)
+    }
   }
 }

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class GenerateRequest(BaseModel):
     scene: str = "report"
     meeting_type: Optional[str] = None
-    content: str = ""
+    content: str = Field("", max_length=200000)
     template: str = "professional-blue"
     model: Optional[str] = None
     slide_count: int = Field(10, ge=1, le=50)
@@ -329,6 +329,13 @@ _PROMPT_PATH = _os.path.join(_os.path.dirname(__file__), "..", "..", "prompts", 
 _PRESETS_DIR = _os.path.join(_os.path.dirname(__file__), "..", "..", "prompts", "auto_mode_presets")
 _CONFIG_PATH = _os.path.join(_os.path.dirname(__file__), "..", "..", "prompts", "auto_mode_config.json")
 
+import re as _re
+_VALID_PRESET_RE = _re.compile(r'^[\w\-\.]+$')
+
+def _validate_preset_id(preset_id: str) -> None:
+    if not _VALID_PRESET_RE.match(preset_id) or '..' in preset_id:
+        raise HTTPException(400, f"无效的预设 ID: {preset_id}")
+
 
 def _load_config() -> dict:
     if _os.path.exists(_CONFIG_PATH):
@@ -404,6 +411,7 @@ async def list_presets():
 
 @router.post("/prompt/presets/activate")
 async def activate_preset(req: PresetActivateRequest):
+    _validate_preset_id(req.preset_id)
     preset_prompt = _os.path.join(_PRESETS_DIR, req.preset_id, "prompt.txt")
     if not _os.path.exists(preset_prompt):
         raise HTTPException(404, f"Preset not found: {req.preset_id}")

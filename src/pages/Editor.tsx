@@ -128,30 +128,39 @@ export function Editor() {
     }
   }, [slides.length])
 
+  const saveToProjectStore = useCallback(() => {
+    if (slides.length === 0) return
+    const project = useProjectStore.getState().currentProject
+    if (!project) return
+    const store = useProjectStore.getState()
+    store.setCurrentProject({
+      ...project,
+      name: projectTitle,
+      slides: slides.map((s, i) => ({
+        id: `slide_${i}`,
+        index: i,
+        layoutType: s.layout_type as any,
+        title: s.title,
+        content: (s.body_items || []).map((b: any) => b.text).join('\n'),
+        notes: s.notes || '',
+        svgContent: s.svg_preview || '',
+        elements: s.elements || [],
+      })),
+      updatedAt: new Date().toISOString(),
+    })
+  }, [slides, projectTitle])
+
   useEffect(() => {
     if (slides.length === 0) return
-    const timer = setTimeout(() => {
-      const project = useProjectStore.getState().currentProject
-      if (!project) return
-      const store = useProjectStore.getState()
-      store.setCurrentProject({
-        ...project,
-        name: projectTitle,
-        slides: slides.map((s, i) => ({
-          id: `slide_${i}`,
-          index: i,
-          layoutType: s.layout_type as any,
-          title: s.title,
-          content: (s.body_items || []).map((b: any) => b.text).join('\n'),
-          notes: s.notes || '',
-          svgContent: s.svg_preview || '',
-          elements: s.elements || [],
-        })),
-        updatedAt: new Date().toISOString(),
-      })
-    }, 3000)
+    const timer = setTimeout(saveToProjectStore, 3000)
     return () => clearTimeout(timer)
-  }, [slides, projectTitle])
+  }, [slides, projectTitle, saveToProjectStore])
+
+  useEffect(() => {
+    const handler = () => saveToProjectStore()
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [saveToProjectStore])
 
   const updateSlideElements = useCallback((newElements: CanvasElement[]) => {
     setSlides(prev => prev.map((s, i) =>

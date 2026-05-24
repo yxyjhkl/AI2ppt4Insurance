@@ -185,14 +185,19 @@ class VideoExporter:
 
     def _concat_audio(self, audio_files: list[dict],
                       concat_file: str, output_path: str):
-        import shlex
+        import re
         with open(concat_file, "w", encoding="utf-8") as f:
             for af in audio_files:
                 file_path = af.get("file", "")
                 if not file_path or not os.path.exists(file_path):
                     logger.warning(f"Audio file not found: {file_path}")
                     continue
-                escaped = file_path.replace("\\", "/").replace("'", "'\\''")
+                # Sanitize path: normalize separators, reject dangerous characters
+                sanitized = file_path.replace("\\", "/")
+                if re.search(r'[\n\r\x00]', sanitized):
+                    logger.warning(f"Audio file path contains invalid characters: {sanitized[:80]}")
+                    continue
+                escaped = sanitized.replace("'", "'\\''")
                 f.write(f"file '{escaped}'\n")
 
         result = subprocess.run([

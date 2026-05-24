@@ -48,7 +48,10 @@
     "files": [
       "dist/**/*",
       "dist-electron/**/*",
-      "backend/**/*"
+      "backend/**/*",
+      "!backend/aippt_config.json",
+      "!backend/api_keys.enc",
+      "!backend/encryption_key.key"
     ],
     "extraResources": [
       {
