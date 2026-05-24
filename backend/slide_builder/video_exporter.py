@@ -92,12 +92,32 @@ class VideoExporter:
             body_match = re.findall(r'<text[^>]*>([^<]+)</text>', svg)
             lines = body_match[1:6] if len(body_match) > 1 else []
 
-            try:
-                title_font = ImageFont.truetype("arial.ttf", 48)
-                body_font = ImageFont.truetype("arial.ttf", 32)
-            except (IOError, OSError):
-                title_font = ImageFont.load_default()
-                body_font = title_font
+            # 查找系统中可用的中文字体
+            font_paths = [
+                "C:/Windows/Fonts/msyh.ttc",  # 微软雅黑
+                "C:/Windows/Fonts/simhei.ttf",  # 黑体
+                "C:/Windows/Fonts/simsun.ttc",  # 宋体
+                "C:/Windows/Fonts/NotoSansSC-Regular.otf",
+                "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+                "/System/Library/Fonts/PingFang.ttc",
+            ]
+            title_font = None
+            for font_path in font_paths:
+                if os.path.exists(font_path):
+                    try:
+                        title_font = ImageFont.truetype(font_path, 48)
+                        body_font = ImageFont.truetype(font_path, 32)
+                        break
+                    except Exception:
+                        continue
+            
+            if title_font is None:
+                try:
+                    title_font = ImageFont.truetype("arial.ttf", 48)
+                    body_font = ImageFont.truetype("arial.ttf", 32)
+                except (IOError, OSError):
+                    title_font = ImageFont.load_default()
+                    body_font = title_font
 
             draw.text((80, 60), title, fill="#1e40af", font=title_font)
             y = 140

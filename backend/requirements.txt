@@ -38,7 +38,7 @@ img2pdf>=0.4.0
 # Optional: offline TTS fallback
 # pyttsx3>=2.90
 
-# Optional: AI Providers
-# openai>=1.0.0
-# anthropic>=0.30.0
-# google-generativeai>=0.3.0
+# AI Providers (取消注释以启用对应供应商)
+openai>=1.0.0
+anthropic>=0.30.0
+google-generativeai>=0.3.0

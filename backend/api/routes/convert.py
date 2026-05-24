@@ -28,15 +28,15 @@ class ExcelUploadResponse(BaseModel):
 @router.post("/file")
 async def convert_file(file: UploadFile = File(...), output_format: str = "md"):
     suffix = os.path.splitext(file.filename or "")[1].lower()
-    supported = {".pdf", ".docx", ".doc", ".md", ".txt", ".pptx", ".html", ".htm", ".epub"}
+    supported = {".pdf", ".docx", ".doc", ".md", ".txt", ".pptx", ".html", ".htm", ".epub", ".xmind"}
 
     if suffix not in supported:
-        raise HTTPException(400, f"Unsupported format: {suffix}")
+        raise HTTPException(400, f"不支持的文件格式: {suffix}")
 
     content = await file.read()
     max_size = 50 * 1024 * 1024
     if len(content) > max_size:
-        raise HTTPException(413, f"File too large. Maximum size is {max_size // (1024*1024)}MB")
+        raise HTTPException(413, f"文件过大。最大支持 {max_size // (1024*1024)}MB")
     with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
         tmp.write(content)
         tmp_path = tmp.name
@@ -45,7 +45,7 @@ async def convert_file(file: UploadFile = File(...), output_format: str = "md"):
         md_content = await to_thread(convert_to_markdown, tmp_path, suffix)
         return {"filename": file.filename, "markdown": md_content, "format": suffix}
     except Exception as e:
-        raise HTTPException(500, f"Conversion failed: {str(e)}")
+        raise HTTPException(500, f"转换失败: {str(e)}")
     finally:
         if os.path.exists(tmp_path):
             os.remove(tmp_path)
@@ -58,21 +58,21 @@ async def convert_url(req: URLConvertRequest):
         md_content = await to_thread(url_to_markdown, req.url)
         return {"url": req.url, "markdown": md_content}
     except Exception as e:
-        raise HTTPException(500, f"URL conversion failed: {str(e)}")
+        raise HTTPException(500, f"URL 转换失败: {str(e)}")
 
 
 @router.post("/excel", response_model=ExcelUploadResponse)
 async def upload_excel(file: UploadFile = File(...)):
     suffix = os.path.splitext(file.filename or "")[1].lower()
     if suffix not in (".xlsx", ".xls"):
-        raise HTTPException(400, f"Unsupported Excel format: {suffix}. Please upload .xlsx or .xls files.")
+        raise HTTPException(400, f"不支持的 Excel 格式: {suffix}。请上传 .xlsx 或 .xls 文件。")
 
     content = await file.read()
     max_size = 50 * 1024 * 1024
     if len(content) > max_size:
-        raise HTTPException(413, f"File too large. Maximum size is 50MB")
+        raise HTTPException(413, f"文件过大。最大支持 50MB")
 
-    upload_dir = os.path.join(tempfile.gettempdir(), "aippt_excel_uploads")
+    upload_dir = os.path.join(tempfile.gettempdir(), "insurdeck_excel_uploads")
     os.makedirs(upload_dir, exist_ok=True)
 
     file_id = uuid.uuid4().hex[:12]
@@ -109,7 +109,7 @@ async def upload_excel(file: UploadFile = File(...)):
 
 @router.get("/excel/{file_id}/preview")
 async def excel_preview(file_id: str):
-    upload_dir = os.path.join(tempfile.gettempdir(), "aippt_excel_uploads")
+    upload_dir = os.path.join(tempfile.gettempdir(), "insurdeck_excel_uploads")
     for fname in os.listdir(upload_dir):
         if fname.startswith(file_id):
             filepath = os.path.join(upload_dir, fname)
@@ -139,5 +139,11 @@ def convert_to_markdown(filepath: str, suffix: str) -> str:
         from converters.url_converter import html_to_markdown
         with open(filepath, "r", encoding="utf-8") as f:
             return html_to_markdown(f.read())
+    elif suffix == ".pptx":
+        from converters.pptx_converter import pptx_to_markdown
+        return pptx_to_markdown(filepath)
+    elif suffix == ".xmind":
+        from converters.xmind_converter import xmind_to_markdown
+        return xmind_to_markdown(filepath)
     else:
         raise ValueError(f"No converter for {suffix}")

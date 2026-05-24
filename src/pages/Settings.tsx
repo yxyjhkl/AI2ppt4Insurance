@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Trash2, CheckCircle, Wifi, WifiOff, Loader2 } from 'lucide-react'
+import { Trash2, CheckCircle, Wifi, WifiOff, Loader2, RotateCcw, Save, Edit3 } from 'lucide-react'
 import { apiConfig } from '@/utils/api'
-import { getObject, setObject, removeItem } from '@/utils/secureStore'
+import { getObject, setObject } from '@/utils/secureStore'
 import { useProjectStore } from '@/stores/projectStore'
 
 interface ProviderDef {
@@ -36,7 +36,7 @@ const providers: ProviderDef[] = [
   { id: 'custom', label: '自定义接口', baseUrl: '', models: ['custom-model'] },
 ]
 
-const DEFAULT_OLLAMA_MODELS = [...providers.find(p => p.id === 'ollama')!.models]
+const DEFAULT_OLLAMA_MODELS = [...(providers.find(p => p.id === 'ollama')?.models ?? [])]
 
 function getProvider(id: string) {
   return providers.find(p => p.id === id)
@@ -77,13 +77,10 @@ export function Settings() {
         const cleaned = saved.filter(m => !(m.id === '2' && m.providerId === 'openai' && !m.apiKey))
         if (cleaned.length !== saved.length) {
           setObject(STORAGE_KEY, cleaned)
-          console.debug('[设置] 已清理旧版默认 OpenAI 条目，当前', cleaned.length, '个模型配置')
         }
         setModels(cleaned)
-        console.debug('[设置] 已从加密存储加载', cleaned.length, '个模型配置')
       } else {
         setObject(STORAGE_KEY, defaultModels())
-        console.debug('[设置] 首次使用，初始化为默认配置')
       }
       setStorageReady(true)
     })
@@ -98,7 +95,6 @@ export function Settings() {
         if (data.available && data.models && data.models.length > 0) {
           setOllamaModels(data.models)
           setOllamaAvailable(true)
-          console.debug('[设置] 检测到 Ollama 模型:', data.models.join(', '))
         }
       } catch {
         // Ollama 不可用，保持默认列表
@@ -119,7 +115,6 @@ export function Settings() {
       if (ok) {
         setSavedIndicator(true)
         setTimeout(() => setSavedIndicator(false), 3000)
-        console.debug('[设置] 已自动保存', models.length, '个模型配置')
       }
     }, 1500)
 
@@ -168,6 +163,106 @@ export function Settings() {
   const [testingId, setTestingId] = useState<string | null>(null)
   const [testResults, setTestResults] = useState<Record<string, { ok: boolean; message: string }>>({})
 
+  // Prompt editor state
+  const [promptContent, setPromptContent] = useState('')
+  const [promptLoading, setPromptLoading] = useState(false)
+  const [promptSaving, setPromptSaving] = useState(false)
+  const [promptResetting, setPromptResetting] = useState(false)
+  const [promptSaved, setPromptSaved] = useState(false)
+  const [showPromptEditor, setShowPromptEditor] = useState(false)
+  const [presets, setPresets] = useState<Array<{
+    id: string; name: string; order: number;
+    description: string; tags: string[]; suitable_for: string[];
+  }>>([])
+  const [activePreset, setActivePreset] = useState('')
+  const [customOverride, setCustomOverride] = useState(false)
+  const [presetLoading, setPresetLoading] = useState(false)
+  const [activatingId, setActivatingId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (showPromptEditor) {
+      loadPresets()
+      if (!promptContent) loadPrompt()
+    }
+  }, [showPromptEditor])
+
+  const loadPresets = async () => {
+    setPresetLoading(true)
+    try {
+      const res = await fetch(await apiConfig.url('/api/v1/generate/prompt/presets'))
+      if (res.ok) {
+        const data = await res.json()
+        setPresets(data.presets || [])
+        setActivePreset(data.active_preset || '')
+        setCustomOverride(data.custom_override || false)
+      }
+    } catch { /* ignore */ }
+    finally { setPresetLoading(false) }
+  }
+
+  const loadPrompt = async () => {
+    setPromptLoading(true)
+    try {
+      const res = await fetch(await apiConfig.url('/api/v1/generate/prompt/auto-mode'))
+      if (res.ok) {
+        const data = await res.json()
+        setPromptContent(data.content || '')
+      }
+    } catch { /* ignore */ }
+    finally { setPromptLoading(false) }
+  }
+
+  const activatePreset = async (presetId: string) => {
+    setActivatingId(presetId)
+    try {
+      const res = await fetch(await apiConfig.url('/api/v1/generate/prompt/presets/activate'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ preset_id: presetId }),
+      })
+      if (res.ok) {
+        setActivePreset(presetId)
+        setCustomOverride(false)
+        await loadPrompt()
+        setPromptSaved(true)
+        setTimeout(() => setPromptSaved(false), 3000)
+      }
+    } finally { setActivatingId(null) }
+  }
+
+  const savePrompt = async () => {
+    setPromptSaving(true)
+    try {
+      const res = await fetch(await apiConfig.url('/api/v1/generate/prompt/auto-mode'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: promptContent }),
+      })
+      if (res.ok) {
+        setCustomOverride(true)
+        setPromptSaved(true)
+        setTimeout(() => setPromptSaved(false), 3000)
+      }
+    } finally { setPromptSaving(false) }
+  }
+
+  const resetPrompt = async () => {
+    setPromptResetting(true)
+    try {
+      const res = await fetch(await apiConfig.url('/api/v1/generate/prompt/auto-mode/reset'), {
+        method: 'POST',
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setPromptContent(data.content || '')
+        setCustomOverride(false)
+        setActivePreset(data.active_preset || activePreset)
+        setPromptSaved(true)
+        setTimeout(() => setPromptSaved(false), 3000)
+      }
+    } finally { setPromptResetting(false) }
+  }
+
   const classifyNetworkError = (e: any): { reason: string; suggestion: string } => {
     const msg = (e.message || '').toLowerCase()
     const name = (e.name || '').toLowerCase()
@@ -215,52 +310,26 @@ export function Settings() {
   }
 
   const testModelConnection = async (entry: ModelEntry) => {
-    const TAG = '[连通测试]'
-    console.groupCollapsed(`${TAG} ${entry.providerId}/${entry.model}`)
-    console.debug(`${TAG} ========== 开始连通测试 ==========`)
-    console.debug(`${TAG} 模型ID: ${entry.id}`)
-    console.debug(`${TAG} 供应商: ${entry.providerId}`)
-    console.debug(`${TAG} 模型名称: ${entry.model}`)
-    console.debug(`${TAG} 接口地址: ${entry.baseUrl}`)
-    console.debug(`${TAG} API Key 已填写: ${entry.apiKey ? `是 (${entry.apiKey.length}位)` : '否'}`)
-
     setTestingId(entry.id)
     setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: '' } }))
 
     try {
       const backendBase = await apiConfig.url('/api/health')
-      console.debug(`${TAG} [预检] 检查后端服务: ${backendBase}`)
 
       let backendOk = false
       try {
         const healthResp = await fetch(backendBase, { method: 'GET' })
         backendOk = healthResp.ok
-        console.debug(`${TAG} [预检] 后端 /api/health 返回: HTTP ${healthResp.status}`)
-      } catch (he: any) {
-        console.error(`${TAG} [预检] 后端 /api/health 不可达: ${he.message}`)
+      } catch {
+        backendOk = false
       }
 
       if (!backendOk) {
-        const msg = '❌ 本机后端服务 (127.0.0.1:8099) 未响应，请先启动 Python 后端再重试'
-        console.error(`${TAG} ${msg}`)
-        setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: msg } }))
+        setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: '❌ 本机后端服务 (127.0.0.1:8099) 未响应，请先启动 Python 后端再重试' } }))
         return
       }
 
-      console.debug(`${TAG} [预检] 后端服务正常，开始测试 AI 模型连通性`)
-
       const baseUrl = await apiConfig.url('/api/v1/ai/connectivity-test')
-      console.debug(`${TAG} [请求] 后端 API 地址: ${baseUrl}`)
-
-      const safeApiKey = entry.apiKey
-        ? `${entry.apiKey.slice(0, 4)}...${entry.apiKey.slice(-4)}`
-        : '(空)'
-      console.debug(`${TAG} [请求] 请求体:`, JSON.stringify({
-        provider_id: entry.providerId,
-        model: entry.model,
-        base_url: entry.baseUrl,
-        api_key: safeApiKey,
-      }, null, 2))
 
       const resp = await fetch(baseUrl, {
         method: 'POST',
@@ -273,58 +342,39 @@ export function Settings() {
         }),
       })
 
-      console.debug(`${TAG} [响应] HTTP 状态码: ${resp.status} ${resp.statusText}`)
-      console.debug(`${TAG} [响应] 响应头:`, Object.fromEntries(resp.headers.entries()))
-
-      const respBody = await resp.text()
-      console.debug(`${TAG} [响应] 原始响应体: ${respBody}`)
-
       if (!resp.ok) {
-        console.error(`${TAG} ❌ 后端 API 请求失败 (HTTP ${resp.status}): ${respBody}`)
         setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: `后端服务异常 (HTTP ${resp.status})` } }))
         return
       }
 
       let result: { ok: boolean; message: string }
       try {
-        result = JSON.parse(respBody)
+        result = await resp.json()
       } catch {
-        console.error(`${TAG} ❌ 响应体解析失败: ${respBody}`)
         setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: '后端返回格式异常' } }))
         return
       }
 
       if (result.ok) {
-        console.info(`${TAG} ✅ 连通测试成功: ${entry.providerId}/${entry.model} — ${result.message}`)
         setTestResults(prev => ({ ...prev, [entry.id]: { ok: true, message: result.message || '连接成功' } }))
       } else {
-        console.error(`${TAG} ❌ 连通测试失败: ${result.message}`)
         setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: result.message || '连接失败' } }))
       }
     } catch (e: any) {
       const { reason, suggestion } = classifyNetworkError(e)
-      console.error(`${TAG} ❌ 网络异常`)
-      console.error(`${TAG} 错误类型: ${e.name}`)
-      console.error(`${TAG} 错误消息: ${e.message}`)
-      console.error(`${TAG} 诊断原因: ${reason}`)
-      console.error(`${TAG} 建议操作: ${suggestion}`)
-      if (e.cause) console.error(`${TAG} 错误原因:`, e.cause)
-      if (e.stack) console.debug(`${TAG} 调用栈:`, e.stack)
       setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: `${reason}\n${suggestion}` } }))
     } finally {
-      console.debug(`${TAG} ========== 连通测试结束 ==========`)
-      console.groupEnd()
       setTestingId(null)
     }
   }
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <h1 className="text-2xl font-bold text-gray-800">设置</h1>
+      <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">设置</h1>
 
-      <section className="card p-6 space-y-4">
+      <section className="card p-6 space-y-4 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-700">AI 模型</h2>
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">AI 模型</h2>
         </div>
 
         <div className="space-y-3">
@@ -479,6 +529,147 @@ export function Settings() {
       </section>
 
       <section className="card p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-700">AI 生成 Prompt</h2>
+            <p className="text-xs text-gray-400 mt-0.5">选择预设或自定义"AI替我做"模式的生成指令</p>
+          </div>
+          <button
+            onClick={() => setShowPromptEditor(!showPromptEditor)}
+            className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5"
+          >
+            <Edit3 className="w-3.5 h-3.5" />
+            {showPromptEditor ? '收起' : '配置 Prompt'}
+          </button>
+        </div>
+
+        {showPromptEditor && (
+          <div className="space-y-4 animate-fade-in">
+            {/* Preset selector */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">选择预设方案</h3>
+              {presetLoading ? (
+                <div className="flex items-center gap-2 text-sm text-gray-400 py-4">
+                  <Loader2 className="w-4 h-4 animate-spin" /> 加载预设列表...
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2">
+                  {presets.map((p) => {
+                    const isActive = p.id === activePreset && !customOverride
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => activatePreset(p.id)}
+                        disabled={activatingId === p.id}
+                        className={`text-left p-3 rounded-lg border-2 transition-all ${
+                          isActive
+                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                            : 'border-gray-200 hover:border-gray-300 dark:border-gray-700'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-blue-500' : 'bg-gray-300'}`} />
+                            <span className={`text-sm font-medium ${isActive ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                              {p.name}
+                            </span>
+                            {activatingId === p.id && <Loader2 className="w-3 h-3 animate-spin text-blue-500" />}
+                          </div>
+                          <div className="flex gap-1">
+                            {p.tags?.map((t: string) => (
+                              <span key={t} className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-500">
+                                {t}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1 ml-4">{p.description}</p>
+                        {p.suitable_for?.length > 0 && (
+                          <p className="text-[10px] text-gray-400 mt-0.5 ml-4">
+                            适用：{p.suitable_for.join('、')}
+                          </p>
+                        )}
+                      </button>
+                    )
+                  })}
+                  {/* Custom override indicator */}
+                  {customOverride && (
+                    <div className="p-3 rounded-lg border-2 border-amber-300 bg-amber-50 dark:bg-amber-900/10">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-amber-500" />
+                        <span className="text-sm font-medium text-amber-700 dark:text-amber-300">自定义 Prompt（已修改）</span>
+                      </div>
+                      <p className="text-xs text-amber-600 mt-1 ml-4">
+                        当前使用手动编辑的 Prompt，点击左侧预设可切换回标准方案
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 dark:border-gray-700" />
+
+            {/* Custom editor */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-600 mb-2">
+                手动编辑{customOverride ? '（当前生效中）' : '（将覆盖预设）'}
+              </h3>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700 mb-3">
+                <p className="font-medium mb-1">注意</p>
+                <ul className="list-disc list-inside space-y-0.5 text-amber-600">
+                  <li>直接修改下方内容会覆盖当前预设，保存后立即生效</li>
+                  <li>保留模板变量 {'{input_text}'} {'{system_prompt}'} 等占位符</li>
+                  <li>出问题时点击"恢复当前预设"或重新选择一个预设即可</li>
+                </ul>
+              </div>
+
+              {promptLoading ? (
+                <div className="flex items-center gap-2 text-sm text-gray-400 py-8 justify-center">
+                  <Loader2 className="w-4 h-4 animate-spin" /> 加载中...
+                </div>
+              ) : (
+                <textarea
+                  value={promptContent}
+                  onChange={(e) => setPromptContent(e.target.value)}
+                  className="input-field min-h-[300px] resize-y font-mono text-xs leading-relaxed"
+                  placeholder="Prompt 内容加载失败..."
+                />
+              )}
+
+              <div className="flex items-center justify-between mt-3">
+                <button
+                  onClick={resetPrompt}
+                  disabled={promptResetting}
+                  className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1.5"
+                >
+                  {promptResetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
+                  恢复当前预设
+                </button>
+
+                <div className="flex items-center gap-3">
+                  {promptSaved && (
+                    <span className="text-sm text-green-600 flex items-center gap-1">
+                      <CheckCircle className="w-4 h-4" /> 已保存
+                    </span>
+                  )}
+                  <button
+                    onClick={savePrompt}
+                    disabled={promptSaving || !promptContent}
+                    className="btn-primary text-xs px-4 py-1.5 flex items-center gap-1.5"
+                  >
+                    {promptSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
+                    保存自定义 Prompt
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+
+      <section className="card p-6 space-y-4">
         <h2 className="text-lg font-semibold text-gray-700">导出选项</h2>
         <div className="space-y-2">
           <label className="flex items-center space-x-2">
@@ -487,8 +678,8 @@ export function Settings() {
             <span className="text-sm text-gray-700">在 PPTX 中包含演讲备注</span>
           </label>
           <label className="flex items-center space-x-2">
-            <input type="checkbox" checked={genConfig.includeImages}
-              onChange={(e) => updateGenConfig({ includeImages: e.target.checked })} className="rounded" />
+            <input type="checkbox" checked={genConfig.includeAnimation}
+              onChange={(e) => updateGenConfig({ includeAnimation: e.target.checked })} className="rounded" />
             <span className="text-sm text-gray-700">在线时包含 OOXML 动画</span>
           </label>
         </div>

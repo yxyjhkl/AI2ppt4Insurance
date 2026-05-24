@@ -1,1 +1,56 @@
-{"name":"Elegant Serif","category":"Proposal","description":"Classic serif typography with refined navy palette.","colors":{"primary":"#1a365d","secondary":"#718096","accent":"#c53030","background":"#fefefe","text":"#2d3748","light-bg":"#f7fafc","stripe":"#edf2f7"},"fonts":{"title":"Georgia","body":"Merriweather"},"spacing":{"margin-x":45,"margin-y":35,"title-size":34,"body-size":20,"line-height":1.6}}
+{
+  "name": "Elegant Serif",
+  "category": "Proposal",
+  "description": "Classic serif typography with refined navy palette.",
+  "colors": {
+    "primary": "#1a365d",
+    "secondary": "#718096",
+    "accent": "#c53030",
+    "background": "#fefefe",
+    "text": "#2d3748",
+    "light-bg": "#f7fafc",
+    "stripe": "#edf2f7"
+  },
+  "fonts": {
+    "title": "Georgia",
+    "body": "Merriweather"
+  },
+  "spacing": {
+    "margin-x": 45,
+    "margin-y": 35,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.6
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "elegant"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#1a365d",
+      "#718096",
+      "#c53030",
+      "#2a5898"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  }
+}

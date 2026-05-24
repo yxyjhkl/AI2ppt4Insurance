@@ -48,8 +48,81 @@ class ExportEngine:
         return output_path
 
     def _svgs_to_pngs(self, svg_contents: list[str], tmp_dir: str) -> list[str]:
-        from slide_builder.video_exporter import svgs_to_pngs as convert_svgs_to_pngs
-        return convert_svgs_to_pngs(svg_contents, tmp_dir, self.width, self.height)
+        """将SVG内容转换为PNG图片列表"""
+        import re
+        import os as os_module
+        png_paths = []
+        for i, svg in enumerate(svg_contents):
+            png_path = os_module.path.join(tmp_dir, f"slide_{i:04d}.png")
+            try:
+                # 尝试使用 cairosvg
+                import cairosvg
+                cairosvg.svg2png(
+                    bytestring=svg.encode("utf-8"),
+                    write_to=png_path,
+                    output_width=self.width,
+                    output_height=self.height,
+                )
+                png_paths.append(png_path)
+            except Exception:
+                # Fallback: 使用 PIL 生成简单 PNG
+                try:
+                    from PIL import Image, ImageDraw, ImageFont
+                    
+                    img = Image.new("RGB", (self.width, self.height), "white")
+                    draw = ImageDraw.Draw(img)
+                    
+                    # 查找系统中可用的中文字体
+                    font_paths = [
+                        "C:/Windows/Fonts/msyh.ttc",  # 微软雅黑
+                        "C:/Windows/Fonts/simhei.ttf",  # 黑体
+                        "C:/Windows/Fonts/simsun.ttc",  # 宋体
+                        "C:/Windows/Fonts/NotoSansSC-Regular.otf",  # Google Noto
+                        "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",  # Linux 文泉驿
+                        "/System/Library/Fonts/PingFang.ttc",  # macOS 苹方
+                    ]
+                    title_font = None
+                    for font_path in font_paths:
+                        if os_module.path.exists(font_path):
+                            try:
+                                title_font = ImageFont.truetype(font_path, 48)
+                                body_font = ImageFont.truetype(font_path, 32)
+                                break
+                            except Exception:
+                                continue
+                    
+                    if title_font is None:
+                        # 最后尝试加载默认字体
+                        title_font = ImageFont.load_default()
+                        body_font = title_font
+                    
+                    # 尝试提取标题
+                    title_match = re.search(r'font-size="(\d+)"[^>]*>([^<]+)', svg)
+                    title = title_match.group(2) if title_match else f"Slide {i + 1}"
+                    
+                    # 尝试提取正文
+                    body_matches = re.findall(r'<text[^>]*>([^<]+)</text>', svg)
+                    lines = [m for m in body_matches if len(m.strip()) > 2][1:6]
+                    
+                    draw.text((80, 60), title, fill="#1e40af", font=title_font)
+                    y = 140
+                    for line in lines:
+                        text = line.strip()
+                        if not text:
+                            continue
+                        draw.text((80, y), text[:50], fill="#333333", font=body_font)
+                        y += 40
+                    
+                    img.save(png_path, "PNG")
+                    png_paths.append(png_path)
+                except Exception as e:
+                    # 最后Fallback: 创建空白PNG
+                    from PIL import Image
+                    img = Image.new("RGB", (self.width, self.height), "white")
+                    img.save(png_path, "PNG")
+                    png_paths.append(png_path)
+        
+        return png_paths
 
     def _pngs_to_pdf(self, png_paths: list[str], output_path: str,
                      titles: Optional[list[str]] = None) -> str:

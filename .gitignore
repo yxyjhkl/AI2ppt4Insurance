@@ -6,3 +6,38 @@ release/
 .DS_Store
 *.local
 .env
+__pycache__/
+*/__pycache__/
+*.pyc
+.pytest_cache/
+preview_cache/
+backend/test_output/
+*.pptx
+
+# Configuration files with API keys
+aippt_config.json
+*.enc
+encryption_key.key
+
+# Temporary and backup files
+backup_*.py
+full_*.py
+test_*.py
+test_*.txt
+fix_*.py
+build-helper.ps1
+test_progress_frontend.html
+
+# IDE and temporary
+.codebuddy/
+
+# Documentation we may contain sensitive info
+CONFIG_GUIDE.md
+TEST_REPORT.md
+
+# Temporary sample files
+backend/test_*.py
+backend/backup_*.py
+*.txt
+*.txt
+

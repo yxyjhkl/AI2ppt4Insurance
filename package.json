@@ -1,8 +1,8 @@
 {
-  "name": "ai-ppt-desktop",
+  "name": "insurdeck",
   "version": "1.0.0",
   "type": "module",
-  "description": "AI PPT Desktop - AI powered presentation generator",
+  "description": "InsurDeck - AI powered presentation generator for insurance industry",
   "main": "dist-electron/main.js",
   "scripts": {
     "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
@@ -40,8 +40,8 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.aippt.desktop",
-    "productName": "AI PPT Desktop",
+    "appId": "com.insurdeck.desktop",
+    "productName": "险而易见 · InsurDeck",
     "directories": {
       "output": "release"
     },

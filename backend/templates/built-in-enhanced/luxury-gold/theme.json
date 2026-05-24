@@ -1,0 +1,226 @@
+{
+  "name": "Luxury Gold",
+  "category": "Proposal",
+  "description": "Premium gold-on-dark for high-end brand presentations. Suitable for insurance product seminars.",
+  "colors": {
+    "primary": "#1a1a2e",
+    "secondary": "#d4af37",
+    "accent": "#e2c275",
+    "background": "#0f0f1a",
+    "text": "#f5e6c8",
+    "light-bg": "#2a2a3e",
+    "stripe": "#3a3a4e"
+  },
+  "fonts": {
+    "title": "Georgia",
+    "body": "Arial",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 45,
+    "margin-y": 35,
+    "title-size": 36,
+    "body-size": 20,
+    "line-height": 1.6
+  },
+  "visual_rules": {
+    "title_size": 40,
+    "subtitle_size": 22,
+    "body_size": 18,
+    "caption_size": 14,
+    "margin": {
+      "top": 60,
+      "bottom": 50,
+      "left": 60,
+      "right": 60
+    },
+    "line_spacing": 1.6,
+    "icon_set": "elegant",
+    "corner_radius": 6,
+    "card_elevation": 3,
+    "shadow_enabled": true,
+    "gradient_bg": true,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": false
+  },
+  "animation": {
+    "type": "fade",
+    "title_animation": "slide_up_fade",
+    "body_animation": "fade_in",
+    "duration": 0.5
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#d4af37",
+      "#e2c275",
+      "#f5e6c8",
+      "#8b7355"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "premium",
+    "quote_style": "elegant"
+  },
+  "scene_optimized": {
+    "insurance_product_seminar": true,
+    "proposal": true,
+    "entrepreneur_seminar": true
+  },
+  "gradients": {
+    "primary": "#1a1a2e 0%, #d4af37 100%",
+    "accent": "#e2c275 0%, #ead49e 100%",
+    "hero": "#1a1a2e 0%, #e2c275 100%",
+    "soft": "#babac0 0%, #f2e7c3 100%",
+    "subtle": "#0f0f1a 0%, #e8e8ea 100%"
+  },
+  "color_variants": {
+    "primary_light": "#474757",
+    "primary_dark": "#141424",
+    "secondary_light": "#dcbf5f",
+    "secondary_dark": "#a98c2c",
+    "accent_light": "#ead49e",
+    "accent_dark": "#b49b5d",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#1a1a2e 0%, #d4af37 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#1a1a2e",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#e2c275",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#e2c275",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#fcf7ee",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#0f0f1a",
+      "border_color": "#8c8c96",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e8e8ea",
+      "border_color": "#1a1a2e",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #1a1a2e, #d4af37)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(26, 26, 46, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#1a1a2e",
+    "secondary": "#d4af37",
+    "accent": "#e2c275",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#f5e6c8",
+    "muted": "#faf2e3"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f3f3f4"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e8e8ea"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#fdfbf6",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

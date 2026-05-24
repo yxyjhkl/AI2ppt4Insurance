@@ -1,0 +1,179 @@
+{
+  "name": "Creative Vibrant",
+  "category": "Creative",
+  "description": "Bold multi-color palette for creative agencies and design.",
+  "colors": {
+    "primary": "#db2777",
+    "secondary": "#f97316",
+    "accent": "#06b6d4",
+    "background": "#ffffff",
+    "text": "#1f2937",
+    "light-bg": "#fdf2f8",
+    "stripe": "#fce7f3"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 35,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.4
+  },
+  "gradients": {
+    "primary": "#db2777 0%, #f97316 100%",
+    "accent": "#06b6d4 0%, #50cbe0 100%",
+    "hero": "#db2777 0%, #06b6d4 100%",
+    "soft": "#f4bed6 0%, #fdd5b9 100%",
+    "subtle": "#ffffff 0%, #fbe9f1 100%"
+  },
+  "color_variants": {
+    "primary_light": "#e25292",
+    "primary_dark": "#af1f5f",
+    "secondary_light": "#fa8f44",
+    "secondary_dark": "#c75c11",
+    "accent_light": "#50cbe0",
+    "accent_dark": "#0491a9",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#db2777 0%, #f97316 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#db2777",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#06b6d4",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#06b6d4",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#bbbec3",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#ffffff",
+      "border_color": "#ed93bb",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#fbe9f1",
+      "border_color": "#db2777",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #db2777, #f97316)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(219, 39, 119, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#db2777",
+    "secondary": "#f97316",
+    "accent": "#06b6d4",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#1f2937",
+    "muted": "#8f949b"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#fdf4f8"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#fbe9f1"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dddee1",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

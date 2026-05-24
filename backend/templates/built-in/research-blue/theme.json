@@ -1,1 +1,56 @@
-{"name":"Research Blue","category":"Report","description":"Trustworthy deep blue for research data presentations.","colors":{"primary":"#1e3a5f","secondary":"#4299e1","accent":"#ed8936","background":"#f8fafc","text":"#1a202c","light-bg":"#ebf8ff","stripe":"#bee3f8"},"fonts":{"title":"Arial","body":"Arial"},"spacing":{"margin-x":40,"margin-y":30,"title-size":30,"body-size":18,"line-height":1.5}}
+{
+  "name": "Research Blue",
+  "category": "Report",
+  "description": "Trustworthy deep blue for research data presentations.",
+  "colors": {
+    "primary": "#1e3a5f",
+    "secondary": "#4299e1",
+    "accent": "#ed8936",
+    "background": "#f8fafc",
+    "text": "#1a202c",
+    "light-bg": "#ebf8ff",
+    "stripe": "#bee3f8"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 30,
+    "body-size": 18,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "business"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#1e3a5f",
+      "#4299e1",
+      "#ed8936",
+      "#305d99"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  }
+}

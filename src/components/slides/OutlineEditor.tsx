@@ -9,10 +9,13 @@ interface OutlineEditorProps {
   onReorder: (from: number, to: number) => void
   onDelete: (index: number) => void
   onAdd: (afterIndex: number) => void
+  onUpdateSlide?: (index: number, updates: Partial<SlideData>) => void
 }
 
-export function OutlineEditor({ slides, selectedIndex, onSelect, onReorder, onDelete, onAdd }: OutlineEditorProps) {
+export function OutlineEditor({ slides, selectedIndex, onSelect, onReorder, onDelete, onAdd, onUpdateSlide }: OutlineEditorProps) {
   const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null)
+  const [editValue, setEditValue] = useState('')
 
   const handleDragStart = useCallback((e: React.DragEvent, i: number) => {
     setDragIndex(i)
@@ -37,6 +40,10 @@ export function OutlineEditor({ slides, selectedIndex, onSelect, onReorder, onDe
     content_two_col: '双栏', content_three_col: '三栏',
     content_table: '表格', content_code: '代码',
     content_quote: '引用', content_compare: '对比',
+    content_kpi: 'KPI', content_timeline: '时间轴',
+    content_matrix: '矩阵', content_waterfall: '瀑布',
+    content_gauge: '仪表', content_ranking: '排行',
+    content_funnel: '漏斗',
     ending: '结尾', toc: '目录',
   }
 
@@ -56,7 +63,7 @@ export function OutlineEditor({ slides, selectedIndex, onSelect, onReorder, onDe
 
         return (
           <div
-            key={i}
+            key={slide.page_number || i}
             draggable
             onDragStart={(e) => handleDragStart(e, i)}
             onDragOver={(e) => handleDragOver(e, i)}
@@ -82,8 +89,41 @@ export function OutlineEditor({ slides, selectedIndex, onSelect, onReorder, onDe
                   {slide.body_items?.length || 0} 项
                 </span>
               </div>
-              <p className="text-sm font-medium text-gray-800 truncate mt-0.5">
-                {slide.title || '(无标题)'}
+              <p className="text-sm font-medium text-gray-800 mt-0.5 cursor-text hover:text-primary-600 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (onUpdateSlide) {
+                    setEditingIndex(i)
+                    setEditValue(slide.title || '')
+                  }
+                }}>
+                {editingIndex === i ? (
+                  <input
+                    className="w-full text-xs p-0.5 border border-primary-300 rounded focus:outline-none focus:ring-1 focus:ring-primary-400"
+                    value={editValue}
+                    autoFocus
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onBlur={() => {
+                      if (onUpdateSlide && editValue.trim() !== slide.title) {
+                        onUpdateSlide(i, { title: editValue.trim() })
+                      }
+                      setEditingIndex(null)
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        if (onUpdateSlide && editValue.trim() !== slide.title) {
+                          onUpdateSlide(i, { title: editValue.trim() })
+                        }
+                        setEditingIndex(null)
+                      }
+                      if (e.key === 'Escape') {
+                        setEditingIndex(null)
+                      }
+                    }}
+                  />
+                ) : (
+                  slide.title || '(点击编辑标题)'
+                )}
               </p>
             </div>
 

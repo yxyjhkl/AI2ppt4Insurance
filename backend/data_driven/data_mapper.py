@@ -41,7 +41,9 @@ class DataMapper:
             return self._cache[meeting_type]
         path = os.path.join(self.TEMPLATE_DIR, f"insurance_{meeting_type}.yaml")
         if not os.path.exists(path):
-            raise FileNotFoundError(f"数据模板不存在: {path}")
+            msg = f"未找到「{meeting_type}」类型的数据模板。已支持的会议类型: business_review, leadership_instruction, business_launch, product_seminar, entrepreneur_seminar, service_rights, operation_review, business_report, product_training, underperformer_review"
+            logger.warning(msg)
+            raise ValueError(msg)
         with open(path, "r", encoding="utf-8") as f:
             template = yaml.safe_load(f)
         self._cache[meeting_type] = template

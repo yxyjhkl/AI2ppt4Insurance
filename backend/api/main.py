@@ -7,13 +7,12 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from .routes import convert, generate, templates, ai, media, export_route
+from .routes import convert, generate, templates, ai, media, export_route, progress
 
 
 class APIKeyFilter(logging.Filter):
     def filter(self, record):
         if hasattr(record, 'msg') and isinstance(record.msg, str):
-            import re
             record.msg = re.sub(
                 r'(api_key|api[-_]?key|secret|token|apikey)["\']?\s*[:=]\s*["\']?([^\s"\'&]{0,4})([^\s"\'&]+)([^\s"\'&]{0,4})["\']?',
                 r'\1\2****\4', record.msg, flags=re.IGNORECASE
@@ -65,10 +64,14 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.middleware("http")
-async def add_ratelimit_header(request: Request, call_next):
+async def add_security_headers(request: Request, call_next):
     response = await call_next(request)
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"
     return response
 
 app.include_router(convert.router, prefix="/api/v1/convert", tags=["convert"])
@@ -77,6 +80,7 @@ app.include_router(templates.router, prefix="/api/v1/templates", tags=["template
 app.include_router(ai.router, prefix="/api/v1/ai", tags=["ai"])
 app.include_router(media.router, prefix="/api/v1/media", tags=["media"])
 app.include_router(export_route.router, prefix="/api/v1", tags=["export"])
+app.include_router(progress.router, prefix="/api/v1", tags=["progress"])
 
 
 @app.get("/api/health")

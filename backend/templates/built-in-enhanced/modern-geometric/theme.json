@@ -1,0 +1,179 @@
+{
+  "name": "Modern Geometric",
+  "category": "Creative",
+  "description": "Bold geometric shapes with contrasting color blocks.",
+  "colors": {
+    "primary": "#27272a",
+    "secondary": "#52525b",
+    "accent": "#d946ef",
+    "background": "#fafafa",
+    "text": "#18181b",
+    "light-bg": "#f4f4f5",
+    "stripe": "#e4e4e7"
+  },
+  "fonts": {
+    "title": "Inter",
+    "body": "Inter"
+  },
+  "spacing": {
+    "margin-x": 35,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 18,
+    "line-height": 1.4
+  },
+  "gradients": {
+    "primary": "#27272a 0%, #52525b 100%",
+    "accent": "#d946ef 0%, #e47df3 100%",
+    "hero": "#27272a 0%, #d946ef 100%",
+    "soft": "#bebebf 0%, #cbcbcd 100%",
+    "subtle": "#fafafa 0%, #e9e9e9 100%"
+  },
+  "color_variants": {
+    "primary_light": "#525254",
+    "primary_dark": "#1f1f21",
+    "secondary_light": "#74747b",
+    "secondary_dark": "#414148",
+    "accent_light": "#e47df3",
+    "accent_dark": "#ad38bf",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#27272a 0%, #52525b 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#27272a",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#d946ef",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#d946ef",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#b9b9ba",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#fafafa",
+      "border_color": "#939394",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e9e9e9",
+      "border_color": "#27272a",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #27272a, #52525b)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(39, 39, 42, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#27272a",
+    "secondary": "#52525b",
+    "accent": "#d946ef",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#18181b",
+    "muted": "#8b8b8d"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f4f4f4"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e9e9e9"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dcdcdc",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

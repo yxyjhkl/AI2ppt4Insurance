@@ -1,1 +1,56 @@
-{"name":"Academic Defense","category":"Education","description":"Formal blue for thesis defense and academic presentations.","colors":{"primary":"#003366","secondary":"#336699","accent":"#cc0000","background":"#ffffff","text":"#1a1a1a","light-bg":"#f0f5fa","stripe":"#e6eef5"},"fonts":{"title":"Times New Roman","body":"Arial"},"spacing":{"margin-x":40,"margin-y":30,"title-size":32,"body-size":20,"line-height":1.5}}
+{
+  "name": "Academic Defense",
+  "category": "Education",
+  "description": "Formal blue for thesis defense and academic presentations.",
+  "colors": {
+    "primary": "#003366",
+    "secondary": "#336699",
+    "accent": "#cc0000",
+    "background": "#ffffff",
+    "text": "#1a1a1a",
+    "light-bg": "#f0f5fa",
+    "stripe": "#e6eef5"
+  },
+  "fonts": {
+    "title": "Times New Roman",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 32,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "elegant"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#003366",
+      "#336699",
+      "#cc0000",
+      "#0059b2"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  }
+}

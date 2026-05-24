@@ -12,6 +12,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onNewProject: (callback: () => void) => {
     ipcRenderer.on('menu:new-project', () => callback())
   },
+  onBackendStatus: (callback: (status: { status: string; message?: string }) => void) => {
+    ipcRenderer.on('backend:status', (_event, data) => callback(data))
+  },
+  getBackendStatus: () => ipcRenderer.invoke('backend:getStatus'),
+  removeAllListeners: (channel: string) => {
+    ipcRenderer.removeAllListeners(channel)
+  },
   secureStore: {
     set: (key: string, value: string) => ipcRenderer.invoke('store:set', key, value),
     get: (key: string): Promise<string | null> => ipcRenderer.invoke('store:get', key),

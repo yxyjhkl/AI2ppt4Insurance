@@ -231,7 +231,7 @@ class OfflineRuleEngine:
             logger.info(f"Single heading slide has {total_items} items, splitting...")
 
         if not slides or not slides[0].body_items:
-            title = raw_text.strip().split("\n")[0][:80] if raw_text.strip() else "Untitled"
+            title = self._smart_truncate_title(raw_text.strip().split("\n")[0]) if raw_text.strip() else "Untitled"
             return [SlideUnit(layout_type="cover", title=title)]
 
         slide = slides[0]
@@ -243,13 +243,13 @@ class OfflineRuleEngine:
 
         if len(paragraphs) <= 2:
             if not slide.title:
-                slide.title = paragraphs[0] if paragraphs else raw_text.strip()[:80]
+                slide.title = self._smart_truncate_title(paragraphs[0]) if paragraphs else self._smart_truncate_title(raw_text.strip())
                 if len(paragraphs) > 1:
                     slide.body_items = [ContentBlock(type="paragraph", text=paragraphs[1])]
             return [slide]
 
         new_slides = []
-        preserved_title = slide.title if (has_headings and slide.title) else paragraphs[0][:80]
+        preserved_title = slide.title if (has_headings and slide.title) else self._smart_truncate_title(paragraphs[0])
         new_slides.append(SlideUnit(
             layout_type="cover",
             title=preserved_title,
@@ -275,7 +275,7 @@ class OfflineRuleEngine:
 
             new_slides.append(SlideUnit(
                 layout_type="content",
-                title=chunk_paragraphs[0][:60],
+                title=self._smart_truncate_title(chunk_paragraphs[0]),
                 body_items=[ContentBlock(type="paragraph", text=t) for t in chunk_paragraphs[1:]] if len(chunk_paragraphs) > 1 else []
             ))
 
@@ -311,6 +311,29 @@ class OfflineRuleEngine:
             slides.append(SlideUnit(layout_type="ending", title="Thank You"))
 
         return slides
+
+    def _smart_truncate_title(self, text: str, max_length: int = 30) -> str:
+        text = text.strip()
+        if len(text) <= max_length:
+            return text
+
+        punctuation = "。！？；，.!?;,：:—…"
+        best = max_length
+        for p in punctuation:
+            idx = text.rfind(p, 0, max_length + 5)
+            if idx >= 8:
+                if idx + 1 < best:
+                    best = idx + 1
+
+        if best == max_length:
+            idx = text.rfind(" ", 0, max_length)
+            if idx >= 8:
+                best = idx
+
+        if best < 8:
+            return text[:max_length].rstrip() + "…"
+
+        return text[:best].strip()
 
     def _match_layout(self, slide: SlideUnit) -> str:
         if slide.layout_type in self.LAYOUT_MAP:

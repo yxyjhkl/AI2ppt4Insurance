@@ -1,0 +1,179 @@
+{
+  "name": "Research Blue",
+  "category": "Report",
+  "description": "Trustworthy deep blue for research data presentations.",
+  "colors": {
+    "primary": "#1e3a5f",
+    "secondary": "#4299e1",
+    "accent": "#ed8936",
+    "background": "#f8fafc",
+    "text": "#1a202c",
+    "light-bg": "#ebf8ff",
+    "stripe": "#bee3f8"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 30,
+    "body-size": 18,
+    "line-height": 1.5
+  },
+  "gradients": {
+    "primary": "#1e3a5f 0%, #4299e1 100%",
+    "accent": "#ed8936 0%, #f2ac72 100%",
+    "hero": "#1e3a5f 0%, #ed8936 100%",
+    "soft": "#bbc3cf 0%, #c6e0f6 100%",
+    "subtle": "#f8fafc 0%, #e8ebef 100%"
+  },
+  "color_variants": {
+    "primary_light": "#4b617f",
+    "primary_dark": "#182e4c",
+    "secondary_light": "#67ade7",
+    "secondary_dark": "#347ab4",
+    "accent_light": "#f2ac72",
+    "accent_dark": "#bd6d2b",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#1e3a5f 0%, #4299e1 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#1e3a5f",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#ed8936",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#ed8936",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#babcbf",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#f8fafc",
+      "border_color": "#8e9caf",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e8ebef",
+      "border_color": "#1e3a5f",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #1e3a5f, #4299e1)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(30, 58, 95, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#1e3a5f",
+    "secondary": "#4299e1",
+    "accent": "#ed8936",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#1a202c",
+    "muted": "#8c8f95"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f3f5f7"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e8ebef"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dcdddf",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

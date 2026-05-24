@@ -1,1 +1,56 @@
-{"name":"Government Red","category":"Report","description":"Official red-gold scheme for government and party presentations.","colors":{"primary":"#c53030","secondary":"#d69e2e","accent":"#f6e05e","background":"#fffbf0","text":"#1a202c","light-bg":"#fef2f2","stripe":"#fee2e2"},"fonts":{"title":"SimHei","body":"Microsoft YaHei"},"spacing":{"margin-x":40,"margin-y":30,"title-size":34,"body-size":20,"line-height":1.5}}
+{
+  "name": "Government Red",
+  "category": "Report",
+  "description": "Official red-gold scheme for government and party presentations.",
+  "colors": {
+    "primary": "#c53030",
+    "secondary": "#d69e2e",
+    "accent": "#f6e05e",
+    "background": "#fffbf0",
+    "text": "#1a202c",
+    "light-bg": "#fef2f2",
+    "stripe": "#fee2e2"
+  },
+  "fonts": {
+    "title": "SimHei",
+    "body": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "business"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#c53030",
+      "#d69e2e",
+      "#f6e05e",
+      "#da6767"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  }
+}

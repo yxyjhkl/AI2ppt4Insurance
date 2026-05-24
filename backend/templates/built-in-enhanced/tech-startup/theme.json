@@ -1,0 +1,179 @@
+{
+  "name": "Tech Startup",
+  "category": "Tech",
+  "description": "Modern gradient design with vibrant blue-purple.",
+  "colors": {
+    "primary": "#4f46e5",
+    "secondary": "#06b6d4",
+    "accent": "#f43f5e",
+    "background": "#0b0f19",
+    "text": "#e2e8f0",
+    "light-bg": "#1e1b4b",
+    "stripe": "#312e81"
+  },
+  "fonts": {
+    "title": "Inter",
+    "body": "system-ui"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "gradients": {
+    "primary": "#4f46e5 0%, #06b6d4 100%",
+    "accent": "#f43f5e 0%, #f7788e 100%",
+    "hero": "#4f46e5 0%, #f43f5e 100%",
+    "soft": "#cac7f7 0%, #b4e9f2 100%",
+    "subtle": "#0b0f19 0%, #edecfc 100%"
+  },
+  "color_variants": {
+    "primary_light": "#726bea",
+    "primary_dark": "#3f38b7",
+    "secondary_light": "#37c4dc",
+    "secondary_dark": "#0491a9",
+    "accent_light": "#f7788e",
+    "accent_dark": "#c3324b",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#4f46e5 0%, #06b6d4 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#4f46e5",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#f43f5e",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#f43f5e",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#f6f8fa",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#0b0f19",
+      "border_color": "#a7a2f2",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#edecfc",
+      "border_color": "#4f46e5",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #4f46e5, #06b6d4)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(79, 70, 229, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#4f46e5",
+    "secondary": "#06b6d4",
+    "accent": "#f43f5e",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#e2e8f0",
+    "muted": "#f0f3f7"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f6f5fd"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#edecfc"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#fafbfc",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

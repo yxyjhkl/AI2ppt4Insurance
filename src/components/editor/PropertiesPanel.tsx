@@ -1,4 +1,4 @@
-import { Type, PaintBucket, Move, RotateCw, Layers, Trash2, Sparkles } from 'lucide-react'
+import { Type, PaintBucket, Move, RotateCw, Layers, Trash2, Sparkles, Lock, Unlock } from 'lucide-react'
 import type { CanvasElement, EntranceEffectName } from '@/types'
 import { ENTRANCE_EFFECT_LABELS } from '@/types'
 
@@ -51,12 +51,33 @@ export function PropertiesPanel({ element, onUpdate, onDelete }: Props) {
           </select>
         )}
         {element.type === 'image' && (
-          <input
-            className="input-field text-xs"
-            value={element.content}
-            onChange={(e) => onUpdate({ content: e.target.value })}
-            placeholder="图片地址..."
-          />
+          <div className="space-y-2">
+            <input
+              className="input-field text-xs"
+              value={element.content}
+              onChange={(e) => onUpdate({ content: e.target.value })}
+              placeholder="图片地址URL或base64..."
+            />
+            {/* 本地上传按钮 - 使用label包裹input */}
+            <label className="flex items-center justify-center w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition-colors">
+              <span className="text-xs text-gray-500">点击选择本地图片</span>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) {
+                    const reader = new FileReader()
+                    reader.onload = (ev) => {
+                      onUpdate({ content: ev.target?.result as string })
+                    }
+                    reader.readAsDataURL(file)
+                  }
+                }}
+              />
+            </label>
+          </div>
         )}
         {element.type === 'table' && (
           <textarea
@@ -111,7 +132,7 @@ export function PropertiesPanel({ element, onUpdate, onDelete }: Props) {
             <div>
               <label className="text-[10px] text-gray-500 block">对齐</label>
               <select className="input-field text-xs" value={element.style.textAlign || 'left'}
-                onChange={(e) => onUpdate({ style: { ...element.style, textAlign: e.target.value as any } })}>
+                  onChange={(e) => onUpdate({ style: { ...element.style, textAlign: e.target.value as CanvasElement['style']['textAlign'] } })}>
                 <option value="left">左对齐</option>
                 <option value="center">居中</option>
                 <option value="right">右对齐</option>
@@ -175,6 +196,12 @@ export function PropertiesPanel({ element, onUpdate, onDelete }: Props) {
           </p>
         )}
       </Section>
+
+      <button onClick={() => onUpdate({ locked: !element.locked })}
+        className="w-full flex items-center justify-center space-x-1.5 px-3 py-2 text-xs text-amber-600 hover:bg-amber-50 rounded-lg border border-amber-200 transition-colors mb-1">
+        {element.locked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+        <span>{element.locked ? '已锁定 (点击解锁)' : '锁定元素'}</span>
+      </button>
 
       <button onClick={onDelete}
         className="w-full flex items-center justify-center space-x-1.5 px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-lg border border-red-200 transition-colors">

@@ -10,7 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react'
-import { useLocale } from '@/locales'
+
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: '仪表盘' },
@@ -26,15 +26,15 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`bg-white border-r border-gray-200 flex flex-col shrink-0 transition-all duration-200 ${
+      className={`bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 flex flex-col shrink-0 transition-all duration-200 ${
         collapsed ? 'w-16' : 'w-56'
       }`}
     >
-      <div className={`h-14 flex items-center border-b border-gray-200 px-4 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+      <div className={`h-14 flex items-center border-b border-gray-200 dark:border-gray-700 px-4 ${collapsed ? 'justify-center' : 'justify-between'}`}>
         {!collapsed && (
           <div className="flex items-center">
             <Presentation className="w-6 h-6 text-primary-600" />
-            <span className="ml-2 font-bold text-gray-800">AI PPT</span>
+            <span className="ml-2 font-bold text-gray-800 dark:text-gray-200">险而易见</span>
           </div>
         )}
         {collapsed && <Presentation className="w-6 h-6 text-primary-600" />}
@@ -51,8 +51,8 @@ export function Sidebar() {
                 collapsed ? 'justify-center' : 'justify-start'
               } ${
                 isActive
-                  ? 'bg-primary-50 text-primary-700'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               }`
             }
           >
@@ -62,10 +62,10 @@ export function Sidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-gray-200 p-2">
+      <div className="border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center py-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          className="w-full flex items-center justify-center py-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           title={collapsed ? '展开侧边栏' : '折叠侧边栏'}
         >
           {collapsed ? (

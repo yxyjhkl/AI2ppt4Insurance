@@ -9,11 +9,11 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <TopBar />
-        <main className="flex-1 overflow-auto p-6 bg-gray-50">
+        <main className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-gray-800 transition-colors">
           {children}
         </main>
         <StatusBar />

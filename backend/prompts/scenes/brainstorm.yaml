@@ -19,17 +19,29 @@ system_prompt: |
   </structure_spec>
 
   <design_requirements>
-  - 配色：创意紫色为主色，活力橙色为辅
+  - 配色：创意紫色#7c3aed为主色，活力橙色#f97316为辅
   - 使用content_compare对比不同视角
   - 使用content_table框架对比矩阵
   - 使用【假设】【未知】【发现】标签标注
   </design_requirements>
 
-  <constraints>
+  <visual_constraints>
+  - 配色方案：主色#7c3aed紫色，辅色#f97316橙色，背景#faf5ff淡紫
+  - 标题字号：34pt，正文：15pt，标注：11pt
+  - 使用卡片布局区分不同框架
+  - 矩阵对比使用表格布局
+  - 假设使用虚线边框标注
+  - 优先级使用🟢高/🟡中/🔴低颜色编码
+  - 每页不超过3个框架分析
+  </visual_constraints>
+
+  <content_constraints>
   - 每个框架至少输出3个有价值的洞察
   - 使用🟢🟡🔴标注行动建议优先级
   - 保持探索性语调，非评判性
-  </constraints>
+  - 假设需明确标注待验证
+  - 行动项需包含负责人
+  </content_constraints>
 
 thinking_frameworks:
   - name: First Principles

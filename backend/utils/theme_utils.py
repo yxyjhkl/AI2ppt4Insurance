@@ -49,8 +49,17 @@ def load_theme(template_dir: str) -> dict:
             theme.setdefault("fonts", {})
             for key, default_val in DEFAULT_THEME["fonts"].items():
                 theme["fonts"].setdefault(key, default_val)
+            _enhance_theme(theme)
             return theme
         except (json.JSONDecodeError, IOError) as e:
             logger.warning(f"Failed to load theme from {theme_path}: {e}")
 
     return dict(DEFAULT_THEME)
+
+
+def _enhance_theme(theme: dict):
+    try:
+        from slide_builder.theme_enhancer import ThemeEnhancer
+        enhancer = ThemeEnhancer(theme)
+    except Exception:
+        pass

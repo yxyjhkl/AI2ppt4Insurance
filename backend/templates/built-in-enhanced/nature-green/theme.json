@@ -1,0 +1,179 @@
+{
+  "name": "Nature Green",
+  "category": "Education",
+  "description": "Fresh green tones for environmental and educational content.",
+  "colors": {
+    "primary": "#166534",
+    "secondary": "#22c55e",
+    "accent": "#eab308",
+    "background": "#f0fdf4",
+    "text": "#1f2937",
+    "light-bg": "#dcfce7",
+    "stripe": "#bbf7d0"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 32,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "gradients": {
+    "primary": "#166534 0%, #22c55e 100%",
+    "accent": "#eab308 0%, #f0c952 100%",
+    "hero": "#166534 0%, #eab308 100%",
+    "soft": "#b9d0c2 0%, #bcedce 100%",
+    "subtle": "#f0fdf4 0%, #e7efea 100%"
+  },
+  "color_variants": {
+    "primary_light": "#44835c",
+    "primary_dark": "#115029",
+    "secondary_light": "#4ed07e",
+    "secondary_dark": "#1b9d4b",
+    "accent_light": "#f0c952",
+    "accent_dark": "#bb8f06",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#166534 0%, #22c55e 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#166534",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#eab308",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#eab308",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#bbbec3",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#f0fdf4",
+      "border_color": "#8ab299",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e7efea",
+      "border_color": "#166534",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #166534, #22c55e)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(22, 101, 52, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#166534",
+    "secondary": "#22c55e",
+    "accent": "#eab308",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#1f2937",
+    "muted": "#8f949b"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f3f7f4"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e7efea"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dddee1",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

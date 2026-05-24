@@ -7,6 +7,7 @@ import os
 import json
 import asyncio
 import tempfile
+import shutil
 import base64
 import io
 from utils.compat import to_thread
@@ -31,7 +32,7 @@ class ExportResponse(BaseModel):
 class PptxExportRequest(BaseModel):
     slides: list[dict] = Field(..., description="Full slide data (title, body_items, tables, notes, etc.)")
     template: str = "professional-blue"
-    canvas_format: str = "16:9"
+    canvas_format: str = Field("16:9", pattern=r"^(16:9|4:3|3:4|1:1)$")
     project_title: str = "演示文稿"
 
 
@@ -42,7 +43,7 @@ async def export_deck(req: ExportRequest):
 
         svg_contents = [s.get("svg_preview", "") for s in req.slides]
         if not svg_contents or all(not s for s in svg_contents):
-            raise HTTPException(400, "No SVG content in slides")
+            raise HTTPException(400, "幻灯片中没有 SVG 内容")
 
         engine = ExportEngine(width=req.width, height=req.height)
         output = os.path.join(tempfile.gettempdir(), f"export_{os.urandom(4).hex()}.{req.format}")
@@ -53,10 +54,24 @@ async def export_deck(req: ExportRequest):
             await to_thread(engine.export_html, svg_contents, output, req.titles, req.notes)
         elif req.format == "png":
             if len(svg_contents) == 0:
-                raise HTTPException(400, "Need at least one slide for PNG")
-            await to_thread(engine.export_png, svg_contents[0], output)
+                raise HTTPException(400, "生成 PNG 需要至少一张幻灯片")
+            await to_thread(engine.export_png, svg_contents[0], output, 0)
+        elif req.format == "pngs":
+            if len(svg_contents) == 0:
+                raise HTTPException(400, "生成 PNG 需要至少一张幻灯片")
+            import zipfile
+            png_dir = tempfile.mkdtemp(prefix="pngs_export_")
+            try:
+                for i, svg in enumerate(svg_contents):
+                    png_out = os.path.join(png_dir, f"slide_{i+1:02d}.png")
+                    await to_thread(engine.export_png, svg, png_out, i)
+                with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as zf:
+                    for fname in sorted(os.listdir(png_dir)):
+                        zf.write(os.path.join(png_dir, fname), fname)
+            finally:
+                shutil.rmtree(png_dir, ignore_errors=True)
         else:
-            raise HTTPException(400, f"Unsupported format: {req.format}")
+            raise HTTPException(400, f"不支持的格式: {req.format}")
 
         with open(output, "rb") as f:
             data_b64 = base64.b64encode(f.read()).decode("utf-8")
@@ -67,7 +82,7 @@ async def export_deck(req: ExportRequest):
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(500, f"Export failed: {str(e)}")
+        raise HTTPException(500, f"导出失败: {str(e)}")
 
 
 @router.post("/export/pptx")
@@ -76,7 +91,9 @@ async def export_pptx(req: PptxExportRequest):
         from slide_builder.generator import PPTXGenerator
         from utils.theme_utils import load_theme, resolve_template_dir
 
-        template_dir = resolve_template_dir(req.template, os.path.dirname(__file__))
+        api_dir = os.path.dirname(__file__)
+        base_dir = os.path.join(api_dir, "..", "..")
+        template_dir = resolve_template_dir(req.template, base_dir)
         theme = load_theme(template_dir)
         generator = PPTXGenerator(req.template, theme, req.canvas_format)
 
@@ -91,6 +108,7 @@ async def export_pptx(req: PptxExportRequest):
                 "images": s.get("images", []),
                 "code_block": s.get("code_block"),
                 "notes": s.get("notes", ""),
+                "canvas_elements": s.get("canvas_elements", []),
             })
 
         pptx_bytes = generator.generate_from_slide_data(slide_dicts)
@@ -100,7 +118,7 @@ async def export_pptx(req: PptxExportRequest):
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(500, f"PPTX export failed: {str(e)}")
+        raise HTTPException(500, f"PPTX 导出失败: {str(e)}")
 
 
 class ChartRequest(BaseModel):
@@ -124,4 +142,4 @@ async def generate_chart(req: ChartRequest):
         svg = engine.generate(req.chart_type, req.data, req.title, req.width, req.height)
         return ChartResponse(svg=svg, chart_type=req.chart_type)
     except Exception as e:
-        raise HTTPException(500, f"Chart generation failed: {str(e)}")
+        raise HTTPException(500, f"图表生成失败: {str(e)}")

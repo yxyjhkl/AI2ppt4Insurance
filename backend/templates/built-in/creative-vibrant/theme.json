@@ -1,1 +1,56 @@
-{"name":"Creative Vibrant","category":"Creative","description":"Bold multi-color palette for creative agencies and design.","colors":{"primary":"#db2777","secondary":"#f97316","accent":"#06b6d4","background":"#ffffff","text":"#1f2937","light-bg":"#fdf2f8","stripe":"#fce7f3"},"fonts":{"title":"Arial","body":"Arial"},"spacing":{"margin-x":35,"margin-y":30,"title-size":34,"body-size":20,"line-height":1.4}}
+{
+  "name": "Creative Vibrant",
+  "category": "Creative",
+  "description": "Bold multi-color palette for creative agencies and design.",
+  "colors": {
+    "primary": "#db2777",
+    "secondary": "#f97316",
+    "accent": "#06b6d4",
+    "background": "#ffffff",
+    "text": "#1f2937",
+    "light-bg": "#fdf2f8",
+    "stripe": "#fce7f3"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 35,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.4
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "creative"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#db2777",
+      "#f97316",
+      "#06b6d4",
+      "#e568a0"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  }
+}

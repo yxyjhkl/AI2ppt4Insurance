@@ -1,1 +1,56 @@
-{"name":"Pitch Dark","category":"Proposal","description":"Bold dark theme with accent highlights for investor pitches.","colors":{"primary":"#0f172a","secondary":"#38bdf8","accent":"#a855f7","background":"#020617","text":"#f8fafc","light-bg":"#1e293b","stripe":"#334155"},"fonts":{"title":"Arial","body":"Arial"},"spacing":{"margin-x":40,"margin-y":30,"title-size":36,"body-size":22,"line-height":1.5}}
+{
+  "name": "Pitch Dark",
+  "category": "Proposal",
+  "description": "Bold dark theme with accent highlights for investor pitches.",
+  "colors": {
+    "primary": "#0f172a",
+    "secondary": "#38bdf8",
+    "accent": "#a855f7",
+    "background": "#020617",
+    "text": "#f8fafc",
+    "light-bg": "#1e293b",
+    "stripe": "#334155"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 36,
+    "body-size": 22,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 40,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": true,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "minimal"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#0f172a",
+      "#38bdf8",
+      "#a855f7",
+      "#233562"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "glass"
+  }
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#047f94"/>
+  <rect x="0" y="240" width="8" height="240" fill="#06b6d4"/>
+  <text x="80" y="360" font-family="Arial" font-size="200" font-weight="bold" fill="#ffffff" fill-opacity="0.08">{{CHAPTER_NUM}}</text>
+  <text x="80" y="380" font-family="Microsoft YaHei" font-size="48" font-weight="bold" fill="#ffffff">{{CHAPTER_TITLE}}</text>
+  <text x="80" y="420" font-family="Microsoft YaHei" font-size="22" fill="#fcc7a1">{{CHAPTER_DESC}}</text>
+</svg>

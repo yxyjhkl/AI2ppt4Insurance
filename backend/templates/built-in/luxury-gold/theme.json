@@ -1,6 +1,6 @@
 {
   "name": "Luxury Gold",
-  "category": "Proposal",
+  "category": "Insurance",
   "description": "Premium gold-on-dark for high-end brand presentations. Suitable for insurance product seminars.",
   "colors": {
     "primary": "#1a1a2e",
@@ -29,7 +29,12 @@
     "subtitle_size": 22,
     "body_size": 18,
     "caption_size": 14,
-    "margin": {"top": 60, "bottom": 50, "left": 60, "right": 60},
+    "margin": {
+      "top": 60,
+      "bottom": 50,
+      "left": 60,
+      "right": 60
+    },
     "line_spacing": 1.6,
     "icon_set": "elegant",
     "corner_radius": 6,
@@ -49,7 +54,12 @@
   "elements": {
     "bullet_style": "disc",
     "table_stripe": true,
-    "chart_colors": ["#d4af37", "#e2c275", "#f5e6c8", "#8b7355"],
+    "chart_colors": [
+      "#d4af37",
+      "#e2c275",
+      "#f5e6c8",
+      "#8b7355"
+    ],
     "progress_bar": true,
     "kpi_card_style": "premium",
     "quote_style": "elegant"

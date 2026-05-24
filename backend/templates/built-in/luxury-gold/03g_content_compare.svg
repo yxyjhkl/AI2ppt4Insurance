@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#0f0f1a"/>
+  <rect y="0" width="1280" height="60" fill="#1a1a2e"/>
+  <rect y="0" width="6" height="60" fill="#e2c275"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#0f0f1a">{{PAGE_TITLE}}</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <line x1="640" y1="90" x2="640" y2="690" stroke="#e5e7eb" stroke-width="1"/>
+  <rect x="48" y="100" width="580" height="30" rx="4" fill="#ecfdf5"/>
+  <text x="60" y="120" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#059669">{{BEFORE_TITLE}}</text>
+  <text x="48" y="160" font-family="Microsoft YaHei" font-size="16" fill="#f5e6c8">{{BEFORE_CONTENT}}</text>
+  <rect x="658" y="100" width="580" height="30" rx="4" fill="#696977"/>
+  <text x="670" y="120" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#2563eb">{{AFTER_TITLE}}</text>
+  <text x="658" y="160" font-family="Microsoft YaHei" font-size="16" fill="#f5e6c8">{{AFTER_CONTENT}}</text>
+  <rect y="690" width="1280" height="30" fill="#2a2a3e"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">{{PAGE_NUM}}</text>
+</svg>

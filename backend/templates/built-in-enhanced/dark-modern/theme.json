@@ -1,0 +1,181 @@
+{
+  "name": "Dark Modern",
+  "category": "Tech",
+  "description": "Dark background with vibrant accents for tech presentations.",
+  "colors": {
+    "primary": "#111827",
+    "secondary": "#3b82f6",
+    "accent": "#10b981",
+    "background": "#0f172a",
+    "text": "#f1f5f9",
+    "light-bg": "#1e293b",
+    "stripe": "#334155"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Microsoft YaHei",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 32,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "gradients": {
+    "primary": "#111827 0%, #3b82f6 100%",
+    "accent": "#10b981 0%, #57cea6 100%",
+    "hero": "#111827 0%, #10b981 100%",
+    "soft": "#b7b9be 0%, #c4d9fc 100%",
+    "subtle": "#0f172a 0%, #e7e7e9 100%"
+  },
+  "color_variants": {
+    "primary_light": "#404652",
+    "primary_dark": "#0d131f",
+    "secondary_light": "#629bf7",
+    "secondary_dark": "#2f68c4",
+    "accent_light": "#57cea6",
+    "accent_dark": "#0c9467",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#111827 0%, #3b82f6 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#111827",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#10b981",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#10b981",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#fafcfd",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#0f172a",
+      "border_color": "#888b93",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e7e7e9",
+      "border_color": "#111827",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #111827, #3b82f6)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(17, 24, 39, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#111827",
+    "secondary": "#3b82f6",
+    "accent": "#10b981",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#f1f5f9",
+    "muted": "#f8fafc"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f3f3f4"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e7e7e9"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#fcfdfe",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

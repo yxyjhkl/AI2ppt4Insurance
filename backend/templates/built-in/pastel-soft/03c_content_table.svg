@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#fdf4ff"/>
+  <rect y="0" width="1280" height="60" fill="#aa4f7f"/>
+  <rect y="0" width="6" height="60" fill="#f472b6"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#fdf4ff">{{PAGE_TITLE}}</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <rect x="48" y="95" width="1200" height="30" rx="4" fill="#aa4f7f"/>
+  <text x="60" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#fdf4ff">{{TABLE_HEADER}}</text>
+  <text x="420" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#fdf4ff">{{TABLE_COL2}}</text>
+  <text x="750" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#fdf4ff">{{TABLE_COL3}}</text>
+  <text x="1080" y="114" font-family="Microsoft YaHei" font-size="16" font-weight="bold" fill="#fdf4ff">{{TABLE_COL4}}</text>
+  <text x="48" y="155" font-family="Microsoft YaHei" font-size="16" fill="#581c87">{{TABLE_ROWS}}</text>
+  <rect y="690" width="1280" height="30" fill="#f5f3ff"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">{{PAGE_NUM}}</text>
+</svg>

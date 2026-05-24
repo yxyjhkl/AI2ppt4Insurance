@@ -1,0 +1,179 @@
+{
+  "name": "Elegant Serif",
+  "category": "Proposal",
+  "description": "Classic serif typography with refined navy palette.",
+  "colors": {
+    "primary": "#1a365d",
+    "secondary": "#718096",
+    "accent": "#c53030",
+    "background": "#fefefe",
+    "text": "#2d3748",
+    "light-bg": "#f7fafc",
+    "stripe": "#edf2f7"
+  },
+  "fonts": {
+    "title": "Georgia",
+    "body": "Merriweather"
+  },
+  "spacing": {
+    "margin-x": 45,
+    "margin-y": 35,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.6
+  },
+  "gradients": {
+    "primary": "#1a365d 0%, #718096 100%",
+    "accent": "#c53030 0%, #d66e6e 100%",
+    "hero": "#1a365d 0%, #c53030 100%",
+    "soft": "#bac2ce 0%, #d4d8df 100%",
+    "subtle": "#fefefe 0%, #e8eaee 100%"
+  },
+  "color_variants": {
+    "primary_light": "#475e7d",
+    "primary_dark": "#142b4a",
+    "secondary_light": "#8d99ab",
+    "secondary_dark": "#5a6678",
+    "accent_light": "#d66e6e",
+    "accent_dark": "#9d2626",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#1a365d 0%, #718096 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#1a365d",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#c53030",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#c53030",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#c0c3c8",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#fefefe",
+      "border_color": "#8c9aae",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e8eaee",
+      "border_color": "#1a365d",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #1a365d, #718096)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(26, 54, 93, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#1a365d",
+    "secondary": "#718096",
+    "accent": "#c53030",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#2d3748",
+    "muted": "#969ba3"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f3f4f6"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e8eaee"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dfe1e3",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

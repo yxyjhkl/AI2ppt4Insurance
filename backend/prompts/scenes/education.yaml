@@ -23,17 +23,29 @@ system_prompt: |
   </structure_spec>
 
   <design_requirements>
-  - 配色：教育蓝为主色，清新专业
+  - 配色：教育蓝#3b82f6为主色，清新专业
   - 每个模块用Chapter分隔增强节奏
   - 使用content_two_col对比理论和应用
   - 添加讲师备注（教学提示）
   </design_requirements>
 
-  <constraints>
+  <visual_constraints>
+  - 配色方案：主色#3b82f6教育蓝，辅色#10b981成功绿，警告#f59e0b琥珀
+  - 标题字号：36pt，正文：16pt，标注：12pt
+  - 卡片圆角：6px，增加亲和感
+  - 使用进度条显示学习进度
+  - 对比布局使用左右分栏，错误红色/正确绿色标注
+  - 每页知识点不超过5个
+  - 关键概念配图标或图示
+  </visual_constraints>
+
+  <content_constraints>
   - 复杂概念必须有类比或示例
-  - 学习目标必须可衡量
+  - 学习目标必须可衡量（SMART）
   - 每模块3-5个核心知识点
-  </constraints>
+  - 练习需有明确答案提示
+  - 案例需有现实关联
+  </content_constraints>
 
 slide_structure:
   - type: cover

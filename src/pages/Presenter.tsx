@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ChevronLeft, ChevronRight, X, Monitor, Settings2,
-  Clock, Mic, FileText, Maximize2, Minimize2
+  ChevronLeft, ChevronRight, X,
+  Clock, Mic, FileText, Maximize2, Video, Square
 } from 'lucide-react'
 import type { SlideData } from '@/types'
-
-const BACKEND_URL = 'http://127.0.0.1:8099'
+import { useProjectStore } from '@/stores/projectStore'
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -18,19 +17,31 @@ export function Presenter() {
   const navigate = useNavigate()
   const [slides, setSlides] = useState<SlideData[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(true)
   const [showNotes, setShowNotes] = useState(true)
   const [elapsed, setElapsed] = useState(0)
   const [timerRunning, setTimerRunning] = useState(true)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const [recording, setRecording] = useState(false)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const chunksRef = useRef<Blob[]>([])
+  const cameraStreamRef = useRef<MediaStream | null>(null)
 
   useEffect(() => {
-    const data = sessionStorage.getItem('presenter_slides')
-    if (data) {
+    const generation = useProjectStore.getState().lastGeneration
+    if (generation?.slides && generation.slides.length > 0) {
+      setSlides(generation.slides)
       try {
-        setSlides(JSON.parse(data))
-      } catch { /* ignore */ }
+        sessionStorage.setItem('presenter_slides', JSON.stringify(generation.slides))
+      } catch {}
+      return
     }
+    try {
+      const stored = sessionStorage.getItem('presenter_slides')
+      if (stored) {
+        setSlides(JSON.parse(stored))
+        return
+      }
+    } catch {}
   }, [])
 
   useEffect(() => {
@@ -69,10 +80,8 @@ export function Presenter() {
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen().catch(() => {})
-      setIsFullscreen(true)
     } else {
       document.exitFullscreen().catch(() => {})
-      setIsFullscreen(false)
     }
   }, [])
 
@@ -80,6 +89,53 @@ export function Presenter() {
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
     navigate(-1)
   }, [navigate])
+
+  const startRecording = useCallback(async () => {
+    try {
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { displaySurface: 'browser' },
+        audio: true,
+      })
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+      let combined = displayStream
+      try {
+        const camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 200, height: 150 }, audio: false })
+        cameraStreamRef.current = camStream
+        const dest = ctx.createMediaStreamDestination()
+        displayStream.getAudioTracks().forEach(t => {
+          const src = ctx.createMediaStreamSource(new MediaStream([t]))
+          src.connect(dest)
+        })
+        const camTrack = camStream.getVideoTracks()[0]
+        if (camTrack) combined = new MediaStream([...displayStream.getVideoTracks(), camTrack, ...dest.stream.getAudioTracks()])
+      } catch { /* no camera */ }
+      const recorder = new MediaRecorder(combined, { mimeType: 'video/webm' })
+      chunksRef.current = []
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: 'video/webm' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url; a.download = `演示录制_${new Date().toISOString().slice(0,19).replace(/:/g,'-')}.webm`
+        a.click(); URL.revokeObjectURL(url)
+        displayStream.getTracks().forEach(t => t.stop())
+        if (cameraStreamRef.current) cameraStreamRef.current.getTracks().forEach(t => t.stop())
+        ctx.close().catch(() => {})
+      }
+      recorder.start()
+      mediaRecorderRef.current = recorder
+      setRecording(true)
+    } catch (err) {
+      console.error('录制失败:', err)
+    }
+  }, [])
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
+      setRecording(false)
+    }
+  }, [])
 
   const currentSlide = slides[currentIndex]
   const nextSlide = slides[currentIndex + 1]
@@ -112,6 +168,15 @@ export function Presenter() {
               {timerRunning ? '暂停' : '继续'}
             </button>
           </div>
+          {recording ? (
+            <button onClick={stopRecording} className="flex items-center space-x-1 px-2 py-1 rounded bg-red-600 hover:bg-red-700 text-xs font-medium animate-pulse" title="停止录制">
+              <Square className="w-3 h-3 fill-current" /><span>停止</span>
+            </button>
+          ) : (
+            <button onClick={startRecording} className="flex items-center space-x-1 px-2 py-1 rounded hover:bg-gray-700 text-xs text-gray-400" title="录制演示 (含音频+摄像头)">
+              <Video className="w-3.5 h-3.5" /><span>录制</span>
+            </button>
+          )}
           <button onClick={() => setShowNotes(s => !s)} className={`p-1.5 rounded ${showNotes ? 'bg-blue-600' : 'hover:bg-gray-700'}`} title="切换备注 (N)">
             <FileText className="w-4 h-4" />
           </button>
@@ -140,6 +205,7 @@ export function Presenter() {
                 className="w-full h-full rounded shadow-2xl"
                 style={{ border: 'none', pointerEvents: 'none' }}
                 title={`第 ${currentIndex + 1} 页`}
+                sandbox="allow-same-origin"
               />
             ) : (
               <div className="text-center text-gray-500">
@@ -185,6 +251,7 @@ export function Presenter() {
                       className="w-full h-full opacity-70"
                       style={{ border: 'none', pointerEvents: 'none', transform: 'scale(0.5)', transformOrigin: 'top left' }}
                       title={`第 ${currentIndex + 2} 页`}
+                      sandbox="allow-same-origin"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-500 text-xs">

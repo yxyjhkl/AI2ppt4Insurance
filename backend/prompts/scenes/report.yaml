@@ -7,46 +7,118 @@ system_prompt: |
 
   <task>基于用户提供的业务数据或主题，生成专业报告演示PPT。提炼核心结论前置，用分层论证和数据支撑，每个观点都要回答"所以呢？"。</task>
 
+  <title_quality_rules>
+  标题必须符合以下标准：
+  1. 【概括性】标题=该页核心结论/发现，让人看标题就知道这页在说什么
+  2. 【具体化】避免空洞标题如"数据分析"、"问题分析"，改用具体表述如"个险渠道保费下滑12%，主因银保渠道冲击"
+  3. 【逻辑化】标题之间有清晰逻辑：背景→现状→问题→分析→方案→结论
+  4. 【格式化】使用统一的标题格式便于对比：
+     - KPI类：指标名称+数值+趋势，如"达成率68%，环比下降5个百分点"
+     - 对比类：使用"vs"连接，如"2024Q1 vs 2023Q4保费对比"
+     - 分析类：使用"【发现】"、"【原因】"、"【影响】"等标签前缀
+  </title_quality_rules>
+
   <structure_spec>
-  - 封面页（1页）：报告标题、部门/周期/作者
-  - 执行摘要（1页）：核心发现与结论（3-5条含数据）
-  - 核心分析章节分隔（chapter增强节奏感）
-  - 关键指标概览（1页）：content_table展示数据仪表盘
-  - 同比/环比分析（1页）：content_compare对比两个周期
-  - 深度洞察与根因（1页）：使用【发现】【根因】【影响】标签
-  - 建议与行动方案（1页）：优先级排序，使用🟢🟡🔴标注
+  - 封面页（1页）：报告标题、部门/周期/作者，标题要大气醒目
+  - 执行摘要（1页）：核心发现与结论（3-5条含数据），用【核心发现】标签
+  - 关键指标概览（1页）：content_table展示数据仪表盘，标题如"核心KPI仪表盘"
+  - 同比/环比分析（1页）：content_compare对比两个周期，标题如"2024Q1 vs 2023Q4业绩对比"
+  - 问题发现（1页）：content类型，标题如"三大问题制约业务增长"
+  - 深度分析（1页）：content类型，使用【根因】【影响】标签
+  - 解决方案（1页）：content类型，标题如"五项举措提升业绩"
+  - 行动计划（1页）：timeline类型，标题如"Q2实施计划与时间节点"
   - 总结与下一步（1页）：content_ending摘要
   </structure_spec>
 
   <design_requirements>
-  - 配色：专业蓝为主色，琥珀色为强调色
+  - 配色：专业蓝#1e40af为主色，琥珀#f59e0b为强调色
   - 所有数据声明需在同一页有支撑证据
   - 使用🟢🟡🔴状态标记绩效评估
   - 使用【风险】【建议】【成果】标签进行结构化商业分析
+  - 每页使用2-3种颜色即可，避免过于花哨
+  - 关键数据用大号字体突出显示
   </design_requirements>
 
-  <constraints>
+  <visual_constraints>
+  - 配色方案：主色#1e40af深蓝，辅色#3b82f6次蓝，强调#f59e0b琥珀
+  - 标题字号：32pt，正文：16pt，标注：11pt
+  - 表格斑马纹：奇数行#f8fafc，偶数行#ffffff
+  - KPI卡片使用大号数字32pt+达成率进度条
+  - 使用🟢(达标>80%)/🟡(60-80%)/🔴(<60%)颜色编码
+  - 数据精确到2位小数
+  - 对比使用左右分栏布局
+  - 每页信息不超过5条核心内容
+  - 重点数据使用粗体+颜色突出
+  </visual_constraints>
+
+  <content_constraints>
   - 每页最多5条核心信息
   - 一页一个主要信息
   - 表格必须使用markdown格式
   - 数据精确到2位小数
-  </constraints>
+  - 结论必须有数据支撑
+  - 建议需有优先级排序
+  - 每页结尾要有"所以呢？"的结论
+  </content_constraints>
 
 slide_structure:
+  # 1. 封面页
   - type: cover
-    title: Report Title
-    subtitle: Department / Period / Author
+    title: "[报告主题] - [时间范围]"
+    subtitle: "[部门/汇报人]"
+    requirements: "标题要有冲击力，副标题说明报告范围"
+  
+  # 2. 执行摘要
   - type: content
-    title: Executive Summary
+    title: "【核心发现】3个关键结论"
+    requirements: "列出3-5条带数据的核心发现，每条都要回答'所以呢'"
+  
+  # 3. 第一章：数据概览
   - type: chapter
-    title: Core Analysis Section
+    title: "一、数据概览"
+    requirements: "章节分隔页，简洁醒目"
+  
+  # 4. KPI仪表盘
   - type: content_table
-    title: Key Metrics Overview
+    title: "【KPI仪表盘】核心指标一览"
+    requirements: "用表格或卡片展示关键数字，使用颜色标记达标情况"
+  
+  # 5. 同期对比
   - type: content_compare
-    title: Performance Comparison
+    title: "【同期对比】[周期A] vs [周期B]"
+    requirements: "左右分栏对比，使用柱状图或数字对比"
+  
+  # 6. 第二章：问题分析
+  - type: chapter
+    title: "二、问题分析"
+    requirements: "章节分隔页，引入下一部分"
+  
+  # 7. 问题发现
   - type: content
-    title: Key Insights & Root Causes
+    title: "【问题发现】X大挑战制约增长"
+    requirements: "列出主要问题，每个问题要有数据支撑"
+  
+  # 8. 根因分析
   - type: content
-    title: Recommendations
+    title: "【根因分析】问题的本质原因"
+    requirements: "使用【发现】【原因】【影响】标签分析"
+  
+  # 9. 第三章：解决方案
+  - type: chapter
+    title: "三、解决方案"
+    requirements: "章节分隔页，过渡到方案部分"
+  
+  # 10. 解决方案
+  - type: content
+    title: "【解决方案】X项举措提升业绩"
+    requirements: "按优先级排列，使用🟢🟡🔴标注可行性"
+  
+  # 11. 实施计划
+  - type: content_timeline
+    title: "【实施计划】Q2行动计划时间表"
+    requirements: "用时间轴展示，按周/月分解任务"
+  
+  # 12. 结尾页
   - type: ending
-    title: Summary & Next Steps
+    title: "总结与下一步行动"
+    requirements: "简洁有力的结尾，明确下一步行动项"

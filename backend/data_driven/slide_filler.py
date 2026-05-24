@@ -207,6 +207,25 @@ class SlideFiller:
             headers.append(mf.label if mf else fn)
 
         md_rows = []
+        rank_field = cfg.get("rank_field", "")
+        if not rank_field:
+            for fn in fields:
+                mf = mapped.get(fn)
+                if mf and mf.data_type == "percent" and "_rate" in fn.lower():
+                    rank_field = fn
+                    break
+
+        rank_values = []
+        if rank_field:
+            for row_data in table_data[:20]:
+                value = row_data.get(rank_field)
+                if value is not None:
+                    try:
+                        s = str(value).strip()
+                        rank_values.append(float(s.rstrip("%").replace(",", "")))
+                    except (ValueError, TypeError):
+                        pass
+
         for row_data in table_data[:20]:
             row_vals = []
             for fn in fields:
@@ -222,14 +241,16 @@ class SlideFiller:
                 else:
                     row_vals.append("")
             if any(v.strip() for v in row_vals):
-                rank_field = cfg.get("rank_field", "")
-                if not rank_field:
-                    for fn in fields:
-                        mf = mapped.get(fn)
-                        if mf and mf.data_type == "percent" and "_rate" in fn.lower():
-                            rank_field = fn
-                            break
-                status_col = self._get_rank_status(row_data, rank_field)
+                status_col = ""
+                if rank_field and rank_values:
+                    value = row_data.get(rank_field)
+                    if value is not None:
+                        try:
+                            s = str(value).strip()
+                            val_float = float(s.rstrip("%").replace(",", ""))
+                            status_col = self._get_rank_status(val_float, rank_values)
+                        except (ValueError, TypeError):
+                            pass
                 if status_col:
                     row_vals[0] = f"{status_col} {row_vals[0]}"
                 md_rows.append(row_vals)
@@ -294,32 +315,26 @@ class SlideFiller:
             page_number=page,
         )
 
-    def _get_rank_status(self, row_data: dict, rank_field: str) -> str:
-        if not rank_field:
-            return ""
-        value = row_data.get(rank_field)
-        if value is None:
+    def _get_rank_status(self, value, all_values: list) -> str:
+        if not all_values or value is None:
             return ""
         try:
-            s = str(value).strip()
-            is_pct = s.endswith("%")
-            v = float(s.rstrip("%").replace(",", ""))
+            sorted_vals = sorted(all_values)
+            n = len(sorted_vals)
+            if n < 3:
+                return ""
+            p30_idx = max(0, int(n * 0.3) - 1)
+            p70_idx = min(n - 1, int(n * 0.7))
+            p30 = sorted_vals[p30_idx]
+            p70 = sorted_vals[p70_idx]
+            if value >= p70:
+                return "🟢"
+            elif value >= p30:
+                return "🟡"
+            else:
+                return "🔴"
         except (ValueError, TypeError):
             return ""
-        if is_pct:
-            if v >= 100:
-                return "🟢"
-            elif v >= 80:
-                return "🟡"
-            else:
-                return "🔴"
-        else:
-            if v >= 1000:
-                return "🟢"
-            elif v >= 500:
-                return "🟡"
-            else:
-                return "🔴"
 
     def generate_analysis_prompt(self, meeting_type: str, mapped: Dict[str, MappedField],
                                   excel_data: ExcelData, extra_context: dict) -> str:

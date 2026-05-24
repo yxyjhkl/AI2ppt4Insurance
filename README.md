@@ -1,9 +1,6 @@
-# AI PPT Desktop
+# 险而易见 · InsurDeck
 
 AI 驱动的 PPT 生成桌面应用 - 保险行业专用版本
-
-![License](https://img.shields.io/github/license/yxyjhkl/AI2ppt4Insurance)
-![Version](https://img.shields.io/github/v/release/yxyjhkl/AI2ppt4Insurance)
 
 ## 功能特性
 
@@ -35,8 +32,8 @@ AI 驱动的 PPT 生成桌面应用 - 保险行业专用版本
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yxyjhkl/AI2ppt4Insurance.git
-cd AI2ppt4Insurance
+# git clone <repo-url>
+cd AIPPTXPLUS
 
 # 安装依赖
 npm install
@@ -57,7 +54,7 @@ npm run build:all
 ## 项目结构
 
 ```
-AI2ppt4Insurance/
+AIPPTXPLUS/
 ├── src/                 # React 前端源码
 │   ├── components/       # 组件
 │   ├── pages/          # 页面

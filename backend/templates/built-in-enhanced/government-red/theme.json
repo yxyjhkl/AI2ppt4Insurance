@@ -1,0 +1,179 @@
+{
+  "name": "Government Red",
+  "category": "Report",
+  "description": "Official red-gold scheme for government and party presentations.",
+  "colors": {
+    "primary": "#c53030",
+    "secondary": "#d69e2e",
+    "accent": "#f6e05e",
+    "background": "#fffbf0",
+    "text": "#1a202c",
+    "light-bg": "#fef2f2",
+    "stripe": "#fee2e2"
+  },
+  "fonts": {
+    "title": "SimHei",
+    "body": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "gradients": {
+    "primary": "#c53030 0%, #d69e2e 100%",
+    "accent": "#f6e05e 0%, #f8e98e 100%",
+    "hero": "#c53030 0%, #f6e05e 100%",
+    "soft": "#edc0c0 0%, #f2e1c0 100%",
+    "subtle": "#fffbf0 0%, #f9eaea 100%"
+  },
+  "color_variants": {
+    "primary_light": "#d05959",
+    "primary_dark": "#9d2626",
+    "secondary_light": "#deb157",
+    "secondary_dark": "#ab7e24",
+    "accent_light": "#f8e98e",
+    "accent_dark": "#c4b34b",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#c53030 0%, #d69e2e 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#c53030",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#f6e05e",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#f6e05e",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#babcbf",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#fffbf0",
+      "border_color": "#e29797",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#f9eaea",
+      "border_color": "#c53030",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #c53030, #d69e2e)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(197, 48, 48, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#c53030",
+    "secondary": "#d69e2e",
+    "accent": "#f6e05e",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#1a202c",
+    "muted": "#8c8f95"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#fcf4f4"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#f9eaea"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dcdddf",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

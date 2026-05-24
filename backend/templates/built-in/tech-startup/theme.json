@@ -1,1 +1,56 @@
-{"name":"Tech Startup","category":"Tech","description":"Modern gradient design with vibrant blue-purple.","colors":{"primary":"#4f46e5","secondary":"#06b6d4","accent":"#f43f5e","background":"#0b0f19","text":"#e2e8f0","light-bg":"#1e1b4b","stripe":"#312e81"},"fonts":{"title":"Inter","body":"system-ui"},"spacing":{"margin-x":40,"margin-y":30,"title-size":34,"body-size":20,"line-height":1.5}}
+{
+  "name": "Tech Startup",
+  "category": "Tech",
+  "description": "Modern gradient design with vibrant blue-purple.",
+  "colors": {
+    "primary": "#4f46e5",
+    "secondary": "#06b6d4",
+    "accent": "#f43f5e",
+    "background": "#0b0f19",
+    "text": "#e2e8f0",
+    "light-bg": "#1e1b4b",
+    "stripe": "#312e81"
+  },
+  "fonts": {
+    "title": "Inter",
+    "body": "system-ui"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 34,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 40,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": true,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "creative"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#4f46e5",
+      "#06b6d4",
+      "#f43f5e",
+      "#8e89ee"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "glass"
+  }
+}

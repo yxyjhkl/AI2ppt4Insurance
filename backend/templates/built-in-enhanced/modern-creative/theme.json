@@ -1,0 +1,194 @@
+{
+  "name": "Modern Creative",
+  "category": "Creative",
+  "description": "现代创意风格，色彩鲜艳，适合创意展示和营销演示",
+  "colors": {
+    "primary": "#6366f1",
+    "secondary": "#8b5cf6",
+    "accent": "#f43f5e",
+    "background": "#ffffff",
+    "text": "#1f2937",
+    "light-bg": "#f5f3ff",
+    "stripe": "#f3f4f6"
+  },
+  "fonts": {
+    "title": "Microsoft YaHei",
+    "body": "Microsoft YaHei",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 48,
+    "margin-y": 32,
+    "title-size": 38,
+    "body-size": 18,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 42,
+    "subtitle_size": 24,
+    "body_size": 17,
+    "caption_size": 12,
+    "margin": {
+      "top": 56,
+      "bottom": 44,
+      "left": 56,
+      "right": 56
+    },
+    "line_spacing": 1.5,
+    "corner_radius": 12,
+    "shadow_enabled": true,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true
+  },
+  "animation": {
+    "type": "dynamic",
+    "title_animation": "zoomIn",
+    "body_animation": "flyInBottom",
+    "transition": "zoomIn",
+    "stagger": 100,
+    "duration": 0.5
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#6366f1",
+      "#8b5cf6",
+      "#ec4899",
+      "#f43f5e",
+      "#f97316"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "gradient"
+  },
+  "gradients": {
+    "primary": "#6366f1 0%, #8b5cf6 100%",
+    "accent": "#f43f5e 0%, #f97316 100%",
+    "hero": "#6366f1 0%, #f43f5e 100%",
+    "soft": "#f5f3ff 0%, #ede9fe 100%",
+    "subtle": "#ffffff 0%, #f5f3ff 100%"
+  },
+  "card_styles": {
+    "default": {
+      "background": "#ffffff",
+      "border_color": "#e0e7ff",
+      "border_width": 1,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 10,
+        "color": "rgba(99,102,241,0.15)"
+      },
+      "padding": {
+        "top": 18,
+        "right": 22,
+        "bottom": 18,
+        "left": 22
+      }
+    },
+    "accent": {
+      "background": "linear-gradient(135deg, #fdf4ff, #fae8ff)",
+      "border_color": "#c084fc",
+      "border_width": 2,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 14,
+        "color": "rgba(192,132,252,0.25)"
+      },
+      "padding": {
+        "top": 22,
+        "right": 26,
+        "bottom": 22,
+        "left": 26
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #6366f1, #8b5cf6)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 16,
+      "shadow": {
+        "enabled": true,
+        "depth": 5,
+        "blur": 20,
+        "color": "rgba(99,102,241,0.4)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 10,
+      "gradient": "#6366f1 0%, #8b5cf6 50%, #ec4899 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#6366f1",
+      "style": "gradient"
+    },
+    "side_border": {
+      "width": 5,
+      "color": "#f43f5e",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": true,
+      "color": "#f43f5e",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 2,
+      "color": "#c4b5fd",
+      "style": "gradient"
+    }
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f5f3ff"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "30% 30%",
+      "radius": "70%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#f5f3ff"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "dots": {
+      "type": "pattern",
+      "pattern": "dot",
+      "size": 20,
+      "color": "#c7d2fe",
+      "spacing": 40
+    }
+  }
+}

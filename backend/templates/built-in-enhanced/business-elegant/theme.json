@@ -1,0 +1,172 @@
+{
+  "name": "Business Elegant",
+  "category": "Business",
+  "description": "专业商务风格，简洁大方，适合企业汇报和商业演示",
+  "colors": {
+    "primary": "#1a365d",
+    "secondary": "#2c5282",
+    "accent": "#ed8936",
+    "background": "#ffffff",
+    "text": "#2d3748",
+    "light-bg": "#f7fafc",
+    "stripe": "#edf2f7"
+  },
+  "fonts": {
+    "title": "Microsoft YaHei",
+    "body": "Microsoft YaHei",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 48,
+    "margin-y": 32,
+    "title-size": 36,
+    "body-size": 18,
+    "line-height": 1.6
+  },
+  "visual_rules": {
+    "title_size": 40,
+    "subtitle_size": 22,
+    "body_size": 16,
+    "caption_size": 12,
+    "margin": {
+      "top": 60,
+      "bottom": 48,
+      "left": 60,
+      "right": 60
+    },
+    "line_spacing": 1.6,
+    "corner_radius": 8,
+    "shadow_enabled": true,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true
+  },
+  "animation": {
+    "type": "professional",
+    "title_animation": "flyInBottom",
+    "body_animation": "fade",
+    "transition": "pushLeft",
+    "stagger": 150,
+    "duration": 0.4
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#1a365d",
+      "#2c5282",
+      "#4a5568",
+      "#718096"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "modern"
+  },
+  "gradients": {
+    "primary": "#1a365d 0%, #2c5282 100%",
+    "accent": "#ed8936 0%, #f6ad55 100%",
+    "hero": "#1a365d 0%, #ed8936 100%",
+    "soft": "#e2e8f0 0%, #f7fafc 100%",
+    "subtle": "#ffffff 0%, #f7fafc 100%"
+  },
+  "card_styles": {
+    "default": {
+      "background": "#ffffff",
+      "border_color": "#e2e8f0",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.08)"
+      },
+      "padding": {
+        "top": 16,
+        "right": 20,
+        "bottom": 16,
+        "left": 20
+      }
+    },
+    "accent": {
+      "background": "#fffaf0",
+      "border_color": "#ed8936",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(237,137,54,0.2)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #1a365d, #2c5282)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(26,54,93,0.3)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    }
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 6,
+      "gradient": "#1a365d 0%, #2c5282 100%",
+      "rounded": false
+    },
+    "footer_bar": {
+      "height": 3,
+      "color": "#1a365d",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 4,
+      "color": "#ed8936",
+      "position": "left"
+    },
+    "divider_line": {
+      "height": 2,
+      "color": "#e2e8f0",
+      "style": "solid"
+    }
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f7fafc"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 30,
+      "color": "#e2e8f0",
+      "line_width": 0.5
+    }
+  }
+}

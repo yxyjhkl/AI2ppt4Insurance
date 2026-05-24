@@ -1,1 +1,58 @@
-{"name":"Clean White","category":"Education","description":"Minimalist white design with subtle gray accents.","colors":{"primary":"#1f2937","secondary":"#6b7280","accent":"#2563eb","background":"#ffffff","text":"#111827","light-bg":"#f9fafb","stripe":"#f3f4f6"},"fonts":{"title":"Arial","body":"Microsoft YaHei","title_cn":"Microsoft YaHei","body_cn":"Microsoft YaHei"},"spacing":{"margin-x":40,"margin-y":30,"title-size":32,"body-size":20,"line-height":1.5}}
+{
+  "name": "Clean White",
+  "category": "Education",
+  "description": "Minimalist white design with subtle gray accents.",
+  "colors": {
+    "primary": "#1f2937",
+    "secondary": "#6b7280",
+    "accent": "#2563eb",
+    "background": "#ffffff",
+    "text": "#111827",
+    "light-bg": "#f9fafb",
+    "stripe": "#f3f4f6"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Microsoft YaHei",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 32,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "business"
+  },
+  "animation": {
+    "type": "none",
+    "title_animation": "fade_in",
+    "duration": 0.3
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#1f2937",
+      "#6b7280",
+      "#2563eb",
+      "#3a4d67"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  }
+}

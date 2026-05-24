@@ -20,17 +20,30 @@ system_prompt: |
   </structure_spec>
 
   <design_requirements>
-  - 配色：商务深蓝为主色，金色点缀
+  - 配色：商务深蓝#1e3a8a为主色，金色#fbbf24点缀
   - 量化一切：市场大小、收入数据、增长百分比
   - 每页突出一个核心数字
   - 包含客户证明：推荐语、案例结果
   </design_requirements>
 
-  <constraints>
+  <visual_constraints>
+  - 配色方案：主色#1e3a8a深蓝，辅色#3b82f6亮蓝，强调#fbbf24金色
+  - 标题字号：36pt，正文：15pt，标注：11pt
+  - 数字突出显示：关键数据使用32pt加粗
+  - 表格使用功能对比矩阵，√×符号标注
+  - 进度条显示增长趋势
+  - 使用柱状图/折线图展示市场数据
+  - 团队介绍使用头像占位+姓名+职位+背景
+  - 融资里程碑使用时间轴展示
+  </visual_constraints>
+
+  <content_constraints>
   - 每页回答"所以呢？"——陈述影响而非功能
   - 数据需注明来源
   - 竞品对比需客观公正
-  </constraints>
+  - 每页核心数字不超过1个
+  - 痛点需要场景化描述
+  </content_constraints>
 
 slide_structure:
   - type: cover

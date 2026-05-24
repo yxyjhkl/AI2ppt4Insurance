@@ -1,0 +1,222 @@
+{
+  "name": "Professional Blue",
+  "category": "Report",
+  "description": "Clean, professional design with deep blue primary color. Suitable for business reports and formal presentations.",
+  "colors": {
+    "primary": "#1e40af",
+    "secondary": "#3b82f6",
+    "accent": "#f59e0b",
+    "background": "#ffffff",
+    "text": "#1f2937",
+    "light-bg": "#f0f4ff",
+    "stripe": "#f8fafc"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Microsoft YaHei",
+    "title_cn": "Microsoft YaHei",
+    "body_cn": "Microsoft YaHei"
+  },
+  "spacing": {
+    "margin-x": 40,
+    "margin-y": 30,
+    "title-size": 32,
+    "body-size": 20,
+    "line-height": 1.5
+  },
+  "visual_rules": {
+    "title_size": 36,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "margin": {
+      "top": 50,
+      "bottom": 40,
+      "left": 50,
+      "right": 50
+    },
+    "line_spacing": 1.5,
+    "icon_set": "business",
+    "corner_radius": 4,
+    "card_elevation": 2,
+    "shadow_enabled": true,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": true
+  },
+  "animation": {
+    "type": "professional",
+    "title_animation": "flyInBottom",
+    "body_animation": "fade",
+    "transition": "pushLeft",
+    "stagger": 200,
+    "duration": 0.5
+  },
+  "elements": {
+    "bullet_style": "disc",
+    "table_stripe": true,
+    "chart_colors": [
+      "#1e40af",
+      "#3b82f6",
+      "#60a5fa",
+      "#93c5fd"
+    ],
+    "progress_bar": true,
+    "kpi_card_style": "rounded"
+  },
+  "gradients": {
+    "primary": "#1e40af 0%, #3b82f6 100%",
+    "accent": "#f59e0b 0%, #f8bb54 100%",
+    "hero": "#1e40af 0%, #f59e0b 100%",
+    "soft": "#bbc5e7 0%, #c4d9fc 100%",
+    "subtle": "#ffffff 0%, #e8ebf7 100%"
+  },
+  "color_variants": {
+    "primary_light": "#4b66bf",
+    "primary_dark": "#18338c",
+    "secondary_light": "#629bf7",
+    "secondary_dark": "#2f68c4",
+    "accent_light": "#f8bb54",
+    "accent_dark": "#c47e08",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#1e40af 0%, #3b82f6 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#1e40af",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#f59e0b",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#f59e0b",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#bbbec3",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#ffffff",
+      "border_color": "#8e9fd7",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e8ebf7",
+      "border_color": "#1e40af",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #1e40af, #3b82f6)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(30, 64, 175, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#1e40af",
+    "secondary": "#3b82f6",
+    "accent": "#f59e0b",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#1f2937",
+    "muted": "#8f949b"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f3f5fb"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e8ebf7"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#dddee1",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

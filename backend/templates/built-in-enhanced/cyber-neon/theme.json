@@ -1,0 +1,179 @@
+{
+  "name": "Cyber Neon",
+  "category": "Tech",
+  "description": "Cyberpunk neon on dark for tech-forward presentations.",
+  "colors": {
+    "primary": "#0d0221",
+    "secondary": "#00f5ff",
+    "accent": "#ff00aa",
+    "background": "#0a0015",
+    "text": "#e0e0ff",
+    "light-bg": "#1a0030",
+    "stripe": "#2a0040"
+  },
+  "fonts": {
+    "title": "Arial",
+    "body": "Arial"
+  },
+  "spacing": {
+    "margin-x": 35,
+    "margin-y": 30,
+    "title-size": 36,
+    "body-size": 20,
+    "line-height": 1.4
+  },
+  "gradients": {
+    "primary": "#0d0221 0%, #00f5ff 100%",
+    "accent": "#ff00aa 0%, #ff4cc3 100%",
+    "hero": "#0d0221 0%, #ff00aa 100%",
+    "soft": "#b6b3bc 0%, #b2fcff 100%",
+    "subtle": "#0a0015 0%, #e6e5e8 100%"
+  },
+  "color_variants": {
+    "primary_light": "#3d344d",
+    "primary_dark": "#0a011a",
+    "secondary_light": "#33f7ff",
+    "secondary_dark": "#00c4cc",
+    "accent_light": "#ff4cc3",
+    "accent_dark": "#cc0088",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6"
+  },
+  "decorations": {
+    "header_bar": {
+      "height": 8,
+      "gradient": "#0d0221 0%, #00f5ff 100%",
+      "rounded": true
+    },
+    "footer_bar": {
+      "height": 4,
+      "color": "#0d0221",
+      "style": "solid"
+    },
+    "side_border": {
+      "width": 3,
+      "color": "#ff00aa",
+      "position": "left"
+    },
+    "corner_ribbon": {
+      "enabled": false,
+      "color": "#ff00aa",
+      "position": "top-right"
+    },
+    "divider_line": {
+      "height": 1,
+      "color": "#f5f5ff",
+      "style": "dashed"
+    }
+  },
+  "card_styles": {
+    "default": {
+      "background": "#0a0015",
+      "border_color": "#868090",
+      "border_width": 1,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 2,
+        "blur": 8,
+        "color": "rgba(0,0,0,0.1)"
+      },
+      "padding": {
+        "top": 20,
+        "right": 24,
+        "bottom": 20,
+        "left": 24
+      }
+    },
+    "accent": {
+      "background": "#e6e5e8",
+      "border_color": "#0d0221",
+      "border_width": 2,
+      "corner_radius": 8,
+      "shadow": {
+        "enabled": true,
+        "depth": 3,
+        "blur": 12,
+        "color": "rgba(0,0,0,0.15)"
+      },
+      "padding": {
+        "top": 24,
+        "right": 28,
+        "bottom": 24,
+        "left": 28
+      }
+    },
+    "kpi": {
+      "background": "linear-gradient(135deg, #0d0221, #00f5ff)",
+      "border_color": "transparent",
+      "border_width": 0,
+      "corner_radius": 12,
+      "shadow": {
+        "enabled": true,
+        "depth": 4,
+        "blur": 16,
+        "color": "rgba(13, 2, 33, 0.3)"
+      },
+      "padding": {
+        "top": 28,
+        "right": 32,
+        "bottom": 28,
+        "left": 32
+      }
+    }
+  },
+  "icon_colors": {
+    "primary": "#0d0221",
+    "secondary": "#00f5ff",
+    "accent": "#ff00aa",
+    "success": "#10b981",
+    "warning": "#f59e0b",
+    "danger": "#ef4444",
+    "info": "#3b82f6",
+    "text": "#e0e0ff",
+    "muted": "#efefff"
+  },
+  "background_patterns": {
+    "gradient_diagonal": {
+      "type": "linear",
+      "angle": 135,
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#ffffff"
+        },
+        {
+          "stop": 100,
+          "color": "#f2f2f3"
+        }
+      ]
+    },
+    "gradient_radial": {
+      "type": "radial",
+      "center": "50% 50%",
+      "radius": "50%",
+      "colors": [
+        {
+          "stop": 0,
+          "color": "#e6e5e8"
+        },
+        {
+          "stop": 100,
+          "color": "#ffffff"
+        }
+      ]
+    },
+    "subtle_grid": {
+      "type": "grid",
+      "size": 40,
+      "color": "#fafaff",
+      "line_width": 1
+    },
+    "none": {
+      "type": "solid",
+      "color": "#ffffff"
+    }
+  }
+}

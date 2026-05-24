@@ -60,3 +60,40 @@ slide_structure:
     title: 承诺追踪矩阵
   - type: ending
     title: 总结与资源承诺
+
+design_constraints:
+  colors:
+    max_colors: 3
+    primary: "#1a365d"
+    accent: "#f59e0b"
+  fonts:
+    title_weight: 700
+    body_size_min: 14
+    body_family: "Microsoft YaHei"
+  layout_rules:
+    - "封面页必须包含机构名称和日期"
+    - "数据表格必须斑马纹交替"
+    - "KPI 卡片使用大号数字(≥28pt)+ 达成率进度条"
+    - "对比页左右分栏，红绿区分现状/目标"
+    - "每页最多 5 条核心信息"
+    - "content 布局连续不超过 2 页，必须穿插表格/对比/KPI"
+    - "禁止使用阴影、渐变、圆角等装饰效果"
+    - "结束页必须有下一步行动建议或资源承诺"
+  status_encoding:
+    green: "排名前30%（🟢）"
+    yellow: "排名30%-70%（🟡）"
+    red: "排名后30%（🔴）"
+  data_precision:
+    amount: 2
+    percentage: 0.1
+
+image_slots:
+  - slide: cover
+    ratio: "16:9"
+    purpose: "机构或产品主视觉"
+  - slide: "content_compare"
+    ratio: "16:10"
+    purpose: "对比图/图表"
+  - slide: "content_kpi"
+    ratio: "1:1"
+    purpose: "人物荣誉照"

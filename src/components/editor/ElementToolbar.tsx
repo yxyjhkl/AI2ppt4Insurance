@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
-import { Type, Square, Image, Table2, Plus, GripVertical, PanelTop, Minus } from 'lucide-react'
+import { useState, useCallback, useRef } from 'react'
+import { Type, Square, Image, Table2, Plus, GripVertical, PanelTop, Minus, Upload } from 'lucide-react'
 
 interface ElementTemplate {
   type: 'text' | 'shape' | 'image' | 'table'
@@ -35,13 +35,14 @@ const templates: ElementTemplate[] = [
   { type: 'shape', label: '三角形', icon: Square, width: 100, height: 90,
     content: 'triangle',
     style: { fillColor: '#fce7f3' } },
-  { type: 'table', label: '表格', icon: Table2, width: 400, height: 180,
-    content: '列1|列2|列3\nA|B|C\nD|E|F',
+  { type: 'table', label: '表格', icon: Table2, width: 400, height: 200,
+    content: '| 列1 | 列2 | 列3 |\n| A | B | C |\n| D | E | F |',
     style: { fontSize: 14 } },
 ]
 
 export function ElementToolbar() {
   const [showMore, setShowMore] = useState(false)
+  const imageInputRef = useRef<HTMLInputElement>(null)
 
   const handleDragStart = useCallback((e: React.DragEvent, tmpl: ElementTemplate) => {
     e.dataTransfer.setData('application/x-canvas-element', JSON.stringify(tmpl))
@@ -57,10 +58,22 @@ export function ElementToolbar() {
     setTimeout(() => document.body.removeChild(ghost), 0)
   }, [])
 
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string
+      window.dispatchEvent(new CustomEvent('image-uploaded', { detail: dataUrl }))
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }, [])
+
   const visible = showMore ? templates : templates.slice(0, 5)
 
   return (
-    <div className="flex items-center space-x-1 p-1.5 bg-white border-b border-gray-200 overflow-x-auto">
+    <div className="flex items-center space-x-1 p-1.5 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
       {visible.map((tmpl, i) => {
         const Icon = tmpl.icon
         return (
@@ -87,8 +100,26 @@ export function ElementToolbar() {
         </button>
       )}
 
+      <div className="ml-2 w-px h-5 bg-gray-200" />
+
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
+      <button
+        onClick={() => imageInputRef.current?.click()}
+        className="flex items-center space-x-1 px-2.5 py-1.5 rounded-md text-xs text-gray-600 hover:bg-blue-50 hover:text-blue-600 border border-transparent hover:border-blue-200 transition-colors"
+        title="上传图片"
+      >
+        <Upload className="w-3.5 h-3.5" />
+        <span>图片上传</span>
+      </button>
+
       <div className="ml-auto text-[10px] text-gray-400 pr-1">
-        拖拽元素到画布上
+        拖拽添加到画布 · 粘贴截图
       </div>
     </div>
   )

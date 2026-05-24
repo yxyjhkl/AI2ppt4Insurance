@@ -10,8 +10,8 @@ def import_template_from_pptx(pptx_path: str, output_dir: str) -> dict:
     theme = {
         "colors": _extract_colors(prs),
         "fonts": _extract_fonts(prs),
-        "slide_width": prs.slide_width,
-        "slide_height": prs.slide_height,
+        "slide_width": str(prs.slide_width),
+        "slide_height": str(prs.slide_height),
         "slide_count": len(prs.slides),
     }
 
@@ -38,10 +38,13 @@ def _extract_colors(prs: Presentation) -> dict:
                     if ph.has_text_frame:
                         for para in ph.text_frame.paragraphs:
                             for run in para.runs:
-                                if run.font.color and run.font.color.rgb:
-                                    hex_val = str(run.font.color.rgb)
-                                    key = "primary" if para.font.size and para.font.size > 200000 else "text"
-                                    colors[key] = hex_val
+                                try:
+                                    if run.font.color and run.font.color.rgb:
+                                        hex_val = str(run.font.color.rgb)
+                                        key = "primary" if para.font.size and para.font.size > 200000 else "text"
+                                        colors[key] = hex_val
+                                except AttributeError:
+                                    continue
 
     return colors
 

@@ -7,6 +7,50 @@ let mainWindow: BrowserWindow | null = null
 let pythonProcess: ChildProcess | null = null
 const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 
+// 窗口状态存储
+interface WindowState {
+  width: number
+  height: number
+  x?: number
+  y?: number
+  maximized: boolean
+}
+
+function getWindowStatePath(): string {
+  return path.join(app.getPath('userData'), 'window-state.json')
+}
+
+function loadWindowState(): WindowState {
+  const defaultState: WindowState = {
+    width: 1400,
+    height: 900,
+    maximized: false
+  }
+  try {
+    const data = fs.readFileSync(getWindowStatePath(), 'utf-8')
+    return { ...defaultState, ...JSON.parse(data) }
+  } catch {
+    return defaultState
+  }
+}
+
+function saveWindowState(): void {
+  if (!mainWindow) return
+  const bounds = mainWindow.getBounds()
+  const state: WindowState = {
+    width: bounds.width,
+    height: bounds.height,
+    x: bounds.x,
+    y: bounds.y,
+    maximized: mainWindow.isMaximized()
+  }
+  try {
+    fs.writeFileSync(getWindowStatePath(), JSON.stringify(state, null, 2))
+  } catch {
+    // 忽略保存错误
+  }
+}
+
 function getStorePath(): string {
   return path.join(app.getPath('userData'), 'secure-store.json')
 }
@@ -69,46 +113,167 @@ function getBackendPath(): string {
   return path.join(process.resourcesPath, 'backend')
 }
 
+let healthCheckInterval: ReturnType<typeof setInterval> | null = null
+let backendReady = false
+
+async function checkBackendHealth(): Promise<boolean> {
+  try {
+    const response = await fetch('http://127.0.0.1:8099/api/health')
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+function notifyBackendStatus(status: 'starting' | 'ready' | 'error', message?: string): void {
+  if (mainWindow) {
+    mainWindow.webContents.send('backend:status', { status, message })
+  }
+}
+
 function startPythonBackend(): void {
   const backendPath = getBackendPath()
   const pythonCmd = process.platform === 'win32' ? 'python' : 'python3'
+  
+  notifyBackendStatus('starting', '正在启动后端服务...')
 
   pythonProcess = spawn(pythonCmd, ['-m', 'uvicorn', 'api.main:app', '--host', '127.0.0.1', '--port', '8099'], {
     cwd: backendPath,
     stdio: ['pipe', 'pipe', 'pipe'],
   })
 
+  let startupOutput = ''
+  const startupTimeout = setTimeout(() => {
+    if (!backendReady) {
+      console.error('[Python] Backend startup timeout')
+      notifyBackendStatus('error', '后端启动超时，请检查 Python 环境')
+    }
+  }, 30000)
+
   pythonProcess.stdout?.on('data', (data: Buffer) => {
-    console.log(`[Python] ${data.toString()}`)
+    const output = data.toString()
+    console.log(`[Python] ${output}`)
+    startupOutput += output
+    
+    // 检测 Uvicorn 启动成功标志
+    if (output.includes('Uvicorn running on') || output.includes('Application startup complete')) {
+      // 开始健康检查
+      startHealthCheck()
+    }
   })
 
   pythonProcess.stderr?.on('data', (data: Buffer) => {
-    console.error(`[Python] ${data.toString()}`)
+    const output = data.toString()
+    console.error(`[Python] ${output}`)
+    startupOutput += output
+    
+    // 检测常见错误
+    if (output.includes('ModuleNotFoundError') || output.includes('No module named')) {
+      notifyBackendStatus('error', '缺少 Python 依赖，请运行 pip install -r requirements.txt')
+      clearTimeout(startupTimeout)
+    }
   })
 
   pythonProcess.on('close', (code: number | null) => {
     console.log(`[Python] process exited with code ${code}`)
     pythonProcess = null
+    backendReady = false
+    
+    if (healthCheckInterval) {
+      clearInterval(healthCheckInterval)
+      healthCheckInterval = null
+    }
+    
+    // 如果是意外退出且不是正常关闭，通知用户
+    if (code !== 0 && code !== null) {
+      notifyBackendStatus('error', `后端意外退出 (代码: ${code})`)
+    }
+    
+    clearTimeout(startupTimeout)
+  })
+
+  pythonProcess.on('error', (err: Error) => {
+    console.error('[Python] Failed to start process:', err)
+    notifyBackendStatus('error', `无法启动 Python: ${err.message}`)
+    clearTimeout(startupTimeout)
   })
 }
 
+async function startHealthCheck(): Promise<void> {
+  // 先进行一次快速检查
+  let attempts = 0
+  const maxAttempts = 10
+  
+  while (attempts < maxAttempts && !backendReady) {
+    attempts++
+    await new Promise(r => setTimeout(r, 1000))
+    backendReady = await checkBackendHealth()
+  }
+  
+  if (backendReady) {
+    console.log('[Python] Backend is ready')
+    notifyBackendStatus('ready')
+  }
+  
+  // 启动定期健康检查
+  healthCheckInterval = setInterval(async () => {
+    const healthy = await checkBackendHealth()
+    if (!healthy && backendReady) {
+      console.warn('[Python] Backend health check failed')
+      backendReady = false
+      notifyBackendStatus('error', '后端连接断开')
+    } else if (healthy && !backendReady) {
+      console.log('[Python] Backend reconnected')
+      backendReady = true
+      notifyBackendStatus('ready')
+    }
+  }, 5000)
+}
+
+ipcMain.handle('backend:getStatus', async () => {
+  return { ready: backendReady }
+})
+
 function createWindow(): void {
+  const windowState = loadWindowState()
+  
   mainWindow = new BrowserWindow({
-    width: 1400,
-    height: 900,
+    width: windowState.width,
+    height: windowState.height,
+    x: windowState.x,
+    y: windowState.y,
     minWidth: 1024,
     minHeight: 700,
-    title: 'AI PPT Desktop',
+    title: '险而易见 · InsurDeck',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
+      nodeIntegrationInWorker: false,
+      nodeIntegrationInSubFrames: false,
+      sandbox: true,
+      enableWebSQL: false,
+      disableBlinkFeatures: 'Auxclick',
     },
   })
 
+  // 阻止新窗口创建
+  mainWindow.webContents.setWindowOpenHandler(() => {
+    return { action: 'deny' }
+  })
+
+  // 保存窗口状态
+  mainWindow.on('resize', saveWindowState)
+  mainWindow.on('move', saveWindowState)
+  mainWindow.on('close', saveWindowState)
+
+  if (windowState.maximized) {
+    mainWindow.maximize()
+  }
+
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
-    mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools({ mode: 'detach' })
   } else {
     mainWindow.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }
@@ -169,12 +334,12 @@ function createWindow(): void {
       label: 'Help',
       submenu: [
         {
-          label: 'About AI PPT Desktop',
+          label: 'About 险而易见 · InsurDeck',
           click: () => {
             dialog.showMessageBox(mainWindow!, {
               type: 'info',
-              title: 'About AI PPT Desktop',
-              message: 'AI PPT Desktop v1.0.0',
+      title: 'About 险而易见 · InsurDeck',
+      message: '险而易见 · InsurDeck v1.0.0',
               detail: 'AI-powered presentation generator.\nBuilt with Electron + React + Python.',
             })
           },
@@ -190,16 +355,30 @@ function createWindow(): void {
   })
 }
 
-app.whenReady().then(() => {
-  startPythonBackend()
-  createWindow()
+// 单实例锁
+const gotTheLock = app.requestSingleInstanceLock()
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow()
+if (!gotTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.focus()
     }
   })
-})
+
+  app.whenReady().then(() => {
+    startPythonBackend()
+    createWindow()
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow()
+      }
+    })
+  })
+}
 
 app.on('window-all-closed', () => {
   if (pythonProcess) {

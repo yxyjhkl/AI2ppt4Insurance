@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <rect width="1280" height="720" fill="#f9fafb"/>
+  <rect y="0" width="1280" height="60" fill="#0c121d"/>
+  <rect y="0" width="6" height="60" fill="#3b82f6"/>
+  <text x="24" y="38" font-family="Microsoft YaHei" font-size="24" font-weight="bold" fill="#f9fafb">目录</text>
+  <line x1="40" y1="75" x2="1240" y2="75" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="48" y="130" font-family="Microsoft YaHei" font-size="18" fill="#080c13">{{CONTENT_AREA}}</text>
+  <rect y="690" width="1280" height="30" fill="#f3f4f6"/>
+  <text x="1240" y="710" text-anchor="end" font-family="Arial" font-size="12" fill="#9ca3af">{{PAGE_NUM}}</text>
+</svg>
