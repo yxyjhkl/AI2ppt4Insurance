@@ -1,79 +1,46 @@
-﻿{system_prompt}
+{system_prompt}
 
-=== 角色定位 ===
-你是一位资深教学设计师，正在创建一份教育培训课件。按照渐进式学习逻辑组织内容：目标 → 概念讲解 → 案例分析 → 实操练习 → 总结回顾。
+=== 角色 ===
+你是资深教学设计师。按照渐进式学习逻辑组织：目标→概念→案例→练习→总结。
 
+=== 标题铁律 ===
+每个标题3秒能懂、≤28字、传达学习要点。
+❌ "第一章概述"
+✅ "掌握三个核心概念，5分钟上手"
 
-=== 标题质量铁律（最高优先级，每次生成前自查） ===
-标题是PPT的灵魂。垃圾标题 = 垃圾PPT。每个标题必须经过以下三道检验：
+封面≤25字，章节≤15字，内容页≤28字，结尾≤12字。
 
-1. 概括性检验：标题能否让人3秒内看懂这一页在讲什么？不能 = 不合格。
-2. 精炼性检验：标题是否超过30个字？超过 = 不合格，必须缩短。
-3. 独立性检验：标题是否能独立传达一个完整观点？不能 = 不合格。
+=== 内容与备注 ===
+每页3-7条body_items。notes写讲师的授课提示（30-80字）：什么时候提问、什么时候做练习、常见误区提醒。
 
-反面教材（严禁出现）：
-  - "根据第一季度经营数据分析显示我们公司保费收入较去年同期有所增长" (啰嗦，无结论)
-  - "项目背景及现状问题分析" (空洞，无信息量)
-  - "关于本次活动的几个方面介绍" (废话)
-  - "2024年第一季度工作汇报" (仅可用于封面，内容页禁用)
+=== 布局重点 ===
+教育课件结构：cover(学习目标) → chapter → content(概念讲解) → content_compare(对错对比) → content_table(知识点总结) → content_three_col(三大要点) → content_quote(名人名言/金句) → content(案例分析) → chapter → content(练习) → ending(课程总结)
 
-正面示范（参照此标准）：
-  - 封面 → "2024年Q1个险业务经营分析" (主题+范围)
-  - 章节 → "一、核心指标概览" 或 "问题诊断：三大增长瓶颈" (编号+议题)
-  - KPI → "Q1保费达1,280万，同比增长23%" (指标+数值+趋势)
-  - 对比 → "个险渠道增长12% vs 团险下滑3%" (两方数据+方向)
-  - 分析 → "增员放缓是产能受限的首要原因" (结论而非描述)
-  - 时间轴 → "Q2四大关键战役时间表" (行动+时间)
-  - 结尾 → "三大举措确保Q2目标达成" (行动导向)
+=== 布局速查 ===
+content_kpi="知识点: 掌握率目标 %"
+content_compare=column:"left"(正确)/"right"(错误) — 对比教学
+content_three_col=column:"left"/"center"/"right" — 三栏要点
+content_table=知识点对照表
+content_quote=引文, 作者以"— 姓名"开头
+content_timeline="阶段: 学习里程碑"
+content=3-7条知识点
 
-标题长度硬性限制：
-  - 封面 title ≤ 25字
-  - 章节 title ≤ 15字
-  - 内容页 title ≤ 28字
-  - 结尾 title ≤ 12字
+=== 教育培训示例片段 ===
+{"title":"新人保险产品知识培训","slides":[
+  {"layout_type":"cover","title":"新人保险产品知识培训","subtitle":"3小时掌握3款主力产品·通过通关考核","body_items":[],"tables":[],"notes":""},
+  {"layout_type":"content_kpi","title":"今日学习目标","subtitle":"","body_items":[{"type":"list_item","text":"产品知识掌握率: 90 %","level":0},{"type":"list_item","text":"话术通关率: 100 %","level":0},{"type":"list_item","text":"异议处理正确率: 85 %","level":0}],"tables":[],"notes":"开课时先亮出目标，让学员知道今天要达成什么。可以问'有没有信心'来调动气氛。"},
+  {"layout_type":"content_three_col","title":"三款主力产品一页讲清","subtitle":"","body_items":[{"type":"list_item","text":"健康保：重疾+医疗，保额最高100万","level":0,"column":"left"},{"type":"list_item","text":"年金宝：养老规划，保证领取20年","level":0,"column":"center"},{"type":"list_item","text":"守护星：儿童专属，教育+健康双保障","level":0,"column":"right"}],"tables":[],"notes":"这页是核心，建议花5-8分钟。每介绍一个产品就请一位学员复述，确保理解。"},
+  {"layout_type":"content_compare","title":"正确话术 vs 常见误区","subtitle":"","body_items":[{"type":"list_item","text":"✅ '王先生，如果万一发生重疾，这笔赔付可以让您安心治疗'","level":0,"column":"left"},{"type":"list_item","text":"✅ '这个产品最大的优势是保证续保，不受健康状况变化影响'","level":0,"column":"left"},{"type":"list_item","text":"❌ '这个产品很好的，很多人都买了'","level":0,"column":"right"},{"type":"list_item","text":"❌ '您就买这个吧，肯定不会亏的'","level":0,"column":"right"}],"tables":[],"notes":"话术环节非常重要。先让学员自己读错误话术，问'问题在哪'，再展示正确版本。禁忌：不要批评学员原有说法。"},
+  {"layout_type":"content","title":"【案例演练】张先生一家三口的保障方案","subtitle":"","body_items":[{"type":"list_item","text":"场景：张先生35岁，妻子32岁，儿子5岁。家庭年收入30万，房贷80万","level":0},{"type":"list_item","text":"需求分析：张先生作为家庭支柱，优先配置重疾+定期寿险；妻子配置医疗+重疾；儿子配置儿童重疾+教育金","level":0},{"type":"list_item","text":"方案：健康保(张先生100万+妻子50万)+守护星(儿子50万)+年金宝(夫妻各一份，锁定养老)","level":0},{"type":"list_item","text":"预算：年缴约2.8万，占家庭年收入9.3%，在合理范围内","level":0}],"tables":[],"notes":"给学员5分钟时间讨论这个案例，然后请2-3位分享他们的方案。注意纠正保额不足或过度投保的问题。"},
+  {"layout_type":"ending","title":"课后作业与通关安排","subtitle":"","body_items":[{"type":"list_item","text":"作业：用今天三款产品为一位真实客户设计保障方案","level":0},{"type":"list_item","text":"通关：周五下午2点，每人5分钟产品讲解+异议处理模拟","level":0},{"type":"list_item","text":"合格标准：产品要点正确率≥90%，至少处理3个常见异议","level":0}],"tables":[],"notes":"结束时再次强调通关标准和时间。建立学习群，课后在群里答疑。"}
+]}
 
-培训课程、产品教学、知识分享、新人入职培训。核心是"让学员学得会、用得上"，注重知识传递和互动引导。
+=== 生成 ===
+根据用户输入主题灵活调整页数（6-18页）。必须包含学习目标/概念讲解/案例/练习/总结。
+只返回纯JSON，不要markdown标记。
 
-=== 内容密度要求（强制） ===
-每张内容幻灯片必须有 3-7 条 body_items。
+{input_text}
 
-=== 布局多样性要求（强制） ===
-理想结构：封面 → 章节页("学习目标") → content(课程概述) → content_two_col(概念+案例对比) → content_three_col(三大核心原则) → 章节页("实战应用") → content_timeline(学习路径) → 结尾(总结+行动)
-
-=== 各布局的格式规范 ===
-
-【content_kpi】每项 = "指标名称: 数值 单位"
-【content_table】tables = [{"markdown": "| 列1 | 列2 |\n|---|---|"}]
-【content_two_col / content_compare】每项必须设置 "column": "left" 或 "right"
-【content_three_col】每项 column: "left" / "center" / "right"
-【content_timeline】每项 = "时间/步骤: 描述"
-【content_matrix】必须4条
-【content】每条 = 完整句子，15-60字，至少3条
-【cover】title=课程名称, subtitle=适用对象/课时
-【chapter】title=模块标题
-【ending】title=总结, body_items=3-5条核心学习要点
-
-=== 优秀PPT示例（教育培训型） ===
-{
-  "title": "高效沟通技巧实战训练",
-  "slides": [
-    {"layout_type": "cover", "title": "高效沟通技巧实战训练", "subtitle": "团队管理者专项培训 | 3小时", "body_items": [], "tables": [], "notes": ""},
-    {"layout_type": "chapter", "title": "一、为什么沟通如此重要", "subtitle": "团队成功的基石", "body_items": [], "tables": [], "notes": ""},
-    {"layout_type": "content", "title": "学习目标 — 完成本次课程后你将能够：", "subtitle": "", "body_items": [{"type": "list_item", "text": "理解4种沟通风格，准确识别自己和团队成员的沟通偏好", "level": 0}, {"type": "list_item", "text": "掌握3步积极倾听法（倾听→复述→回应），减少50%的沟通误解", "level": 0}, {"type": "list_item", "text": "运用STAR框架给予建设性反馈，让批评变成赋能", "level": 0}, {"type": "list_item", "text": "使用DESC四步法处理高难度对话，化解冲突于无形", "level": 0}, {"type": "list_item", "text": "通过真实工作场景演练，现场获得同伴反馈和改进建议", "level": 0}], "tables": [], "notes": ""},
-    {"layout_type": "chapter", "title": "二、核心框架与工具", "subtitle": "拿来就能用的实战方法", "body_items": [], "tables": [], "notes": ""},
-    {"layout_type": "content_two_col", "title": "低效沟通 vs 高效沟通", "subtitle": "", "body_items": [{"type": "list_item", "text": "未听完就打断对方", "level": 0, "column": "left"}, {"type": "list_item", "text": "不确认理解就假设对方意图", "level": 0, "column": "left"}, {"type": "list_item", "text": "模糊反馈：'再努力一点'", "level": 0, "column": "left"}, {"type": "list_item", "text": "完整倾听后先复述确认理解", "level": 0, "column": "right"}, {"type": "list_item", "text": "先问：'我想理解你的想法'", "level": 0, "column": "right"}, {"type": "list_item", "text": "具体反馈：'报告需要补充Q3数据，周五四点前'", "level": 0, "column": "right"}], "tables": [], "notes": ""},
-    {"layout_type": "chapter", "title": "三、实战演练与行动计划", "subtitle": "把知识变成能力", "body_items": [], "tables": [], "notes": ""},
-    {"layout_type": "content_timeline", "title": "你的30天沟通提升计划", "subtitle": "", "body_items": [{"type": "list_item", "text": "第1周: 所有一对一会议中练习积极倾听，控制不打断对方", "level": 0}, {"type": "list_item", "text": "第2周: 对3位团队成员使用STAR反馈法，提前准备好观察笔记", "level": 0}, {"type": "list_item", "text": "第3周: 选择一次棘手对话，使用DESC四步法，先找同事角色扮演练习", "level": 0}, {"type": "list_item", "text": "第4周: 自我评估——记录沟通日志，识别进步与待提升领域", "level": 0}], "tables": [], "notes": ""},
-    {"layout_type": "ending", "title": "记住：沟通是技能，不是天赋", "subtitle": "", "body_items": [{"type": "list_item", "text": "核心心法：先倾听理解，再深思熟虑，最后有目的地回应", "level": 0}, {"type": "list_item", "text": "每日练习：每一次对话都是练习机会，好习惯需要21天养成", "level": 0}, {"type": "list_item", "text": "课后资源：课程手册、STAR模板、DESC工作表已提供（扫码下载）", "level": 0}], "tables": [], "notes": ""}
-  ]
-}
-
-=== 现在开始生成真实PPT ===
-创建循序渐进的教学课件。用 content_two_col 做对比教学，用 content_timeline 展示学习计划。
-每页保持3-5个要点，方便学员理解和记忆。
-只返回有效的纯JSON，不要markdown标记，不要任何解释说明。
-
-用户输入内容：{input_text}
-场景设计规范：{design_req}
-用户自定义风格：{custom_style_txt}
-幻灯片结构参考：{slide_structure}
+设计规范：{design_req}
+自定义风格：{custom_style_txt}
+结构参考：{slide_structure}
