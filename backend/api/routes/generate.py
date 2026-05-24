@@ -80,7 +80,7 @@ async def generate_pptx(req: GenerateRequest):
         from api.routes.progress import send_progress
 
         model_id = req.model or "gpt-4o"
-        stored = get_api_key(model_id)
+        stored = get_api_key(model_id) if not model_id.startswith("ollama/") else {}
 
         progress_callback = None
         if req.task_id:
@@ -104,6 +104,7 @@ async def generate_pptx(req: GenerateRequest):
             meeting_type=req.meeting_type,
             excel_filepath=req.excel_filepath,
             custom_style=req.custom_style,
+            include_images=req.include_images,
             progress_callback=progress_callback,
         )
 
@@ -117,14 +118,17 @@ async def generate_pptx(req: GenerateRequest):
 
                 engine = AnimationEngine(prs)
 
-                if req.transition_effect:
-                    for i in range(len(prs.slides)):
-                        engine.apply_slide_transition(i, req.transition_effect)
+                transition = req.transition_effect or "fade"
+                animation = req.animation_effect or "fadeIn"
 
-                if req.animation_effect:
+                if transition:
+                    for i in range(len(prs.slides)):
+                        engine.apply_slide_transition(i, transition)
+
+                if animation:
                     for i in range(len(prs.slides)):
                         engine.apply_entrance_to_all_shapes(
-                            i, req.animation_effect,
+                            i, animation,
                             duration_ms=req.animation_duration,
                             stagger_ms=req.stagger_ms,
                         )
@@ -313,6 +317,54 @@ async def supplement_slides(req: SupplementRequest):
         import traceback
         traceback.print_exc()
         raise HTTPException(500, f"Supplement failed: {e}")
+
+
+class RefreshPreviewRequest(BaseModel):
+    slide: dict = Field(..., description="Single slide data (layout_type, title, body_items, tables, etc.)")
+    template: str = "professional-blue"
+    canvas_format: str = Field("16:9", pattern=r"^(16:9|4:3|3:4|1:1)$")
+
+
+class RefreshPreviewResponse(BaseModel):
+    svg: str
+
+
+@router.post("/refresh-preview", response_model=RefreshPreviewResponse)
+async def refresh_preview(req: RefreshPreviewRequest):
+    """Regenerate SVG preview for a single slide after editing."""
+    try:
+        from slide_builder.svg_filler import SVGFiller
+        from utils.theme_utils import load_theme, resolve_template_dir
+        import os as _os
+
+        base_dir = _os.path.join(_os.path.dirname(__file__), "..", "..")
+        template_dir = resolve_template_dir(req.template, base_dir)
+        theme = load_theme(template_dir)
+        filler = SVGFiller(template_dir, theme)
+
+        VB = {"16:9": (1280, 720), "4:3": (960, 720), "3:4": (720, 960), "1:1": (720, 720)}
+        vw, vh = VB.get(req.canvas_format, (1280, 720))
+
+        slide_data = {
+            "layout_type": req.slide.get("layout_type", "content"),
+            "title": req.slide.get("title", ""),
+            "subtitle": req.slide.get("subtitle"),
+            "body_items": req.slide.get("body_items", []),
+            "tables": req.slide.get("tables", []),
+            "images": req.slide.get("images", []),
+            "code_block": req.slide.get("code_block"),
+            "notes": req.slide.get("notes", ""),
+        }
+        page_num = req.slide.get("page_number", 1)
+
+        filled = filler.fill("", slide_data, page_num)
+        svg = f'<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {vw} {vh}">\n{filled}\n</svg>'
+
+        return RefreshPreviewResponse(svg=svg)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(500, f"Preview refresh failed: {e}")
 
 @router.get("/preview/{slide_index}")
 async def preview_slide(slide_index: int,

@@ -53,12 +53,14 @@ export function Dashboard() {
   const [generating, setGenerating] = useState(false)
   const [error, setError] = useState('')
 
-  const [useCustomTemplate, setUseCustomTemplate] = useState<boolean | null>(null)
+  const [useCustomTemplate, setUseCustomTemplate] = useState(false)
   const [customTemplateId, setCustomTemplateId] = useState<string | null>(null)
 
   const [selectedPrompt, setSelectedPrompt] = useState<string | null>(null)
 
   const [customStyle, setCustomStyle] = useState('')
+
+  const [excelFilepath, setExcelFilepath] = useState<string | null>(null)
 
   const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null)
 
@@ -294,21 +296,19 @@ export function Dashboard() {
         currentModelId = selectedModelId || config.model || 'gpt-4o'
       } else if (selectedMode === 'local_ollama') {
         ai_mode = 'online'
-        if (ollamaLocalModels.length > 0) {
-          currentModelId = `ollama/${ollamaLocalModels[0]}`
-        }
+        currentModelId = selectedModelId || (ollamaLocalModels.length > 0 ? `ollama/${ollamaLocalModels[0]}` : '')
       } else {
         ai_mode = 'offline'
       }
 
       const savedModels = await getObject<{ model?: string; apiKey?: string; baseUrl?: string; name?: string }[]>('aippt_models')
       const selectedModel = savedModels?.find(m => m.model === currentModelId)
-      if (selectedModel?.apiKey && selectedModel.apiKey !== 'ollama') {
+      if (selectedModel?.apiKey && (selectedModel.apiKey !== 'ollama' || selectedModel.baseUrl)) {
         await fetch(await apiConfig.url('/api/v1/ai/configure'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ model_id: currentModelId, api_key: selectedModel.apiKey, base_url: selectedModel.baseUrl }),
-        }).catch(() => {})
+        }).catch((e) => { console.warn('[Dashboard] API key configure failed:', e) })
       }
 
       const taskId = `task_${Math.random().toString(36).substring(2, 10)}`
@@ -332,6 +332,7 @@ export function Dashboard() {
         auto_mode: workflowMode === 'auto',
         canvas_format: config.canvasFormat || '16:9',
         task_id: taskId,
+        excel_filepath: excelFilepath,
       }
 
       const res = await abortableFetch(await apiConfig.url('/api/v1/generate/pptx'), {
@@ -362,12 +363,13 @@ export function Dashboard() {
         id: data.project_id,
         name: data.title,
         scene: selectedScene,
-        slides: (data.slides as { layout_type: string; title: string; body_items?: { text: string }[]; notes?: string; svg_preview?: string }[] | undefined)?.map((s, i: number) => ({
+        slides: (data.slides as { layout_type: string; title: string; body_items?: { type: string; text: string; level: number }[]; notes?: string; svg_preview?: string }[] | undefined)?.map((s, i: number) => ({
           id: `slide_${i}`,
           index: i,
           layoutType: s.layout_type as LayoutType,
           title: s.title,
           content: s.body_items?.map((b) => b.text).join('\n') || '',
+          bodyItems: s.body_items || [],
           notes: s.notes || '',
           svgContent: s.svg_preview || data.preview_slides?.[i] || '',
         })) || [],
@@ -453,6 +455,7 @@ export function Dashboard() {
                   onInputChange={setInputText}
                   onGenerate={handleGenerate}
                   onFileUploaded={handleFileUploaded}
+                  onExcelUploaded={(data) => setExcelFilepath(data.filepath)}
                 />
               </div>
 
@@ -489,6 +492,7 @@ export function Dashboard() {
                 onInputChange={setInputText}
                 onGenerate={handleGenerate}
                 onFileUploaded={handleFileUploaded}
+                onExcelUploaded={(data) => setExcelFilepath(data.filepath)}
               />
 
               <RequirementsPanel value={requirements} onChange={setRequirements} />

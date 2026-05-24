@@ -103,7 +103,11 @@ export function Editor() {
         layout_type: s.layoutType,
         title: s.title,
         subtitle: null,
-        body_items: s.content ? [{ type: 'list_item' as const, text: s.content, level: 1 }] : [],
+        body_items: s.bodyItems && s.bodyItems.length > 0
+          ? s.bodyItems
+          : s.content
+            ? [{ type: 'list_item' as const, text: s.content, level: 1 }]
+            : [],
         images: [], tables: [], code_block: null,
         notes: s.notes || '',
         svg_preview: s.svgContent || '',
@@ -142,6 +146,7 @@ export function Editor() {
         layoutType: s.layout_type as any,
         title: s.title,
         content: (s.body_items || []).map((b: any) => b.text).join('\n'),
+        bodyItems: s.body_items || [],
         notes: s.notes || '',
         svgContent: s.svg_preview || '',
         elements: s.elements || [],
@@ -161,6 +166,66 @@ export function Editor() {
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
   }, [saveToProjectStore])
+
+  // 编辑后自动刷新 SVG 预览，保持预览与导出一致
+  const previewRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const lastRefreshedHash = useRef<Record<number, string>>({})
+
+  useEffect(() => {
+    if (slides.length === 0) return
+    if (selectedIndex < 0 || selectedIndex >= slides.length) return
+    const currentSlide = slides[selectedIndex]
+    if (!currentSlide) return
+
+    // 计算当前页内容的哈希，避免相同内容重复刷新
+    const contentHash = JSON.stringify({
+      layout_type: currentSlide.layout_type,
+      title: currentSlide.title,
+      body_items: currentSlide.body_items,
+      tables: currentSlide.tables,
+    })
+    if (lastRefreshedHash.current[selectedIndex] === contentHash) return
+
+    if (previewRefreshTimer.current) clearTimeout(previewRefreshTimer.current)
+    previewRefreshTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(await apiConfig.url('/api/v1/generate/refresh-preview'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            slide: {
+              page_number: currentSlide.page_number,
+              layout_type: currentSlide.layout_type,
+              title: currentSlide.title,
+              subtitle: currentSlide.subtitle,
+              body_items: currentSlide.body_items || [],
+              tables: currentSlide.tables || [],
+              images: currentSlide.images || [],
+              code_block: currentSlide.code_block,
+              notes: currentSlide.notes || '',
+            },
+            template: searchParams.get('template') || 'professional-blue',
+            canvas_format: useProjectStore.getState().generationConfig.canvasFormat || '16:9',
+          }),
+        })
+        if (res.ok) {
+          const data = await res.json()
+          if (data.svg) {
+            lastRefreshedHash.current[selectedIndex] = contentHash
+            setSlides(prev => prev.map((s, i) =>
+              i === selectedIndex ? { ...s, svg_preview: data.svg } : s
+            ))
+          }
+        }
+      } catch {
+        // 后端不可用时静默跳过，预览保持旧版本
+      }
+    }, 800)
+
+    return () => {
+      if (previewRefreshTimer.current) clearTimeout(previewRefreshTimer.current)
+    }
+  }, [slides, selectedIndex])  // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateSlideElements = useCallback((newElements: CanvasElement[]) => {
     setSlides(prev => prev.map((s, i) =>
@@ -343,7 +408,7 @@ export function Editor() {
   }, [slides, navigate, setLastGeneration, qaResults, mode, modeMessage, projectTitle])
 
   const handleExport = useCallback(async () => {
-    if (slides.length === 0) return
+    if (slides.length === 0 || exporting) return
     setExporting(true)
     if (abortRef.current) abortRef.current.abort()
     abortRef.current = new AbortController()
@@ -394,7 +459,7 @@ export function Editor() {
   }, [slides, searchParams, projectTitle])
 
   const handleExportPdf = useCallback(async () => {
-    if (slides.length === 0) return
+    if (slides.length === 0 || exporting) return
     setExporting(true)
     if (abortRef.current) abortRef.current.abort()
     abortRef.current = new AbortController()
@@ -439,7 +504,7 @@ export function Editor() {
   }, [slides, projectTitle])
 
   const handleExportPngs = useCallback(async () => {
-    if (slides.length === 0) return
+    if (slides.length === 0 || exporting) return
     setExporting(true)
     if (abortRef.current) abortRef.current.abort()
     abortRef.current = new AbortController()
@@ -484,7 +549,7 @@ export function Editor() {
   }, [slides, projectTitle])
 
   const handleTTS = useCallback(async () => {
-    if (slides.length === 0) return
+    if (slides.length === 0 || exporting) return
     setExporting(true)
     try {
       const notes = slides.map(s => s.notes || '').filter(n => n.trim())
@@ -769,7 +834,7 @@ export function Editor() {
                 <label className="text-xs text-gray-500 block mb-1">布局</label>
                 <select className="input-field text-sm" value={currentSlide.layout_type}
                   onChange={(e) => handleUpdateSlide(selectedIndex, { layout_type: e.target.value })}>
-                  {['cover','chapter','content','content_two_col','content_three_col','content_table','content_code','content_quote','content_compare','content_kpi','content_matrix','content_timeline','content_waterfall','content_gauge','content_ranking','content_funnel','ending'].map(lt => (
+                  {['cover','toc','chapter','content','content_two_col','content_three_col','content_table','content_code','content_quote','content_compare','content_kpi','content_matrix','content_timeline','content_waterfall','content_gauge','content_ranking','content_funnel','ending'].map(lt => (
                     <option key={lt} value={lt}>{lt === 'cover' ? '封面' : lt === 'chapter' ? '章节' : lt === 'content' ? '内容' : lt === 'content_two_col' ? '双栏' : lt === 'content_three_col' ? '三栏' : lt === 'content_table' ? '表格' : lt === 'content_code' ? '代码' : lt === 'content_quote' ? '引用' : lt === 'content_compare' ? '对比' : lt === 'content_kpi' ? 'KPI' : lt === 'content_matrix' ? '矩阵' : lt === 'content_timeline' ? '时间轴' : lt === 'content_waterfall' ? '瀑布' : lt === 'content_gauge' ? '仪表盘' : lt === 'content_ranking' ? '排行' : lt === 'content_funnel' ? '漏斗' : lt === 'ending' ? '结尾' : lt === 'toc' ? '目录' : lt.replace(/_/g, ' ')}</option>
                   ))}
                 </select>

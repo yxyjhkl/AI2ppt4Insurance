@@ -84,7 +84,7 @@ const defaultConfig: GenerationConfig = {
   scene: 'report',
   meetingType: null,
   template: 'professional-blue',
-  model: 'gpt-4',
+  model: 'gpt-4o',
   slideCount: 10,
   language: 'zh-CN',
   includeNotes: true,

@@ -124,11 +124,12 @@ class GenerationPipeline:
                  api_key: Optional[str] = None, base_url: Optional[str] = None,
                  canvas_format: str = "16:9", meeting_type: Optional[str] = None,
                  excel_filepath: Optional[str] = None, custom_style: Optional[str] = None,
-                 progress_callback=None):
+                 include_images: bool = True, progress_callback=None):
         self.scene = scene
         self.meeting_type = meeting_type
         self.excel_filepath = excel_filepath
         self.custom_style = custom_style
+        self.include_images = include_images
         self.template_id = template_id
         self.ai_mode = ai_mode
         self.auto_mode = auto_mode
@@ -404,6 +405,9 @@ class GenerationPipeline:
         planner_prompt = planner_prompt.replace("{design_req}", design_req)
         planner_prompt = planner_prompt.replace("{custom_style_txt}", custom_style_txt)
         planner_prompt = planner_prompt.replace("{slide_structure}", str(slide_structure))
+
+        if self.include_images:
+            planner_prompt += "\n\nInclude relevant images where appropriate. Use the 'images' field with descriptive alt text for each image suggestion."
 
         provider = AIProviderFactory.create(model_id=self.model or "gpt-4o",
                                             api_key=self.api_key, base_url=self.base_url)
@@ -1216,9 +1220,10 @@ async def run_pipeline(input_text: str, scene: str = "report",
                        canvas_format: str = "16:9", meeting_type: Optional[str] = None,
                        excel_filepath: Optional[str] = None,
                        custom_style: Optional[str] = None,
+                       include_images: bool = True,
                        progress_callback=None) -> GenerationResult:
     pipeline = GenerationPipeline(scene, template_id, ai_mode, auto_mode,
                                    model, api_key, base_url, canvas_format,
                                    meeting_type, excel_filepath, custom_style,
-                                   progress_callback)
+                                   include_images, progress_callback)
     return await pipeline.run(input_text)

@@ -183,6 +183,7 @@ export interface Slide {
   notes: string
   svgContent?: string
   elements?: CanvasElement[]
+  bodyItems?: { type: string; text: string; level: number }[]
 }
 
 /**

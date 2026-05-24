@@ -17,8 +17,9 @@ export function InputSection(props: {
   onInputChange: (text: string) => void
   onGenerate: () => void
   onFileUploaded?: () => void
+  onExcelUploaded?: (data: { filepath: string; file_id: string; filename: string }) => void
 }) {
-  const { selectedScene, meetingType, inputText, onInputChange, onGenerate, onFileUploaded } = props
+  const { selectedScene, meetingType, inputText, onInputChange, onGenerate, onFileUploaded, onExcelUploaded } = props
   const [inputMethod, setInputMethod] = useState('text')
   const [excelUploading, setExcelUploading] = useState(false)
   const [excelUploadError, setExcelUploadError] = useState('')
@@ -63,6 +64,7 @@ export function InputSection(props: {
       const data = await res.json()
       setExcelData({ ...data, headers: {}, summary: data.preview })
       onInputChange(data.preview || `Excel文件: ${data.filename}, ${data.row_count}行数据`)
+      onExcelUploaded?.({ filepath: data.filepath, file_id: data.file_id, filename: data.filename })
       onFileUploaded?.()
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : 'Excel上传失败'
@@ -71,7 +73,7 @@ export function InputSection(props: {
     } finally {
       setExcelUploading(false)
     }
-  }, [onInputChange, onFileUploaded])
+  }, [onInputChange, onFileUploaded, onExcelUploaded])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {

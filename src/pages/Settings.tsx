@@ -404,9 +404,15 @@ export function Settings() {
                   <div>
                     <label className="text-xs text-gray-500 block mb-1">接口地址</label>
                     <input
-                      className="input-field text-sm bg-gray-50"
+                      className="input-field text-sm"
                       value={entry.baseUrl}
-                      readOnly
+                      readOnly={entry.providerId !== 'ollama' && entry.providerId !== 'custom'}
+                      onChange={(e) => {
+                        if (entry.providerId === 'ollama' || entry.providerId === 'custom') {
+                          setModels(prev => prev.map(m => m.id === entry.id ? { ...m, baseUrl: e.target.value } : m))
+                          setSavedIndicator(false)
+                        }
+                      }}
                     />
                   </div>
                   <div>
