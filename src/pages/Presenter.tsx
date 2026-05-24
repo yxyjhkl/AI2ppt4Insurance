@@ -20,6 +20,7 @@ export function Presenter() {
   const [showNotes, setShowNotes] = useState(true)
   const [elapsed, setElapsed] = useState(0)
   const [timerRunning, setTimerRunning] = useState(true)
+  const [speakerView, setSpeakerView] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [recording, setRecording] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -180,6 +181,9 @@ export function Presenter() {
           <button onClick={() => setShowNotes(s => !s)} className={`p-1.5 rounded ${showNotes ? 'bg-blue-600' : 'hover:bg-gray-700'}`} title="切换备注 (N)">
             <FileText className="w-4 h-4" />
           </button>
+          <button onClick={() => setSpeakerView(v => !v)} className={`p-1.5 rounded text-xs ${speakerView ? 'bg-green-600' : 'hover:bg-gray-700 text-gray-400'}`} title="演讲者视图（双屏）">
+            <Mic className="w-4 h-4" />
+          </button>
           <button onClick={toggleFullscreen} className="p-1.5 hover:bg-gray-700 rounded" title="全屏 (F)">
             <Maximize2 className="w-4 h-4" />
           </button>
@@ -187,9 +191,43 @@ export function Presenter() {
       </div>
 
       {/* Main presenter area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Current slide */}
-        <div className="flex-1 flex items-center justify-center bg-gray-800 p-4 relative">
+      <div className={`flex-1 flex overflow-hidden ${speakerView ? 'flex-col' : ''}`}>
+        {speakerView ? (
+          /* 演讲者视图：上半=幻灯片，下半=备注+计时器+下一页 */
+          <>
+            <div className="flex-1 flex items-center justify-center bg-gray-800 p-2 relative min-h-0">
+              <div className="h-full flex items-center justify-center" style={{ aspectRatio: '16/9' }}>
+                {currentSlide?.svg_preview ? (
+                  <iframe srcDoc={currentSlide.svg_preview} className="w-full h-full rounded shadow-xl" style={{ border: 'none', pointerEvents: 'none' }} title={`第 ${currentIndex + 1} 页`} sandbox="allow-same-origin" />
+                ) : (
+                  <div className="text-center text-gray-500"><p className="text-4xl font-bold mb-2">{currentSlide?.title || '幻灯片'}</p></div>
+                )}
+              </div>
+            </div>
+            <div className="h-48 bg-gray-900 border-t border-gray-700 flex divide-x divide-gray-700 shrink-0">
+              <div className="flex-1 p-4 overflow-auto">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">演讲备注</span>
+                  <span className="text-xs text-gray-500">{currentIndex + 1}/{slides.length}</span>
+                </div>
+                <p className="text-sm text-gray-200 leading-relaxed whitespace-pre-wrap">{currentSlide?.notes || '此页暂无备注'}</p>
+              </div>
+              <div className="w-64 p-4 flex flex-col items-center justify-center space-y-3 shrink-0">
+                <Clock className="w-6 h-6 text-gray-400" />
+                <span className={`text-3xl font-mono font-bold ${elapsed > 600 ? 'text-yellow-400' : 'text-white'}`}>{formatTime(elapsed)}</span>
+                <button onClick={() => setTimerRunning(r => !r)} className="text-xs text-gray-500 hover:text-white">{timerRunning ? '⏸ 暂停' : '▶ 继续'}</button>
+                {nextSlide && (
+                  <div className="w-full mt-2">
+                    <span className="text-[10px] text-gray-500">下一页</span>
+                    <div className="text-xs text-gray-300 mt-0.5 truncate">{nextSlide.title}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          /* 普通演示视图 */
+          <>
           <button
             onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
             disabled={currentIndex === 0}

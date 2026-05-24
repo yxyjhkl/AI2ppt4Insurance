@@ -27,30 +27,26 @@ class SVGFiller:
         """将文本自动换行，返回行列表"""
         if not text:
             return [""]
-        
-        # 中文字符约等于 font_size * 0.6 的宽度，英文约等于 font_size * 0.5
-        # 考虑中英文混合，每行字符数估算
-        avg_char_width = font_size * 0.55
-        chars_per_line = int(max_width / avg_char_width)
-        
+
         lines = []
         current_line = ""
-        
+        current_width = 0.0
+
         for char in text:
-            if ord(char) > 127:  # 中文字符
-                test_line = current_line + char
-            else:
-                test_line = current_line + char
-            
-            if len(test_line) > chars_per_line and current_line:
+            # 中文字符约 font_size*0.8 宽，英文约 font_size*0.5
+            char_width = font_size * 0.8 if ord(char) > 127 else font_size * 0.5
+
+            if current_width + char_width > max_width and current_line:
                 lines.append(current_line)
                 current_line = char
+                current_width = char_width
             else:
-                current_line = test_line
-        
+                current_line += char
+                current_width += char_width
+
         if current_line:
             lines.append(current_line)
-        
+
         return lines if lines else [""]
 
     def _calculate_text_height(self, text: str, font_size: int, max_width: int, line_height: float = 1.4) -> int:

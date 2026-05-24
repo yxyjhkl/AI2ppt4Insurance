@@ -78,9 +78,41 @@ async def generate_pptx(req: GenerateRequest):
         from slide_builder.pipeline import run_pipeline
         from api.key_store import get_api_key
         from api.routes.progress import send_progress
+        from utils.generation_cache import get_cached_result, set_cached_result
 
         model_id = req.model or "gpt-4o"
         stored = get_api_key(model_id) if not model_id.startswith("ollama/") else {}
+
+        # Check cache for identical requests (skip for data-driven/transcript modes)
+        cache_key_input = req.content[:500] if req.content else ""
+        if not req.excel_filepath and req.ai_mode != "offline" and len(req.content) > 100:
+            cached = get_cached_result(cache_key_input, req.scene, req.template, model_id)
+            if cached:
+                # Cache hit: build response from cached data
+                from dataclasses import dataclass
+                slides_cache = []
+                for s in cached.get("slides", []):
+                    slides_cache.append(SlideResponse(
+                        page_number=s.get("page_number", 1),
+                        layout_type=s.get("layout_type", "content"),
+                        title=s.get("title", ""),
+                        body_items=s.get("body_items", []),
+                        tables=s.get("tables", []),
+                        notes=s.get("notes", ""),
+                        svg_preview=s.get("svg_preview", ""),
+                    ))
+                return GenerateResponse(
+                    project_id=f"proj_{uuid.uuid4().hex[:12]}",
+                    title=cached.get("title", ""),
+                    scene=req.scene,
+                    template_id=req.template,
+                    mode=cached.get("mode", "cached"),
+                    message="(缓存结果) " + cached.get("message", ""),
+                    slide_count=len(slides_cache),
+                    slides=slides_cache,
+                    qa_results=cached.get("qa_results", []),
+                    preview_slides=cached.get("preview_slides", []),
+                )
 
         progress_callback = None
         if req.task_id:
@@ -184,6 +216,29 @@ async def generate_pptx(req: GenerateRequest):
         pptx_b64 = None
         if result.pptx_bytes:
             pptx_b64 = base64.b64encode(result.pptx_bytes).decode("utf-8")
+
+        # Store in cache for future identical requests
+        if not req.excel_filepath and req.ai_mode != "offline" and len(req.content) > 100:
+            try:
+                cache_data = {
+                    "title": result.title,
+                    "mode": result.mode,
+                    "message": result.message,
+                    "slides": [{
+                        "page_number": s.page_number,
+                        "layout_type": s.layout_type,
+                        "title": s.title,
+                        "body_items": s.body_items,
+                        "tables": s.tables,
+                        "notes": s.notes,
+                        "svg_preview": svg or "",
+                    } for s, svg in zip(result.slides, result.svg_contents)],
+                    "qa_results": result.qa_results,
+                    "preview_slides": result.svg_contents,
+                }
+                set_cached_result(cache_key_input, req.scene, req.template, model_id, cache_data)
+            except Exception:
+                pass
 
         return GenerateResponse(
             project_id=project_id,

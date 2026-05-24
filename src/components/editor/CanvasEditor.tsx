@@ -346,7 +346,7 @@ export function CanvasEditor({
       </div>
 
       <div ref={canvasRef}
-        className="canvas-bg bg-white shadow-2xl rounded-lg relative overflow-hidden cursor-pointer"
+        className="canvas-bg bg-white dark:bg-gray-700 shadow-2xl rounded-lg relative overflow-hidden cursor-pointer"
         style={{ width: '100%', maxWidth: 960, aspectRatio: '16 / 9', transform: `scale(${scale})`, transformOrigin: 'top center', marginBottom: scale < 1 ? `${-960 * 0.5625 * (1 - scale)}px` : undefined }}
         onClick={handleCanvasClick} onDoubleClick={handleDoubleClick} onDrop={handleDrop} onDragOver={handleDragOver}
         title="双击上传图片 · 拖拽元素到画布 · Ctrl+滚轮缩放"

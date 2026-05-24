@@ -14,6 +14,26 @@ from utils.theme_utils import load_theme
 class PPTXGenerator:
     DIMENSIONS = {k: (Inches(v[0]), Inches(v[1])) for k, v in CANVAS_INCHES.items()}
 
+    # 跨平台字体回退映射
+    FONT_FALLBACK = {
+        "Microsoft YaHei": ["Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "Arial", "sans-serif"],
+        "Arial": ["Arial", "Helvetica", "sans-serif"],
+        "Arial Black": ["Arial Black", "Helvetica Neue", "Arial", "sans-serif"],
+        "Consolas": ["Consolas", "Menlo", "Monaco", "Courier New", "monospace"],
+    }
+
+    def _resolve_font(self, font_name: str) -> str:
+        """Return the best available font for the current platform."""
+        import platform
+        system = platform.system()
+        if system == "Darwin":  # macOS
+            mac_map = {"Microsoft YaHei": "PingFang SC", "Arial Black": "Helvetica Neue"}
+            return mac_map.get(font_name, font_name)
+        elif system == "Linux":
+            linux_map = {"Microsoft YaHei": "Noto Sans CJK SC", "Arial Black": "Arial"}
+            return linux_map.get(font_name, font_name)
+        return font_name  # Windows: use as-is
+
     # Professional color palette
     PALETTE = {
         "dark_bg": "065A82",
@@ -41,10 +61,14 @@ class PPTXGenerator:
             self.PALETTE.update({
                 "dark_bg": c.get("primary", "065A82").lstrip("#"),
                 "accent": c.get("accent", "F96167").lstrip("#"),
+                "white": c.get("background", "FFFFFF").lstrip("#"),
+                "off_white": c.get("light-bg", c.get("surface", "F2F8FA")).lstrip("#"),
+                "light_bg": c.get("light-bg", c.get("surface", "F2F8FA")).lstrip("#"),
+                "card_bg": c.get("background", "FFFFFF").lstrip("#"),
+                "text": c.get("text", "1A2332").lstrip("#"),
+                "text_light": c.get("secondary", "5A6B7B").lstrip("#"),
+                "divider": c.get("light-bg", "D0E4ED").lstrip("#"),
             })
-            bg = c.get("light-bg", c.get("surface", "F2F8FA")).lstrip("#")
-            self.PALETTE["off_white"] = bg
-            self.PALETTE["light_bg"] = bg
 
     def _hex(self, key: str) -> str:
         return self.PALETTE.get(key, "065A82")
@@ -112,7 +136,7 @@ class PPTXGenerator:
         p.text = self._safe(str(text))
         p.font.size = Pt(size)
         p.font.bold = bold
-        p.font.name = font
+        p.font.name = self._resolve_font(font)
         p.font.color.rgb = self._rgb(color or self._hex("text"))
         p.alignment = align
 

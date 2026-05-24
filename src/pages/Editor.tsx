@@ -72,6 +72,40 @@ export function Editor() {
     30
   )
 
+  // 幻灯片级撤销/重做（改标题、删页、排序、布局等）
+  const slideHistoryRef = useRef<SlideData[][]>([])
+  const slideHistoryIdxRef = useRef(-1)
+  const MAX_SLIDE_HISTORY = 50
+
+  const pushSlideHistory = useCallback((newSlides: SlideData[]) => {
+    const history = slideHistoryRef.current
+    const idx = slideHistoryIdxRef.current
+    // 截断后续历史（如果用户在撤销后做了新操作）
+    const newHistory = history.slice(0, idx + 1)
+    newHistory.push(newSlides)
+    if (newHistory.length > MAX_SLIDE_HISTORY) newHistory.shift()
+    slideHistoryRef.current = newHistory
+    slideHistoryIdxRef.current = newHistory.length - 1
+  }, [])
+
+  const undoSlides = useCallback(() => {
+    const idx = slideHistoryIdxRef.current
+    if (idx <= 0) return
+    slideHistoryIdxRef.current = idx - 1
+    setSlides(slideHistoryRef.current[idx - 1].map((s, i) => ({ ...s, page_number: i + 1 })))
+  }, [])
+
+  const redoSlides = useCallback(() => {
+    const history = slideHistoryRef.current
+    const idx = slideHistoryIdxRef.current
+    if (idx >= history.length - 1) return
+    slideHistoryIdxRef.current = idx + 1
+    setSlides(history[idx + 1].map((s, i) => ({ ...s, page_number: i + 1 })))
+  }, [])
+
+  const canUndoSlides = slideHistoryIdxRef.current > 0
+  const canRedoSlides = slideHistoryIdxRef.current < slideHistoryRef.current.length - 1
+
   useEffect(() => {
     mountedRef.current = true
     return () => {
@@ -129,6 +163,9 @@ export function Editor() {
       if (slides[selectedIndex]) {
         elementsHistory.reset(slides[selectedIndex].elements || [])
       }
+      // 初始化幻灯片历史
+      slideHistoryRef.current = [slides.map(s => ({ ...s }))]
+      slideHistoryIdxRef.current = 0
     }
   }, [slides.length])
 
@@ -305,15 +342,28 @@ export function Editor() {
       if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
         e.preventDefault()
         if (e.shiftKey) {
+          if (canRedoSlides) { redoSlides(); return }
           elementsHistoryRef.current.redo()
         } else {
+          if (canUndoSlides && !selectedElement) { undoSlides(); return }
           elementsHistoryRef.current.undo()
+        }
+      }
+      // Ctrl+Shift+↑/↓ 移动幻灯片顺序
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        e.preventDefault()
+        if (e.key === 'ArrowUp' && selectedIndex > 0) {
+          handleReorder(selectedIndex, selectedIndex - 1)
+          setSelectedIndex(selectedIndex - 1)
+        } else if (e.key === 'ArrowDown' && selectedIndex < slides.length - 1) {
+          handleReorder(selectedIndex, selectedIndex + 1)
+          setSelectedIndex(selectedIndex + 1)
         }
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [])
+  }, [canUndoSlides, canRedoSlides, undoSlides, redoSlides, selectedElement, slides.length, selectedIndex, handleReorder])
 
   const handleRegenerate = useCallback(async () => {
     const content = regenerateContent || generationContentRef.current
@@ -355,28 +405,36 @@ export function Editor() {
   }, [regenerateContent, searchParams])
 
   const handleUpdateSlide = useCallback((index: number, updates: Partial<SlideData>) => {
-    setSlides(prev => prev.map((s, i) => i === index ? { ...s, ...updates } : s))
-  }, [])
+    setSlides(prev => {
+      const next = prev.map((s, i) => i === index ? { ...s, ...updates } : s)
+      pushSlideHistory(next)
+      return next
+    })
+  }, [pushSlideHistory])
 
   const handleReorder = useCallback((from: number, to: number) => {
     setSlides(prev => {
       const next = [...prev]
       const [moved] = next.splice(from, 1)
       next.splice(to, 0, moved)
-      return next.map((s, i) => ({ ...s, page_number: i + 1 }))
+      const renumbered = next.map((s, i) => ({ ...s, page_number: i + 1 }))
+      pushSlideHistory(renumbered)
+      return renumbered
     })
-  }, [])
+  }, [pushSlideHistory])
 
   const handleDeleteSlide = useCallback((index: number) => {
     setSlides(prev => {
       const next = prev.filter((_, i) => i !== index)
-      return next.map((s, i) => ({ ...s, page_number: i + 1 }))
+      const renumbered = next.map((s, i) => ({ ...s, page_number: i + 1 }))
+      pushSlideHistory(renumbered)
+      return renumbered
     })
     setSelectedIndex(prev => {
       if (prev >= index) return Math.max(0, prev - 1)
       return prev
     })
-  }, [])
+  }, [pushSlideHistory])
 
   const handleAddSlide = useCallback((afterIndex: number) => {
     const newSlide: SlideData = {
@@ -388,10 +446,12 @@ export function Editor() {
     setSlides(prev => {
       const next = [...prev]
       next.splice(afterIndex + 1, 0, newSlide)
-      return next.map((s, i) => ({ ...s, page_number: i + 1 }))
+      const renumbered = next.map((s, i) => ({ ...s, page_number: i + 1 }))
+      pushSlideHistory(renumbered)
+      return renumbered
     })
     setSelectedIndex(afterIndex + 1)
-  }, [])
+  }, [pushSlideHistory])
 
   const handlePresent = useCallback(() => {
     if (slides.length === 0) return
@@ -696,13 +756,13 @@ export function Editor() {
         {/* Toolbar */}
         <div className="flex items-center justify-between px-3 py-1 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <div className="flex items-center space-x-1">
-            <button onClick={() => elementsHistory.undo()}
-              disabled={!elementsHistory.canUndo}
+            <button onClick={() => { if (canUndoSlides && !selectedElement) { undoSlides() } else { elementsHistory.undo() } }}
+              disabled={!canUndoSlides && !elementsHistory.canUndo}
               className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded disabled:opacity-30" title="撤销 (Ctrl+Z)">
               <Undo2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>
-            <button onClick={() => elementsHistory.redo()}
-              disabled={!elementsHistory.canRedo}
+            <button onClick={() => { if (canRedoSlides && !selectedElement) { redoSlides() } else { elementsHistory.redo() } }}
+              disabled={!canRedoSlides && !elementsHistory.canRedo}
               className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded disabled:opacity-30" title="重做 (Ctrl+Shift+Z)">
               <Redo2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
             </button>

@@ -207,6 +207,7 @@ export function Dashboard() {
   const config = useProjectStore((s) => s.generationConfig)
   const setCurrentProject = useProjectStore((s) => s.setCurrentProject)
   const setLastGeneration = useProjectStore((s) => s.setLastGeneration)
+  const projects = useProjectStore((s) => s.projects)
 
   const handleGenerateOutline = useCallback(async () => {
     if (!inputText.trim()) return
@@ -349,6 +350,12 @@ export function Dashboard() {
       const data = await res.json()
       if (!mountedRef.current) return
 
+      // 如果AI回退到离线模式，提示用户
+      if (data.mode === 'offline' && (selectedMode === 'ai_network' || selectedMode === 'local_ollama')) {
+        setNotification({ type: 'info', message: 'AI 生成失败，已自动切换为离线模式。效果可能不如预期，可在设置中检查 API Key 后重试。' })
+        setTimeout(() => setNotification(null), 8000)
+      }
+
       setLastGeneration({
         slides: data.slides || [],
         qaResults: data.qa_results || [],
@@ -401,6 +408,60 @@ export function Dashboard() {
         <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-1">新建演示文稿</h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">AI 从您的内容生成可编辑的 PPTX</p>
       </section>
+
+      {projects.length > 0 && (
+        <section>
+          <h2 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">最近项目</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {projects.slice(0, 6).map((project) => (
+              <div
+                key={project.id}
+                onClick={() => {
+                  setCurrentProject(project)
+                  navigate(`/editor/${project.id}?scene=${project.scene}&template=${project.templateId}`)
+                }}
+                className="card p-4 cursor-pointer hover:shadow-md hover:border-primary-300 dark:hover:border-primary-600 transition-all group"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate">{project.name}</h3>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {project.slides.length} 页 · {new Date(project.updatedAt).toLocaleDateString('zh-CN')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      useProjectStore.getState().setProjects(projects.filter(p => p.id !== project.id))
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-50 rounded transition-all"
+                    title="删除项目"
+                  >
+                    <svg className="w-3.5 h-3.5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 生成中骨架屏 */}
+      {generating && (
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-xl" />
+          <div className="flex gap-3">
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-20" />
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-20" />
+          </div>
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 rounded-lg" style={{ width: `${85 - i * 10}%` }} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {notification && (
         <div className={`flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium animate-in slide-in-from-top-2 ${
