@@ -234,7 +234,7 @@ export function Presenter() {
           </>
         ) : (
           /* 普通演示视图 */
-          <>
+          <div className="flex-1 flex items-center justify-center bg-gray-800 p-4 relative">
           <button
             onClick={() => setCurrentIndex(i => Math.max(0, i - 1))}
             disabled={currentIndex === 0}
@@ -268,6 +268,7 @@ export function Presenter() {
             <ChevronRight className="w-6 h-6" />
           </button>
         </div>
+        )}
 
         {/* Notes panel (right side) */}
         {showNotes && (
