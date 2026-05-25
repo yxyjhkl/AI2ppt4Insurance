@@ -72,7 +72,8 @@ export function Presenter() {
           exitPresenter()
         }
       } else if (e.key === 'g' || e.key === 'G') {
-        setShowThumbnails(v => !v) else if (e.key === 'n' || e.key === 'N') {
+        setShowThumbnails(v => !v)
+      } else if (e.key === 'n' || e.key === 'N') {
         setShowNotes(s => !s)
       } else if (e.key === 'f' || e.key === 'F') {
         toggleFullscreen()
