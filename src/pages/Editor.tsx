@@ -355,17 +355,17 @@ export function Editor() {
       if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
         e.preventDefault()
         if (e.key === 'ArrowUp' && selectedIndex > 0) {
-          handleReorder(selectedIndex, selectedIndex - 1)
+          reorderRef.current(selectedIndex, selectedIndex - 1)
           setSelectedIndex(selectedIndex - 1)
         } else if (e.key === 'ArrowDown' && selectedIndex < slides.length - 1) {
-          handleReorder(selectedIndex, selectedIndex + 1)
+          reorderRef.current(selectedIndex, selectedIndex + 1)
           setSelectedIndex(selectedIndex + 1)
         }
       }
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [canUndoSlides, canRedoSlides, undoSlides, redoSlides, selectedElement, slides.length, selectedIndex, handleReorder])
+  }, [canUndoSlides, canRedoSlides, undoSlides, redoSlides, selectedElement, slides.length, selectedIndex])
 
   const handleRegenerate = useCallback(async () => {
     const content = regenerateContent || generationContentRef.current
@@ -424,6 +424,9 @@ export function Editor() {
       return renumbered
     })
   }, [pushSlideHistory])
+
+  const reorderRef = useRef(handleReorder)
+  reorderRef.current = handleReorder
 
   const handleDeleteSlide = useCallback((index: number) => {
     setSlides(prev => {

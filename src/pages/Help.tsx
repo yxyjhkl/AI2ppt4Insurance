@@ -1,5 +1,5 @@
 ﻿import {
-  Download, Monitor, Zap, FileUp, Globe, Keyboard, Shield, List,
+  Download, Monitor, Zap, FileUp, Globe, Keyboard, Shield, List, Layout,
   Briefcase, Settings, Edit3, Play, Rocket, Target, Handshake,
   Sparkles, Mic, Image, Database, RefreshCw,
 } from 'lucide-react'

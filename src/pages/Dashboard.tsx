@@ -211,47 +211,6 @@ export function Dashboard() {
     }
   }, [inputText, workflowMode, selectedMode, generating])
 
-  // Auto模式：手动输入足够文本后自动提示
-  const autoTextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [autoGenCountdown, setAutoGenCountdown] = useState(0)
-  useEffect(() => {
-    if (workflowMode !== 'auto' || !selectedMode || generating) return
-    if (inputText.trim().length < 100) { setAutoGenCountdown(0); return }
-
-    if (autoTextTimerRef.current) clearTimeout(autoTextTimerRef.current)
-    autoTextTimerRef.current = setTimeout(() => {
-      setAutoGenCountdown(5)
-    }, 4000)
-    return () => {
-      if (autoTextTimerRef.current) clearTimeout(autoTextTimerRef.current)
-    }
-  }, [inputText, workflowMode, selectedMode, generating])
-
-  // 倒计时自动生成
-  useEffect(() => {
-    if (autoGenCountdown <= 0) return
-    const timer = setTimeout(() => {
-      if (autoGenCountdown === 1) {
-        setAutoGenCountdown(0)
-        setNotification(null)
-        handleGenerate()
-      } else {
-        setAutoGenCountdown(c => c - 1)
-        setNotification({ type: 'info', message: `内容已就绪，${autoGenCountdown - 1} 秒后自动生成...（点击按钮可立即生成）` })
-      }
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [autoGenCountdown, handleGenerate])
-
-  // Cocreate自动触发：大纲确认后自动调用handleGenerate
-  useEffect(() => {
-    if (cocreateTriggerRef.current && !generating) {
-      cocreateTriggerRef.current = false
-      const timer = setTimeout(() => handleGenerate(), 200)
-      return () => clearTimeout(timer)
-    }
-  }, [cocreateTriggerRef.current, generating, handleGenerate])
-
   const config = useProjectStore((s) => s.generationConfig)
   const setCurrentProject = useProjectStore((s) => s.setCurrentProject)
   const setLastGeneration = useProjectStore((s) => s.setLastGeneration)
@@ -463,6 +422,35 @@ export function Dashboard() {
   }, [inputText, selectedScene, meetingType, selectedPrompt, useCustomTemplate, customTemplateId, customStyle, config, navigate, setCurrentProject, setLastGeneration, selectedModelId, selectedMode, ollamaDetected, ollamaLocalModels, generating, requirements])
 
   autoGenRef.current = handleGenerate
+
+  // Cocreate自动触发：大纲确认后自动调用handleGenerate
+  useEffect(() => {
+    if (cocreateTriggerRef.current && !generating) {
+      cocreateTriggerRef.current = false
+      const timer = setTimeout(() => handleGenerate(), 200)
+      return () => clearTimeout(timer)
+    }
+  }, [cocreateTriggerRef.current, generating, handleGenerate])
+
+  // Auto模式：手动输入足够文本后自动提示
+  const autoTextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [autoGenCountdown, setAutoGenCountdown] = useState(0)
+  useEffect(() => {
+    if (workflowMode !== 'auto' || !selectedMode || generating) return
+    if (inputText.trim().length < 100) { setAutoGenCountdown(0); return }
+    if (autoTextTimerRef.current) clearTimeout(autoTextTimerRef.current)
+    autoTextTimerRef.current = setTimeout(() => { setAutoGenCountdown(5) }, 4000)
+    return () => { if (autoTextTimerRef.current) clearTimeout(autoTextTimerRef.current) }
+  }, [inputText, workflowMode, selectedMode, generating])
+
+  useEffect(() => {
+    if (autoGenCountdown <= 0) return
+    const timer = setTimeout(() => {
+      if (autoGenCountdown === 1) { setAutoGenCountdown(0); setNotification(null); handleGenerate() }
+      else { setAutoGenCountdown(c => c - 1); setNotification({ type: 'info', message: `内容已就绪，${autoGenCountdown - 1} 秒后自动生成...（点击按钮可立即生成）` }) }
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [autoGenCountdown, handleGenerate])
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">

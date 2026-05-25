@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { X, ArrowRight, Sparkles } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 
 interface QuickAskProps {
   onComplete: (answers: QuickAnswers) => void
