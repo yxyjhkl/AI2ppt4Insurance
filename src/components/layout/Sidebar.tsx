@@ -34,7 +34,10 @@ export function Sidebar() {
         {!collapsed && (
           <div className="flex items-center">
             <Presentation className="w-6 h-6 text-primary-600" />
-            <span className="ml-2 font-bold text-gray-800 dark:text-gray-200">险而易见</span>
+            <div className="ml-2">
+              <span className="font-bold text-gray-800 dark:text-gray-200">险而易见</span>
+              <span className="block text-[10px] text-gray-400 dark:text-gray-500 leading-tight">克霖的组训兄弟</span>
+            </div>
           </div>
         )}
         {collapsed && <Presentation className="w-6 h-6 text-primary-600" />}
