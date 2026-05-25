@@ -101,6 +101,10 @@ class GenerationPipeline:
         "transform": "modern-geometric", "insurance": "professional-blue",
         "enhance": "corporate-navy", "general": "professional-blue",
         "data_analysis": "professional-blue",
+        "meeting_summary": "professional-blue",
+        "work_report": "professional-blue",
+        "training_course": "education-warm",
+        "experience_share": "corporate-navy",
     }
     SCENE_KEYWORD_MAP = {
         "report": ["quarterly", "annual", "summary", "review", "report", "performance", "KPI", "metric",
@@ -117,6 +121,14 @@ class GenerationPipeline:
                       "优化", "升级", "转型", "改进", "迁移", "润色", "美化", "改造"],
         "data_analysis": ["data", "chart", "dashboard", "analytics", "statistics",
                           "数据", "图表", "看板", "统计", "趋势", "环比", "同比", "占比"],
+        "meeting_summary": ["meeting", "minutes", "transcript", "领导", "会议", "讲话", "总结", "部署",
+                            "传达", "纪要", "批示", "指示", "精神", "方针"],
+        "work_report": ["周报", "月报", "述职", "工作汇报", "业务重点", "人力重点", "育优",
+                        "KPI达成", "增员率", "续钻", "一人一策", "行事历"],
+        "training_course": ["课件", "培训材料", "教材", "讲义", "话术训练",
+                            "产品培训", "技能提升", "通关", "新人班", "演练"],
+        "experience_share": ["经验分享", "标杆", "典范", "最佳实践", "萃取",
+                             "转介绍", "客户经营", "绩优", "分享会", "优秀案例"],
     }
 
     VALID_LAYOUT_TYPES = {
@@ -670,6 +682,10 @@ Only flag pages with actual issues. Return ONLY valid JSON, no explanation."""
             "transform": "business_report",
             "enhance": "business_report",
             "general": "business_report",
+            "meeting_summary": "meeting_summary",
+            "work_report": "work_report",
+            "training_course": "training_course",
+            "experience_share": "experience_share",
         }
         # 保险子场景都映射到 business_report
         if scene.startswith("insurance_"):

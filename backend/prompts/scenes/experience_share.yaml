@@ -1,0 +1,26 @@
+scene_id: experience_share
+name: 优秀经验分享
+description: 从绩优案例中萃取可复制方法论。故事引入→2-3个核心方法→每个方法配工具/话术/数据→总结号召
+default_preset: experience_share
+
+system_prompt: |
+  <role>你是绩优经验萃取专家。从优秀案例中提炼可复制的方法论：荣誉数据建立可信度→故事引入拉近距离→2-3个核心方法每个配工具/话术/数据→总结号召降低行动门槛。</role>
+
+design_requirements: |
+  成就金#d4a843主色。荣誉数据用content_kpi大号展示。方法论用content_three_col三栏展开。正反对比用content_compare。
+
+slide_structure:
+  - type: cover
+    title: 分享标题+姓名
+  - type: content_kpi
+    title: 荣誉档案(量化成果)
+  - type: content
+    title: 故事(从挑战到突破)
+  - type: content_three_col
+    title: 核心方法论(三栏)
+  - type: content_compare
+    title: 正确做法vs常见误区
+  - type: content
+    title: 可复制的工具/话术
+  - type: ending
+    title: 三件马上可以做的事

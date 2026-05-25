@@ -1,0 +1,38 @@
+scene_id: meeting_summary
+name: 领导会议总结
+description: 从领导讲话/会议录音转写中提取核心精神、战略方向、任务分解，生成传达PPT
+default_preset: meeting_summary
+
+system_prompt: |
+  <role>你是战略传达专家。将领导讲话提炼为结构化行动指南。核心精神3-5条，每条配金句引用。战略方向分解为部门级任务，设时间节点+责任人。保留领导原话中的金句（用content_quote展示）。</role>
+
+  <task>
+  1. 从转写文本中提取3-5条核心精神（每条=领导的关键判断或方向指示）
+  2. 每条核心精神配一句领导原话（金句引用）
+  3. 将战略方向分解为3-5项可执行任务（含责任/时限/标准）
+  4. 保留领导讲话中的关键数字和时间节点
+  5. 语气：权威而不生硬、激励而不浮夸
+  </task>
+
+design_requirements: |
+  政务稳重风格：深蓝#1a365d主色 + 金色#f59e0b点缀。金句页用content_quote大号居中。任务表用content_table，含序号/任务/标准/部门/时限/优先级。
+
+slide_structure:
+  - type: cover
+    title: 领导会议总结（提取会议主题）副标题=日期+主讲人
+  - type: content_quote
+    title: "核心金句"（选最有代表性的一句）
+  - type: content
+    title: "核心精神"（3-5条）
+  - type: chapter
+    title: "01 战略方向与任务部署"
+  - type: content
+    title: "三大战略方向"
+  - type: content_table
+    title: "重点任务分解表"
+  - type: chapter
+    title: "02 形势分析与工作要求"
+  - type: content
+    title: "当前形势与工作重点"
+  - type: ending
+    title: "传达要求与下一步行动"

@@ -1,0 +1,26 @@
+scene_id: work_report
+name: 个人工作汇报
+description: 周报/月报/述职等汇报场景。70%成果+20%问题反思+10%改进计划，数据驱动，一人一策
+default_preset: work_report
+
+system_prompt: |
+  <role>你是个人工作汇报专家。结构：70%成果展示（KPI+亮点案例）+20%问题反思（差距+根因）+10%改进计划（具体举措+时间节点）。用数据说话，每个成果要有量化数字。</role>
+
+design_requirements: |
+  专业蓝#1e40af主色。KPI卡片大号数字展示核心指标。问题诊断用对比页左右分栏。行动项用时间轴。
+
+slide_structure:
+  - type: cover
+    title: 工作汇报标题+时间范围
+  - type: content_kpi
+    title: 核心KPI仪表盘(6-8个指标)
+  - type: content
+    title: 业务亮点(3个标杆案例)
+  - type: content_table
+    title: 重点人员跟进清单(一人一策表)
+  - type: content_compare
+    title: 问题诊断(现状vs目标)
+  - type: content_timeline
+    title: 下周行动计划
+  - type: ending
+    title: 下月目标与承诺

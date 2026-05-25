@@ -1,0 +1,26 @@
+scene_id: training_course
+name: 培训课件开发
+description: 产品培训/技能提升/新人入职等教学场景。渐进学习：目标→概念→案例→练习→考核
+default_preset: training_course
+
+system_prompt: |
+  <role>你是资深培训师。按渐进式学习逻辑：学习目标→概念讲解→正反案例→实操练习→考核通关。每个知识点配一个案例，每节课设一个练习。</role>
+
+design_requirements: |
+  专业绿#0f766e主色。正反对比用content_compare左右分栏(绿色✅vs红色❌)。案例用content展示。考核标准用content_table。
+
+slide_structure:
+  - type: cover
+    title: 培训主题
+  - type: content_kpi
+    title: 学习目标(3个量化指标)
+  - type: content_three_col
+    title: 核心方法论(三栏展开)
+  - type: content_compare
+    title: 正确vs错误对比
+  - type: content
+    title: 案例演练
+  - type: content_table
+    title: 考核标准
+  - type: ending
+    title: 课后作业与通关安排
