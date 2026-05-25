@@ -185,6 +185,7 @@ export function Dashboard() {
   }, [selectedMode, storedModels, ollamaLocalModels])
 
   const autoGenRef = useRef<() => void>(() => {})
+  const cocreateTriggerRef = useRef(false)
 
   useEffect(() => {
     if (
@@ -205,6 +206,47 @@ export function Dashboard() {
       return () => clearTimeout(timer)
     }
   }, [inputText, workflowMode, selectedMode, generating])
+
+  // Auto模式：手动输入足够文本后自动提示
+  const autoTextTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [autoGenCountdown, setAutoGenCountdown] = useState(0)
+  useEffect(() => {
+    if (workflowMode !== 'auto' || !selectedMode || generating) return
+    if (inputText.trim().length < 100) { setAutoGenCountdown(0); return }
+
+    if (autoTextTimerRef.current) clearTimeout(autoTextTimerRef.current)
+    autoTextTimerRef.current = setTimeout(() => {
+      setAutoGenCountdown(5)
+    }, 4000)
+    return () => {
+      if (autoTextTimerRef.current) clearTimeout(autoTextTimerRef.current)
+    }
+  }, [inputText, workflowMode, selectedMode, generating])
+
+  // 倒计时自动生成
+  useEffect(() => {
+    if (autoGenCountdown <= 0) return
+    const timer = setTimeout(() => {
+      if (autoGenCountdown === 1) {
+        setAutoGenCountdown(0)
+        setNotification(null)
+        handleGenerate()
+      } else {
+        setAutoGenCountdown(c => c - 1)
+        setNotification({ type: 'info', message: `内容已就绪，${autoGenCountdown - 1} 秒后自动生成...（点击按钮可立即生成）` })
+      }
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [autoGenCountdown, handleGenerate])
+
+  // Cocreate自动触发：大纲确认后自动调用handleGenerate
+  useEffect(() => {
+    if (cocreateTriggerRef.current && !generating) {
+      cocreateTriggerRef.current = false
+      const timer = setTimeout(() => handleGenerate(), 200)
+      return () => clearTimeout(timer)
+    }
+  }, [cocreateTriggerRef.current, generating, handleGenerate])
 
   const config = useProjectStore((s) => s.generationConfig)
   const setCurrentProject = useProjectStore((s) => s.setCurrentProject)
@@ -256,15 +298,10 @@ export function Dashboard() {
       ).join('\n\n')
 
     if (workflowMode === 'cocreate') {
-      // Cocreate模式：确认后直接生成，进入编辑器逐页微调
+      // Cocreate模式：确认后直接触发生成
       setInputText(outlineText)
-      setNotification({ type: 'info', message: `大纲已确认，正在生成 ${outlineSlides.length} 页PPT，进入编辑器后您可逐页微调...` })
-      setTimeout(() => {
-        setNotification(null)
-        // 直接触发生成
-        const genBtn = document.querySelector('[data-gen-btn]') as HTMLButtonElement
-        if (genBtn) genBtn.click()
-      }, 300)
+      setNotification({ type: 'info', message: `大纲已确认，正在自动生成 ${outlineSlides.length} 页PPT...` })
+      cocreateTriggerRef.current = true
     } else {
       // Guided模式：设置大纲文本，用户手动点击生成
       setInputText(outlineText)
@@ -541,6 +578,17 @@ export function Dashboard() {
                 />
               </div>
 
+              {/* Auto模式高级选项（折叠） */}
+              <details className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                <summary className="text-sm font-medium text-gray-600 dark:text-gray-400 cursor-pointer select-none">
+                  高级选项（可选：设定受众/风格偏好）
+                </summary>
+                <div className="mt-4 space-y-4">
+                  <RequirementsPanel value={requirements} onChange={setRequirements} />
+                  <StyleSelector customStyle={customStyle} onChange={setCustomStyle} />
+                </div>
+              </details>
+
               <div className="text-center py-3">
                 <div className="inline-flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-sm text-gray-500">
                   <Sparkles className="w-4 h-4 text-blue-500" />
@@ -643,9 +691,14 @@ export function Dashboard() {
               slides={outlineSlides}
               generating={outlineGenerating}
               onConfirm={handleConfirmOutline}
+              onConfirmAndGenerate={() => {
+                setShowOutlineReview(false)
+                cocreateTriggerRef.current = true
+              }}
               onRegenerate={handleGenerateOutline}
               onCancel={() => setShowOutlineReview(false)}
               onEditSlide={handleEditOutlineSlide}
+              mode={workflowMode === 'cocreate' ? 'cocreate' : 'guided'}
             />
           )}
         </>

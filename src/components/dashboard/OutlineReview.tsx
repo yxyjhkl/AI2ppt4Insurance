@@ -14,9 +14,11 @@ interface Props {
   slides: OutlineItem[]
   generating: boolean
   onConfirm: () => void
+  onConfirmAndGenerate?: () => void
   onRegenerate: () => void
   onCancel: () => void
   onEditSlide: (idx: number, field: string, value: string) => void
+  mode?: 'guided' | 'cocreate'
 }
 
 const layoutLabels: Record<string, string> = {
@@ -32,7 +34,7 @@ const layoutColors: Record<string, string> = {
   ending: 'bg-amber-100 text-amber-700',
 }
 
-export function OutlineReview({ title, slides, generating, onConfirm, onRegenerate, onCancel, onEditSlide }: Props) {
+export function OutlineReview({ title, slides, generating, onConfirm, onConfirmAndGenerate, onRegenerate, onCancel, onEditSlide, mode }: Props) {
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null)
   const [editingIdx, setEditingIdx] = useState<number | null>(null)
   const [editValue, setEditValue] = useState('')
@@ -140,8 +142,13 @@ export function OutlineReview({ title, slides, generating, onConfirm, onRegenera
             <button onClick={onRegenerate} disabled={generating} className="btn-secondary text-xs px-3 py-1.5 flex items-center gap-1">
               {generating ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}重新生成
             </button>
+            {onConfirmAndGenerate && mode === 'guided' && (
+              <button onClick={onConfirmAndGenerate} disabled={generating} className="btn-primary text-xs px-3 py-1.5 flex items-center gap-1 bg-green-600 hover:bg-green-700">
+                <Check className="w-3 h-3" />确认并生成
+              </button>
+            )}
             <button onClick={onConfirm} disabled={generating} className="btn-primary text-xs px-3 py-1.5 flex items-center gap-1">
-              <Check className="w-3 h-3" />确认并生成
+              <Check className="w-3 h-3" />{onConfirmAndGenerate && mode === 'guided' ? '仅确认' : mode === 'cocreate' ? '确认并生成' : '确认'}
             </button>
           </div>
         </div>

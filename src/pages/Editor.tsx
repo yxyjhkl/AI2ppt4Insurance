@@ -775,6 +775,58 @@ export function Editor() {
 
           <div className="flex items-center space-x-2">
             <span className="text-xs text-gray-400 dark:text-gray-500">{slides.length > 0 ? `${selectedIndex + 1} / ${slides.length}` : ''}</span>
+            <select
+              className="text-xs px-2 py-1 rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+              value={searchParams.get('template') || 'professional-blue'}
+              onChange={async (e) => {
+                const newTemplate = e.target.value
+                // 更新URL参数
+                const params = new URLSearchParams(searchParams)
+                params.set('template', newTemplate)
+                navigate(`/editor/${searchParams.get('project') || 'new'}?${params.toString()}`, { replace: true })
+                // 刷新所有幻灯片SVG预览
+                for (let i = 0; i < slides.length; i++) {
+                  const s = slides[i]
+                  try {
+                    const res = await fetch(await apiConfig.url('/api/v1/generate/refresh-preview'), {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        slide: {
+                          page_number: s.page_number,
+                          layout_type: s.layout_type,
+                          title: s.title,
+                          subtitle: s.subtitle,
+                          body_items: s.body_items || [],
+                          tables: s.tables || [],
+                          images: s.images || [],
+                          code_block: s.code_block,
+                          notes: s.notes || '',
+                        },
+                        template: newTemplate,
+                        canvas_format: useProjectStore.getState().generationConfig.canvasFormat || '16:9',
+                      }),
+                    })
+                    if (res.ok) {
+                      const data = await res.json()
+                      if (data.svg) {
+                        setSlides(prev => prev.map((sl, idx) => idx === i ? { ...sl, svg_preview: data.svg } : sl))
+                      }
+                    }
+                  } catch {}
+                }
+              }}
+              title="切换模板（将刷新所有预览）"
+            >
+              <option value="professional-blue">专业蓝</option>
+              <option value="corporate-navy">商务深蓝</option>
+              <option value="dark-modern">暗色现代</option>
+              <option value="clean-white">简洁白</option>
+              <option value="creative-vibrant">创意活力</option>
+              <option value="elegant-serif">优雅衬线</option>
+              <option value="tech-startup">科技创业</option>
+              <option value="minimal-gray">极简灰</option>
+            </select>
             <button
               onClick={() => {
                 setRegenerateContent(generationContentRef.current)
