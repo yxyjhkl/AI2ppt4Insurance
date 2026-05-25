@@ -71,7 +71,7 @@ export function GenerateBar({
             <span>{outlineGenerating ? '生成大纲中...' : '生成大纲'}</span>
           </button>
         )}
-        <button onClick={onGenerate} disabled={generating || !inputText.trim()}
+        <button onClick={onGenerate} disabled={generating || !inputText.trim()} data-gen-btn
           className="btn-primary flex items-center space-x-2 disabled:opacity-50">
           {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
           <span>{generating ? '生成中...' : '生成 PPT'}</span>

@@ -88,6 +88,8 @@ export function Dashboard() {
     audience: '', duration: '', tone: '', mustInclude: '', avoidTopics: '',
   })
 
+  const originalContentRef = useRef('')
+
   useEffect(() => {
     mountedRef.current = true
     return () => {
@@ -247,12 +249,29 @@ export function Dashboard() {
 
   const handleConfirmOutline = useCallback(() => {
     setShowOutlineReview(false)
+    originalContentRef.current = inputText
     const outlineText = `【演示标题】${outlineTitle}\n\n` +
       outlineSlides.map(s =>
         `## ${s.title} [${s.layout_type}]\n${s.description}\n${s.key_points.map(k => `- ${k}`).join('\n')}`
       ).join('\n\n')
-    setInputText(outlineText)
-  }, [outlineTitle, outlineSlides])
+
+    if (workflowMode === 'cocreate') {
+      // Cocreate模式：确认后直接生成，进入编辑器逐页微调
+      setInputText(outlineText)
+      setNotification({ type: 'info', message: `大纲已确认，正在生成 ${outlineSlides.length} 页PPT，进入编辑器后您可逐页微调...` })
+      setTimeout(() => {
+        setNotification(null)
+        // 直接触发生成
+        const genBtn = document.querySelector('[data-gen-btn]') as HTMLButtonElement
+        if (genBtn) genBtn.click()
+      }, 300)
+    } else {
+      // Guided模式：设置大纲文本，用户手动点击生成
+      setInputText(outlineText)
+      setNotification({ type: 'success', message: `大纲已确认（${outlineSlides.length}页）。请点击"生成PPT"按钮完成生成。` })
+      setTimeout(() => setNotification(null), 6000)
+    }
+  }, [outlineTitle, outlineSlides, inputText, workflowMode])
 
   const handleGenerate = useCallback(async () => {
     if (generating || !inputText.trim()) return
@@ -334,6 +353,8 @@ export function Dashboard() {
         canvas_format: config.canvasFormat || '16:9',
         task_id: taskId,
         excel_filepath: excelFilepath,
+        requirements: Object.keys(requirements).some(k => (requirements as any)[k])
+          ? requirements : null,
       }
 
       const res = await abortableFetch(await apiConfig.url('/api/v1/generate/pptx'), {
@@ -555,6 +576,23 @@ export function Dashboard() {
                 onFileUploaded={handleFileUploaded}
                 onExcelUploaded={(data) => setExcelFilepath(data.filepath)}
               />
+
+              {originalContentRef.current && (
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-400">当前显示的是大纲格式。</span>
+                  <button
+                    onClick={() => {
+                      setInputText(originalContentRef.current)
+                      originalContentRef.current = ''
+                      setNotification({ type: 'info', message: '已恢复原始输入内容' })
+                      setTimeout(() => setNotification(null), 3000)
+                    }}
+                    className="text-primary-600 hover:text-primary-700 underline"
+                  >
+                    恢复原始内容
+                  </button>
+                </div>
+              )}
 
               <RequirementsPanel value={requirements} onChange={setRequirements} />
 

@@ -102,12 +102,18 @@ class GenerationPipeline:
         "enhance": "corporate-navy",
     }
     SCENE_KEYWORD_MAP = {
-        "report": ["quarterly", "annual", "summary", "review", "report", "performance", "KPI", "metric"],
-        "proposal": ["proposal", "plan", "budget", "strategy", "roadmap"],
-        "education": ["training", "course", "learn", "tutorial", "guide", "skill"],
-        "brainstorm": ["brainstorm", "creative", "idea", "innovation", "explore"],
-        "insurance": ["insurance", "premium", "claim", "policy", "product launch"],
-        "transform": ["optimize", "upgrade", "transform", "improve", "migrate"],
+        "report": ["quarterly", "annual", "summary", "review", "report", "performance", "KPI", "metric",
+                   "季度", "年度", "总结", "复盘", "报告", "汇报", "经营", "分析", "业绩", "指标", "达成"],
+        "proposal": ["proposal", "plan", "budget", "strategy", "roadmap",
+                     "提案", "方案", "计划", "预算", "策略", "路线图", "建议书", "投标"],
+        "education": ["training", "course", "learn", "tutorial", "guide", "skill",
+                      "培训", "课程", "学习", "教程", "教育", "课件", "新人", "入职", "考核"],
+        "brainstorm": ["brainstorm", "creative", "idea", "innovation", "explore",
+                       "脑暴", "创意", "创新", "探索", "研讨", "战略会", "工作坊", "启发"],
+        "insurance": ["insurance", "premium", "claim", "policy", "product launch",
+                      "保险", "保费", "理赔", "保单", "产品发布", "增员", "代理人", "续保", "产说会", "创说会"],
+        "transform": ["optimize", "upgrade", "transform", "improve", "migrate",
+                      "优化", "升级", "转型", "改进", "迁移", "润色", "美化", "改造"],
     }
 
     VALID_LAYOUT_TYPES = {
@@ -124,12 +130,14 @@ class GenerationPipeline:
                  api_key: Optional[str] = None, base_url: Optional[str] = None,
                  canvas_format: str = "16:9", meeting_type: Optional[str] = None,
                  excel_filepath: Optional[str] = None, custom_style: Optional[str] = None,
-                 include_images: bool = True, progress_callback=None):
+                 include_images: bool = True, requirements: Optional[dict] = None,
+                 progress_callback=None):
         self.scene = scene
         self.meeting_type = meeting_type
         self.excel_filepath = excel_filepath
         self.custom_style = custom_style
         self.include_images = include_images
+        self.requirements = requirements
         self.template_id = template_id
         self.ai_mode = ai_mode
         self.auto_mode = auto_mode
@@ -408,6 +416,23 @@ class GenerationPipeline:
 
         if self.include_images:
             planner_prompt += "\n\nInclude relevant images where appropriate. Use the 'images' field with descriptive alt text for each image suggestion."
+
+        if self.requirements and isinstance(self.requirements, dict):
+            req_lines = []
+            audience_map = {"executives": "管理层/决策者", "team": "团队成员", "clients": "客户", "general": "全员"}
+            tone_map = {"professional": "严谨专业", "motivating": "激励动员", "warm": "温暖亲和", "modern": "现代简洁"}
+            if self.requirements.get("audience"):
+                req_lines.append(f"目标受众: {audience_map.get(self.requirements['audience'], self.requirements['audience'])}")
+            if self.requirements.get("duration"):
+                req_lines.append(f"演示时长: {self.requirements['duration']}")
+            if self.requirements.get("tone"):
+                req_lines.append(f"语言风格: {tone_map.get(self.requirements['tone'], self.requirements['tone'])}")
+            if self.requirements.get("mustInclude"):
+                req_lines.append(f"必须包含: {self.requirements['mustInclude']}")
+            if self.requirements.get("avoidTopics"):
+                req_lines.append(f"避免提及: {self.requirements['avoidTopics']}")
+            if req_lines:
+                planner_prompt += "\n\n=== 用户定制需求 ===\n" + "\n".join(req_lines)
 
         provider = AIProviderFactory.create(model_id=self.model or "gpt-4o",
                                             api_key=self.api_key, base_url=self.base_url)
@@ -1221,9 +1246,10 @@ async def run_pipeline(input_text: str, scene: str = "report",
                        excel_filepath: Optional[str] = None,
                        custom_style: Optional[str] = None,
                        include_images: bool = True,
+                       requirements: Optional[dict] = None,
                        progress_callback=None) -> GenerationResult:
     pipeline = GenerationPipeline(scene, template_id, ai_mode, auto_mode,
                                    model, api_key, base_url, canvas_format,
                                    meeting_type, excel_filepath, custom_style,
-                                   include_images, progress_callback)
+                                   include_images, requirements, progress_callback)
     return await pipeline.run(input_text)

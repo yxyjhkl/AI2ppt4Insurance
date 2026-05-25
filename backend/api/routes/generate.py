@@ -36,6 +36,7 @@ class GenerateRequest(BaseModel):
     excel_filepath: Optional[str] = None
     custom_style: Optional[str] = None
     task_id: Optional[str] = None
+    requirements: Optional[dict] = None
 
 class SlideResponse(BaseModel):
     page_number: int
@@ -137,6 +138,7 @@ async def generate_pptx(req: GenerateRequest):
             excel_filepath=req.excel_filepath,
             custom_style=req.custom_style,
             include_images=req.include_images,
+            requirements=req.requirements,
             progress_callback=progress_callback,
         )
 
