@@ -701,6 +701,8 @@ export function Settings() {
             { id: 'cogview', name: 'CogView', region: '国内 · 智谱AI', desc: '智谱出品，与GLM模型同源，速度快', keyName: 'ZHIPU_API_KEY' },
             { id: 'ernie', name: '文心一格', region: '国内 · 百度', desc: '百度出品，中文场景效果好，需API Key+Secret Key', keyName: 'BAIDU_API_KEY + BAIDU_SECRET_KEY' },
             { id: 'spark', name: '讯飞星火', region: '国内 · 科大讯飞', desc: '讯飞出品，需APP_ID+API_KEY+API_SECRET', keyName: 'SPARK_API_KEY + SPARK_API_SECRET + SPARK_APP_ID' },
+            { id: 'modelscope', name: '魔搭 ModelScope', region: '国内 · 阿里达摩院', desc: '国内最大模型社区，qwen-plus多模态生成', keyName: 'MODELSCOPE_API_KEY' },
+            { id: 'comfyui', name: 'ComfyUI 本地', region: '本地部署 💻', desc: '自部署ComfyUI，完全免费无限量，需本地GPU', keyName: 'COMFYUI_URL (默认 http://127.0.0.1:8188)' },
           ].map(provider => {
             const isSelected = imageProvider === provider.id
             return (
@@ -738,6 +740,32 @@ export function Settings() {
               <li>编辑 .env 文件或系统环境变量，填入对应的 API Key</li>
               <li>图片生成有成本，建议仅在封面和关键数据页使用</li>
               <li>相同内容会自动缓存，不会重复计费</li>
+            </ul>
+          </div>
+        )}
+
+        {imageProvider === 'comfyui' && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-xs space-y-2">
+            <p className="font-semibold text-green-800">ComfyUI 本地部署指南</p>
+            <ol className="list-decimal list-inside space-y-1 text-green-700">
+              <li>下载 ComfyUI：<code className="bg-green-100 px-1 rounded">git clone https://github.com/comfyanonymous/ComfyUI.git</code></li>
+              <li>下载 SD XL 模型放入 <code className="bg-green-100 px-1 rounded">models/checkpoints/</code></li>
+              <li>启动：<code className="bg-green-100 px-1 rounded">python main.py --listen 0.0.0.0</code></li>
+              <li>如需修改地址，设置环境变量 <code className="bg-green-100 px-1 rounded">COMFYUI_URL=http://你的IP:8188</code></li>
+            </ol>
+            <p className="text-green-600">✅ 优势：完全免费、不限量、数据不外传、可自定义模型和LoRA</p>
+            <p className="text-green-600">⚠ 要求： NVIDIA GPU (6GB+ VRAM推荐)</p>
+          </div>
+        )}
+
+        {imageProvider === 'modelscope' && (
+          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-3 text-xs text-indigo-700">
+            <p className="font-medium mb-1">魔搭 ModelScope 说明</p>
+            <ul className="list-disc list-inside space-y-0.5 text-indigo-600">
+              <li>使用阿里云 DashScope API 的多模态生成能力</li>
+              <li>底层模型 qwen-plus，同时理解文字和生成图片</li>
+              <li>API Key 获取：<code className="bg-indigo-100 px-1 rounded">https://modelscope.cn/my/overview</code></li>
+              <li>新用户通常有免费额度</li>
             </ul>
           </div>
         )}

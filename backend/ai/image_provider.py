@@ -1,6 +1,7 @@
 """AI Image Generation Provider — DALL-E / Stability AI integration for slide illustrations."""
 from __future__ import annotations
 import os
+import asyncio
 import base64
 import logging
 from typing import Optional
@@ -40,6 +41,8 @@ class ImageGenProvider:
             "cogview": self._generate_cogview,
             "ernie": self._generate_ernie,
             "spark": self._generate_spark,
+            "comfyui": self._generate_comfyui,
+            "modelscope": self._generate_modelscope,
         }
         gen_func = providers.get(self.provider)
         if not gen_func:
@@ -237,4 +240,107 @@ class ImageGenProvider:
                             return f"data:image/png;base64,{b64}"
         except Exception as e:
             logger.warning(f"讯飞星火 failed: {e}")
+        return None
+
+    # ---- 本地部署 & 魔搭 ----
+
+    async def _generate_comfyui(self, prompt: str, style: str, size: str) -> Optional[str]:
+        """本地ComfyUI — 完全免费，需自行部署ComfyUI服务"""
+        try:
+            comfyui_url = os.environ.get("COMFYUI_URL", "http://127.0.0.1:8188")
+            import httpx
+
+            # ComfyUI 标准 txt2img workflow
+            workflow = {
+                "3": {
+                    "class_type": "KSampler",
+                    "inputs": {"seed": 42, "steps": 20, "cfg": 7, "sampler_name": "euler", "scheduler": "normal", "denoise": 1,
+                               "model": ["4", 0], "positive": ["6", 0], "negative": ["7", 0], "latent_image": ["5", 0]},
+                },
+                "4": {"class_type": "CheckpointLoaderSimple", "inputs": {"ckpt_name": "sd_xl_base_1.0.safetensors"}},
+                "5": {"class_type": "EmptyLatentImage", "inputs": {"width": 1024, "height": 1024, "batch_size": 1}},
+                "6": {"class_type": "CLIPTextEncode", "inputs": {
+                    "text": f"Professional slide illustration, clean modern business style, no text: {prompt[:300]}",
+                    "clip": ["4", 1]}},
+                "7": {"class_type": "CLIPTextEncode", "inputs": {
+                    "text": "text, watermark, signature, ugly, blurry, low quality",
+                    "clip": ["4", 1]}},
+                "8": {"class_type": "VAEDecode", "inputs": {"samples": ["3", 0], "vae": ["4", 2]}},
+                "9": {"class_type": "SaveImage", "inputs": {"filename_prefix": "insurdeck", "images": ["8", 0]}},
+            }
+
+            async with httpx.AsyncClient() as http:
+                # 提交workflow
+                resp = await http.post(
+                    f"{comfyui_url}/prompt",
+                    json={"prompt": workflow, "client_id": "insurdeck"},
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    return None
+                prompt_id = resp.json().get("prompt_id")
+                if not prompt_id:
+                    return None
+
+                # 轮询等待生成完成
+                for _ in range(60):  # 最多等60秒
+                    await asyncio.sleep(2)
+                    hist_resp = await http.get(f"{comfyui_url}/history/{prompt_id}", timeout=10)
+                    if hist_resp.status_code == 200:
+                        history = hist_resp.json()
+                        if prompt_id in history:
+                            outputs = history[prompt_id].get("outputs", {})
+                            for node_id, node_output in outputs.items():
+                                images = node_output.get("images", [])
+                                if images:
+                                    img_info = images[0]
+                                    img_url = f"{comfyui_url}/view?filename={img_info['filename']}&subfolder={img_info.get('subfolder', '')}&type={img_info.get('type', 'output')}"
+                                    r = await http.get(img_url, timeout=30)
+                                    if r.status_code == 200:
+                                        return f"data:image/png;base64,{base64.b64encode(r.content).decode('utf-8')}"
+                            break
+        except Exception as e:
+            logger.warning(f"ComfyUI failed: {e}")
+        return None
+
+    async def _generate_modelscope(self, prompt: str, style: str, size: str) -> Optional[str]:
+        """魔搭社区(ModelScope) API — 国内最大模型社区"""
+        try:
+            api_key = self.api_key or os.environ.get("MODELSCOPE_API_KEY", "")
+            import httpx
+
+            async with httpx.AsyncClient() as http:
+                resp = await http.post(
+                    "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json={
+                        "model": "qwen-plus",
+                        "input": {
+                            "messages": [{
+                                "role": "user",
+                                "content": [
+                                    {"text": f"Generate a professional slide illustration: {prompt[:200]}. Clean modern business style, no text overlays, abstract geometric composition."}
+                                ]
+                            }]
+                        },
+                        "parameters": {"result_format": "url"},
+                    },
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    # 解析多模态输出中的图片URL
+                    output = data.get("output", {})
+                    choices = output.get("choices", [])
+                    for choice in choices:
+                        message = choice.get("message", {})
+                        content = message.get("content", [])
+                        for item in content:
+                            if isinstance(item, dict) and item.get("image"):
+                                img_url = item["image"]
+                                r = await http.get(img_url, timeout=30)
+                                if r.status_code == 200:
+                                    return f"data:image/png;base64,{base64.b64encode(r.content).decode('utf-8')}"
+        except Exception as e:
+            logger.warning(f"ModelScope failed: {e}")
         return None
