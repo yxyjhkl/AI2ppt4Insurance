@@ -7,19 +7,19 @@ import { INSURANCE_MEETING_PROMPTS, type InsuranceMeetingType } from '@/types'
 
 const shortcuts = [
   { keys: 'Ctrl + Enter', desc: '快速生成演示文稿' },
-  { keys: 'Ctrl + Z', desc: '撤销上一步操作' },
+  { keys: 'Ctrl + Z', desc: '撤销上一步操作（幻灯片/元素）' },
   { keys: 'Ctrl + Shift + Z', desc: '重做已撤销操作' },
+  { keys: 'Ctrl + Shift + ↑↓', desc: '移动当前幻灯片顺序' },
   { keys: 'Ctrl + C/V/D', desc: '画布元素复制/粘贴/原地复制' },
   { keys: 'Ctrl + ] / [', desc: '画布元素上移/下移一层' },
   { keys: 'Delete / Backspace', desc: '删除选中的画布元素' },
   { keys: 'Shift + 拖拽', desc: '图片等比缩放（保持宽高比）' },
-  { keys: '方向键 ↑↓', desc: '编辑器中切换上一张/下一张幻灯片' },
-  { keys: '方向键 ← →', desc: '演示模式下翻页' },
-  { keys: 'Esc', desc: '退出演示模式 / 取消选中元素' },
+  { keys: '方向键 ↑↓←→', desc: '微移选中元素 / 切换幻灯片' },
+  { keys: 'Esc', desc: '退出演示模式 / 演示中显示缩略图索引' },
   { keys: 'F', desc: '演示模式切换全屏' },
+  { keys: 'G', desc: '演示模式显示/隐藏缩略图网格' },
   { keys: 'N', desc: '演示模式显示/隐藏备注' },
   { keys: 'T', desc: '演示模式暂停/继续计时器' },
-  { keys: 'B', desc: '演示模式切换静态低功耗模式' },
 ]
 
 export function Help() {
@@ -196,15 +196,67 @@ export function Help() {
           <FeatureCard icon={RefreshCw} title="PPTX 导入润色"
             desc="上传已有 .pptx 文件 → AI 提取内容 → 优化标题/丰富数据/升级布局 → 输出全新 PPT。选择「润色」场景即可使用。" />
           <FeatureCard icon={Database} title="资料补充"
-            desc="对已生成的 PPT，选择补充类型（综合/数据/案例/流程/对比/自定义）→ AI 为每页追加新内容，原有内容不删除。新增项带【补充】标记。" />
-          <FeatureCard icon={Image} title="图片搜索"
-            desc="支持 Pexels 专业图库搜索高质量图片，也可回退到 DuckDuckGo 搜索，适合为封面页和数据页配图。" />
-          <FeatureCard icon={Mic} title="语音旁白"
-            desc="点击编辑器中的「旁白」按钮 → 基于所有演讲备注 → edge-tts 合成 MP3 音频 → 下载为演讲配音。" />
+            desc="对已生成的 PPT，选择补充类型（综合/数据/案例/流程/对比/自定义）→ AI 为每页追加新内容，原有内容不删除。" />
+          <FeatureCard icon={Image} title="AI 智能配图"
+            desc="支持 8 家图片生成供应商（DALL·E 3、通义万相、ComfyUI 本地等），AI 根据每页内容自动生成配图。设置页可选用。" />
+          <FeatureCard icon={Sparkles} title="AI 对话式编辑"
+            desc="编辑器右下角打开 AI 助手 → 用自然语言修改 PPT：'把第3页标题加数据''换成表格布局'。AI 理解意图并直接修改。" />
+          <FeatureCard icon={Mic} title="语音旁白 + 克隆"
+            desc="支持 edge-tts 免费合成 + ElevenLabs/MiniMax 语音克隆。为演讲备注生成自然语音旁白 MP3。" />
           <FeatureCard icon={Play} title="录制演示"
             desc="演示模式下点击「录制」→ 屏幕录制 + 摄像头 PIP + 音频 → 停止后自动下载 WebM 视频。" />
           <FeatureCard icon={Globe} title="多平台封面"
-            desc="基于当前主题和标题生成公众号(21:9)、小红书(3:4)、分享卡(1:1)三种规格的封面 SVG。" />
+            desc="一键生成公众号 21:9 头图、小红书 3:4 竖图、1:1 分享卡片。基于当前主题色自动适配。" />
+          <FeatureCard icon={Monitor} title="三种风格预览"
+            desc="输入标题后一键生成 3 种风格封面（专业商务蓝/杂志编辑风/瑞士国际主义），看图选用。" />
+          <FeatureCard icon={Layout} title="24 套内置模板"
+            desc="含新增杂志编辑风(Editorial Magazine)和瑞士国际主义(Swiss International)双设计语言包。全部支持模板预览大图。" />
+          <FeatureCard icon={Edit3} title="幻灯片撤销/重做"
+            desc="50 步历史栈：改标题/删页/排序/切换布局都可 Ctrl+Z 撤销。元素级和幻灯片级双历史。" />
+          <FeatureCard icon={Zap} title="生成缓存"
+            desc="相同输入 SHA256 去重，24 小时内不重复调 API。节省费用，加速二次生成。" />
+          <FeatureCard icon={FileUp} title="全格式输入"
+            desc="支持 PDF/DOCX/MD/TXT/PPTX/XMind/HTML/LaTeX/URL 共 9 种输入格式。Excel 可数据驱动生成。" />
+        </div>
+      </section>
+
+      {/* ===== 五、AI 配图供应商 ===== */}
+      <section>
+        <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          <Image className="w-5 h-5 text-primary-600" />
+          AI 配图供应商（8家）
+        </h2>
+        <div className="card p-4 overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">供应商</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">区域</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">成本</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">所需配置</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600">
+              {[
+                ['DALL·E 3', '🌍 OpenAI', '~$0.04/张', 'OPENAI_API_KEY'],
+                ['Stable Diffusion', '🌍 Stability AI', '~$0.01/张', 'STABILITY_API_KEY'],
+                ['ComfyUI 本地', '💻 本地部署', '免费无限量', 'COMFYUI_URL + GPU 6GB+'],
+                ['通义万相', '🇨🇳 阿里云', '按量计费', 'DASHSCOPE_API_KEY'],
+                ['CogView', '🇨🇳 智谱AI', '按量计费', 'ZHIPU_API_KEY'],
+                ['文心一格', '🇨🇳 百度', '按量计费', 'BAIDU_API_KEY + SECRET_KEY'],
+                ['讯飞星火', '🇨🇳 科大讯飞', '按量计费', 'SPARK 三Key'],
+                ['魔搭 ModelScope', '🇨🇳 阿里达摩院', '新用户免费额度', 'MODELSCOPE_API_KEY'],
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-gray-100">
+                  <td className="py-2 px-2 font-medium">{row[0]}</td>
+                  <td className="py-2 px-2">{row[1]}</td>
+                  <td className="py-2 px-2">{row[2]}</td>
+                  <td className="py-2 px-2 font-mono text-[10px] text-gray-500">{row[3]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p className="text-xs text-gray-400 mt-3">在「设置」→「AI 配图生成」中选择供应商。相同内容自动 SHA256 缓存，不重复计费。</p>
         </div>
       </section>
 
