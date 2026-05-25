@@ -813,32 +813,90 @@ class SVGFiller:
                 except ValueError:
                     pass
             if label.strip():
-                steps.append({"label": label.strip(), "value": num})
+                # 检测正负号
+                sign = 1
+                display_val = val_str.strip()
+                if display_val.startswith("+"):
+                    sign = 1
+                elif display_val.startswith("-"):
+                    sign = -1
+                steps.append({"label": label.strip(), "value": num * sign, "raw": display_val})
                 total = max(total, abs(num))
 
         if not steps:
             return ""
 
         lines: list[str] = []
-        bar_w = 80
-        gap = 30
-        max_bar_w = min(180, (1140 - gap) // max(len(steps), 1))
-        start_x = 60
-        y_base = 420
-        scale = max(1, total / 300) if total > 0 else 1
+        n = len(steps)
+        max_bar_w = min(140, int(1000 / n))
+        gap = 16
+        start_x = (1280 - (n * max_bar_w + (n - 1) * gap)) // 2
+        y_base = 450
+        scale = max(1, total / 280) if total > 0 else 1
 
-        for ni, s in enumerate(steps):
+        # 计算累计值确定每个柱子的底部和顶部
+        cumulative = 0
+        bars: list[dict] = []
+        for s in steps:
+            val = s["value"]
+            if cumulative == 0 and val >= 0:
+                # 起始柱：从0开始
+                bottom = y_base
+                top = y_base - min(abs(val) / scale, 300)
+            else:
+                # 后续柱：从前一个累计值开始
+                prev_cum = cumulative
+                cumulative += val
+                if val >= 0:
+                    bottom = y_base - min(abs(prev_cum) / scale, 300)
+                    top = y_base - min(abs(cumulative) / scale, 300)
+                else:
+                    bottom = y_base - min(abs(cumulative) / scale, 300)
+                    top = y_base - min(abs(prev_cum) / scale, 300)
+            bars.append({"bottom": bottom, "top": top, "height": abs(top - bottom), "val": val})
+            if cumulative == 0 and val < 0:
+                cumulative = val  # 首个负值
+            elif cumulative != 0 or val < 0:
+                pass  # cumulative already updated above for non-first items
+            if val >= 0 and cumulative == 0:
+                cumulative = val
+
+        # 绘制基准线
+        lines.append(f'<line x1="{start_x - 10}" y1="{y_base}" x2="{start_x + n * (max_bar_w + gap) + 10}" y2="{y_base}" stroke="#94a3b8" stroke-width="2"/>')
+
+        actual_cum = 0
+        for ni, (s, bar) in enumerate(zip(steps, bars)):
             cx = start_x + ni * (max_bar_w + gap)
-            bh = min(abs(s["value"]) / scale, 300)
-            is_pos = s["value"] >= 0
+            val = s["value"]
+            is_pos = val >= 0
             color = "#10b981" if is_pos else "#ef4444"
 
-            lines.append(f'<rect x="{cx}" y="{y_base - bh}" width="{max_bar_w}" height="{bh}" rx="4" fill="{color}" opacity="0.85"/>')
-            lines.append(f'<rect x="{cx}" y="{y_base - bh}" width="{max_bar_w}" height="6" rx="2" fill="{accent}"/>')
-            lines.append(f'<text x="{cx + max_bar_w//2}" y="{y_base - bh - 16}" font-family="{font_body}" font-size="13" font-weight="bold" fill="{text_color}" text-anchor="middle">{s["value"]:.0f}</text>')
-            lines.append(f'<text x="{cx + max_bar_w//2}" y="{y_base + 20}" font-family="{font_body}" font-size="12" fill="{text_color}" text-anchor="middle">{self._esc(s["label"][:12])}</text>')
+            # 柱子
+            bh = max(bar["height"], 6)  # 最小高度6px，避免0高度不可见
+            bar_top = bar["bottom"] - bh
+            lines.append(f'<rect x="{cx}" y="{bar_top}" width="{max_bar_w}" height="{bh}" rx="4" fill="{color}" opacity="0.85"/>')
+            lines.append(f'<rect x="{cx}" y="{bar_top}" width="{max_bar_w}" height="4" rx="2" fill="{color}" opacity="0.5"/>')
 
-        lines.append(f'<line x1="{start_x}" y1="{y_base}" x2="{start_x + len(steps) * (max_bar_w + gap)}" y2="{y_base}" stroke="#94a3b8" stroke-width="2"/>')
+            # 连接线（虚线，从前一柱子顶到当前柱子底）
+            if ni > 0:
+                prev_cx = start_x + (ni - 1) * (max_bar_w + gap) + max_bar_w
+                prev_top = bars[ni - 1]["top"]
+                lines.append(f'<line x1="{prev_cx}" y1="{prev_top}" x2="{cx}" y2="{bar["bottom"]}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,4"/>')
+
+            # 数值标签
+            val_text = f"{s['raw']}" if s.get('raw') else f"{'+' if is_pos else ''}{val:.0f}"
+            lines.append(f'<text x="{cx + max_bar_w//2}" y="{bar_top - 10}" font-family="{font_body}" font-size="13" font-weight="bold" fill="{color}" text-anchor="middle">{val_text}</text>')
+
+            # 阶段名标签
+            lines.append(f'<text x="{cx + max_bar_w//2}" y="{y_base + 20}" font-family="{font_body}" font-size="11" fill="{text_color}" text-anchor="middle">{self._esc(s["label"][:14])}</text>')
+
+            actual_cum += val
+
+        # 合计标签
+        final_val = sum(s["value"] for s in steps)
+        fx = start_x + n * (max_bar_w + gap) - gap
+        lines.append(f'<text x="{fx}" y="{y_base + 42}" font-family="{font_body}" font-size="12" font-weight="bold" fill="{primary}" text-anchor="middle">合计: {final_val:+.0f}</text>')
+
         return "\n".join(lines)
 
     def _render_gauge(self, body_items: list, primary: str, accent: str, text_color: str, font_body: str) -> str:
