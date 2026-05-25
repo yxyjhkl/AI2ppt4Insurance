@@ -266,6 +266,89 @@ export function Help() {
         </div>
       </section>
 
+      {/* ===== 语音旁白配置 ===== */}
+      <section>
+        <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          <Mic className="w-5 h-5 text-primary-600" />
+          语音旁白配置
+        </h2>
+        <div className="card p-4 space-y-4">
+          <p className="text-sm text-gray-600">点击编辑器工具栏「旁白」按钮，为演讲备注生成语音 MP3。支持三种引擎：</p>
+
+          {/* 引擎对比表格 */}
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-2 px-2 font-semibold text-gray-600">引擎</th>
+                  <th className="text-left py-2 px-2 font-semibold text-gray-600">音质</th>
+                  <th className="text-left py-2 px-2 font-semibold text-gray-600">中文</th>
+                  <th className="text-left py-2 px-2 font-semibold text-gray-600">费用</th>
+                  <th className="text-left py-2 px-2 font-semibold text-gray-600">配置难度</th>
+                </tr>
+              </thead>
+              <tbody className="text-gray-600">
+                {[
+                  ['Edge TTS', '★★★', '★★★', '免费', '无需配置'],
+                  ['ElevenLabs', '★★★★★', '★★★★', '≈$0.015/千字', '需 API Key'],
+                  ['MiniMax', '★★★★', '★★★★★', '按量计费', '需 API Key + Group ID'],
+                ].map((row, i) => (
+                  <tr key={i} className="border-b border-gray-100">
+                    <td className="py-2 px-2 font-medium">{row[0]}</td>
+                    <td className="py-2 px-2">{row[1]}</td>
+                    <td className="py-2 px-2">{row[2]}</td>
+                    <td className="py-2 px-2">{row[3]}</td>
+                    <td className="py-2 px-2">{row[4]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Edge TTS */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-xs space-y-2">
+            <p className="font-semibold text-green-800">🆓 Edge TTS — 免费·零配置</p>
+            <p className="text-green-700">使用微软晓晓语音（zh-CN-XiaoxiaoNeural），自然女声，无需任何设置。</p>
+            <p className="text-green-700">选择后直接点击「生成并下载 MP3」即可。</p>
+          </div>
+
+          {/* ElevenLabs */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-xs space-y-2">
+            <p className="font-semibold text-blue-800">🎙️ ElevenLabs — 最高音质·可克隆真人声音</p>
+            <ol className="list-decimal list-inside space-y-1 text-blue-700">
+              <li>注册账号：<code className="bg-blue-100 px-1 rounded">https://elevenlabs.io</code></li>
+              <li>获取 API Key：头像 → Profile → API Key → 复制</li>
+              <li>配置环境变量（.env 文件）：<code className="bg-blue-100 px-1 rounded">ELEVENLABS_API_KEY=sk_xxxx</code></li>
+              <li>（可选）克隆音色：Voices → Add Voice → 上传录音 → 获得 Voice ID</li>
+            </ol>
+            <p className="text-blue-600 mt-1">对话框中填入 Voice ID（留空用默认女声 Rachel），可调整稳定性(0-1)和相似度(0-1)滑块。</p>
+          </div>
+
+          {/* MiniMax */}
+          <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-xs space-y-2">
+            <p className="font-semibold text-indigo-800">🇨🇳 MiniMax — 中文最佳·可克隆</p>
+            <ol className="list-decimal list-inside space-y-1 text-indigo-700">
+              <li>注册账号：<code className="bg-indigo-100 px-1 rounded">https://platform.minimaxi.com</code></li>
+              <li>获取 API Key + Group ID：控制台 → 账户管理 → API 密钥</li>
+              <li>配置环境变量（.env 文件）：
+                <br /><code className="bg-indigo-100 px-1 rounded">MINIMAX_API_KEY=your_key</code>
+                <br /><code className="bg-indigo-100 px-1 rounded">MINIMAX_GROUP_ID=your_group_id</code>
+              </li>
+            </ol>
+            <p className="text-indigo-600 mt-1">对话框中填入 Voice ID（如 male-qn-qingse 男声，留空用默认）。</p>
+          </div>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+            <p className="font-medium mb-1">💡 提示</p>
+            <ul className="list-disc list-inside space-y-0.5">
+              <li>不设置任何环境变量时，默认使用 Edge TTS（免费）</li>
+              <li>旁白基于每页的「演讲备注」生成，生成前请先在编辑器中为每页填写备注</li>
+              <li>ElevenLabs 新用户有免费额度，MiniMax 按量计费</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
       {/* ===== 五、AI 模型配置 ===== */}
       <section>
         <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
@@ -441,7 +524,7 @@ export function Help() {
           <FAQ q="画布元素刷新后会丢失吗？"
             a="不会。画布元素每 3 秒自动保存到 localStorage，关闭页面前也会即时保存。编辑内容后 SVG 预览 0.8 秒内自动刷新，所见即所得。" />
           <FAQ q="语音旁白怎么用？"
-            a="1. 编辑器右侧面板切到「备注」，为每页填写演讲备注；2. 点击工具栏「旁白」按钮；3. 选择引擎：Edge TTS（免费·系统自带）、ElevenLabs（克隆·最自然）或 MiniMax（克隆·中文好）；4. 点击「生成并下载 MP3」。ElevenLabs/MiniMax 需在 .env 中设置 API Key。" />
+            a="1. 在编辑器右侧面板「备注」中为每页填写演讲内容；2. 点击工具栏「旁白」按钮；3. 在弹出的对话框中选择引擎（Edge TTS 免费 / ElevenLabs 最自然 / MiniMax 中文好）；4. 点击「生成并下载 MP3」。详细配置方法见上方「语音旁白配置」章节。" />
           <FAQ q="可以离线使用吗？"
             a="四种方式：① 本地 Ollama 大模型（需提前安装拉取模型）；② ComfyUI 本地生图（需 GPU 6GB+）；③ 离线规则引擎（零依赖）；④ Edge TTS 旁白（免费）。以上都不行时自动回退。" />
           <FAQ q="Ollama 地址怎么改？"
