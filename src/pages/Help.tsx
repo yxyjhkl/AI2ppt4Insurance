@@ -431,7 +431,51 @@ export function Help() {
         </div>
       </section>
 
-      {/* ===== 九、保险行业模式 ===== */}
+      {/* ===== 九、四大高频场景 ===== */}
+      <section>
+        <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+          <Target className="w-5 h-5 text-primary-600" />
+          四大高频场景
+        </h2>
+        <p className="text-sm text-gray-500 mb-4">针对保险行业四大高频工作场景，内置专属 AI 角色和提示词。上传文档后自动识别场景：</p>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-2 font-semibold text-gray-600 w-24">场景</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">自动识别词</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">AI 角色</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">特色布局</th>
+                <th className="text-left py-2 px-2 font-semibold text-gray-600">推荐结构</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600">
+              {[
+                ['领导会议总结', '领导/会议/部署/传达/纪要/精神', '战略传达专家', '金句引用 + 任务RACI表', '金句→核心精神→任务分解→传达要求'],
+                ['个人工作汇报', '周报/月报/述职/一人一策/行事历', '工作汇报专家', 'KPI仪表盘 + 跟进清单', '成果(70%)→问题(20%)→计划(10%)'],
+                ['培训课件开发', '课件/培训/话术/通关/新人班', '资深培训师', '正反对比 + 案例演练', '目标→概念→对比→案例→考核'],
+                ['优秀经验分享', '标杆/萃取/转介绍/绩优/分享', '经验萃取专家', '荣誉档案 + 方法论卡片', '数据→故事→方法论→工具→行动'],
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-gray-100">
+                  <td className="py-2 px-2 font-medium">{row[0]}</td>
+                  <td className="py-2 px-2 text-[10px] text-gray-500">{row[1]}</td>
+                  <td className="py-2 px-2">{row[2]}</td>
+                  <td className="py-2 px-2">{row[3]}</td>
+                  <td className="py-2 px-2 text-[10px] text-gray-500">{row[4]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <p className="text-xs text-gray-400 mt-3">
+          每个场景都有专属的 few-shot 示例（含真实保险业务数据），AI 会参照示例的格式、密度和风格生成。<br />
+          上传文档后自动关键词匹配，也可在「AI帮我做」或「AI陪我做」模式下手动选择场景。
+        </p>
+      </section>
+
+      {/* ===== 十、保险行业模式 ===== */}
       <section>
         <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
           <Briefcase className="w-5 h-5 text-primary-600" />
