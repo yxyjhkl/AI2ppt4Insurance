@@ -99,7 +99,8 @@ class GenerationPipeline:
         "report": "professional-blue", "education": "education-warm",
         "proposal": "corporate-navy", "brainstorm": "creative-vibrant",
         "transform": "modern-geometric", "insurance": "professional-blue",
-        "enhance": "corporate-navy",
+        "enhance": "corporate-navy", "general": "professional-blue",
+        "data_analysis": "professional-blue",
     }
     SCENE_KEYWORD_MAP = {
         "report": ["quarterly", "annual", "summary", "review", "report", "performance", "KPI", "metric",
@@ -114,6 +115,8 @@ class GenerationPipeline:
                       "保险", "保费", "理赔", "保单", "产品发布", "增员", "代理人", "续保", "产说会", "创说会"],
         "transform": ["optimize", "upgrade", "transform", "improve", "migrate",
                       "优化", "升级", "转型", "改进", "迁移", "润色", "美化", "改造"],
+        "data_analysis": ["data", "chart", "dashboard", "analytics", "statistics",
+                          "数据", "图表", "看板", "统计", "趋势", "环比", "同比", "占比"],
     }
 
     VALID_LAYOUT_TYPES = {
@@ -214,7 +217,7 @@ class GenerationPipeline:
                 best_scene = scene
 
         if best_score == 0:
-            best_scene = "report" if len(input_text) > 2000 else "brainstorm"
+            best_scene = "general" if len(input_text) < 2000 else "report"
 
         best_template = self.AUTO_SCENE_TEMPLATE_MAP.get(best_scene, "professional-blue")
         est_slides = estimate_slide_count(input_text)
@@ -413,6 +416,12 @@ class GenerationPipeline:
         planner_prompt = planner_prompt.replace("{design_req}", design_req)
         planner_prompt = planner_prompt.replace("{custom_style_txt}", custom_style_txt)
         planner_prompt = planner_prompt.replace("{slide_structure}", str(slide_structure))
+
+        # 自动模式：加载匹配预设的 few-shot 示例
+        example_text = ""
+        if self.auto_mode:
+            example_text = self._load_preset_example(resolved_scene)
+        planner_prompt = planner_prompt.replace("{example}", example_text)
 
         if self.include_images:
             planner_prompt += "\n\nInclude relevant images where appropriate. Use the 'images' field with descriptive alt text for each image suggestion."
@@ -647,7 +656,56 @@ Only flag pages with actual issues. Return ONLY valid JSON, no explanation."""
         if os.path.exists(prompt_path):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 return f.read()
-        return "{system_prompt}\n\nCreate a presentation based on:\n{input_text}"
+        return "{system_prompt}\n\nCreate a presentation based on:\n{input_text}\n\n{example}"
+
+    def _load_preset_example(self, scene: str) -> str:
+        """Load the few-shot example from the matching preset for auto mode."""
+        scene_to_preset = {
+            "report": "business_report",
+            "insurance": "business_report",
+            "proposal": "product_pitch",
+            "education": "education",
+            "brainstorm": "creative_brainstorm",
+            "data_analysis": "data_analysis",
+            "transform": "business_report",
+            "enhance": "business_report",
+            "general": "business_report",
+        }
+        # 保险子场景都映射到 business_report
+        if scene.startswith("insurance_"):
+            preset_name = "business_report"
+        else:
+            preset_name = scene_to_preset.get(scene, "business_report")
+
+        preset_dir = os.path.join(os.path.dirname(__file__), "..", "prompts", "auto_mode_presets", preset_name)
+        if not os.path.isdir(preset_dir):
+            return ""
+
+        prompt_path = os.path.join(preset_dir, "prompt.txt")
+        if not os.path.exists(prompt_path):
+            return ""
+
+        try:
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                content = f.read()
+
+            # 提取 "=== ...示例" 之后的内容作为 few-shot 示例
+            example_marker = "示例"
+            for marker in ["=== 商务报告示例", "=== 数据分析示例", "=== 教育培训示例",
+                          "=== 产品推介示例", "=== 创意研讨示例", "示例片段", "示例"]:
+                idx = content.find(marker)
+                if idx > 0:
+                    # 取从示例标记到 "=== 生成 ===" 之间的内容
+                    end_idx = content.find("=== 生成 ===", idx)
+                    if end_idx < 0:
+                        end_idx = content.find("{input_text}", idx)
+                    if end_idx > idx:
+                        example = content[idx:end_idx].strip()
+                        return f"\n=== 参考示例（参照此格式和密度生成） ===\n{example}\n"
+                    break
+        except Exception:
+            pass
+        return ""
 
     def _parse_ai_response(self, response: str) -> list[SlideData]:
         json_str = extract_json(response)

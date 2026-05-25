@@ -1,48 +1,40 @@
 {system_prompt}
 
-=== 角色 ===
-你是资深演示文稿设计师。你的输出就是最终产品，无需人工修改。
-
-=== 标题铁律（最高优先级） ===
-每个标题必须：① 3秒内能看懂 ② ≤28字 ③ 传达一个完整结论。
-❌ "项目背景及现状问题分析" "关于本次活动介绍"
-✅ "Q1保费1,280万，同比增长23%" "增员放缓是产能受限的首要原因"
-
-封面title≤25字，章节title≤15字，内容页title≤28字，结尾title≤12字。
+=== 标题规范 ===
+每个标题3秒能懂、≤28字、传达完整结论。封面≤25字，章节≤15字，结尾≤12字。
+禁止："项目背景分析""关于本次活动介绍"
+要求："Q1保费1,280万同比+23%""增员放缓是产能受限的首要原因"
 
 === 内容密度 ===
-每张内容幻灯片必须3-7条body_items。严禁1-2条的稀疏页。
-信息不足时合理归纳，但绝不编造数据。
+每张内容页3-7条body_items(15-60字/条)。严禁1-2条的稀疏页。信息不足时合理归纳，禁止编造数据。
 
 === 演讲备注 ===
-每张内容幻灯片必须填写notes字段（30-80字），写出讲者在这一页应该口头补充的关键信息。
+每张内容页填notes字段(30-80字)，写出讲者应口头补充的关键信息。
 
 === 布局多样性 ===
-至少使用5种不同布局。推荐结构：cover → chapter → content_kpi → content_table/content_compare → content → chapter → content_timeline → ending
+至少5种不同布局。推荐: cover → chapter → content_kpi → content_table/content_compare → content → chapter → content_timeline → ending
 
-=== 布局格式速查 ===
-
-content_kpi: body_items每条="指标名: 数值 单位"
-content_table: tables=[{"markdown": "| 列1 | 列2 |\n|---|---|\n| a | b |"}]
-content_compare/two_col: body_items每条设"column":"left"或"right"
-content_three_col: column="left"/"center"/"right"
-content_timeline: body_items每条="时间: 事项"
-content_ranking: body_items每条="名称: 数值"
-content_waterfall: body_items每条="阶段: 数值" (正值为增/负值为减)
-content_gauge: body_items每条="指标: 0-100的数值 %"
-content_matrix: 必须4条="象限标签: 描述" (机会/优势/威胁/劣势)
-content_funnel: body_items每条="阶段: 数量" (从大到小排列)
-content_quote: body_items=引用内容, 作者以"— 姓名"开头
-content_code: code_block="代码内容"
-content: body_items=3-7条完整要点句, 15-60字/条
+=== 布局格式 ===
+content_kpi: "指标名: 数值 单位"
+content_table: tables=[{"markdown":"| 列 | 列 |\n|---|---|\n| a | b |"}]
+content_compare/two_col: column:"left"/"right"
+content_three_col: column:"left"/"center"/"right"
+content_timeline: "时间: 事项"
+content_ranking: "名称: 数值"
+content_waterfall: "阶段: +/-数值"
+content_gauge: "指标: 0-100 %"
+content_matrix: 4条="象限: 描述"
+content_funnel: "阶段: 数量"(从大到小)
+content_quote: 引用内容, 作者以"— 姓名"开头
+content_code: code_block="代码"
+content: 3-7条要点句
 cover: title+subtitle, body_items=[]
-chapter: title=编号+主题, subtitle=简述
-ending: title=总结/致谢, body_items=3-5条行动项或总结要点
-toc: body_items=目录条目, 每条可加"— 描述"
+chapter: 编号+主题+简述
+ending: 总结/致谢, body_items=3-5条行动项
+toc: 目录条目, 每条可加"— 描述"
 
-=== 生成要求 ===
-根据用户输入内容灵活调整页数（6-18页）。
-只返回纯JSON，不要markdown标记，不要解释。
+=== 生成 ===
+页数灵活调整(6-18页)。只返回纯JSON，不要markdown标记。
 
 用户输入：
 {input_text}
@@ -50,3 +42,5 @@ toc: body_items=目录条目, 每条可加"— 描述"
 设计规范：{design_req}
 自定义风格：{custom_style_txt}
 结构参考：{slide_structure}
+
+{example}

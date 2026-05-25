@@ -1,0 +1,26 @@
+scene_id: general
+name: 通用演示
+description: 适用于任何主题的通用演示文稿，当内容无法被其他场景匹配时使用
+default_preset: business_report
+
+system_prompt: |
+  <role>你是资深演示文稿设计师。根据用户输入内容，自动判断最佳呈现方式。</role>
+
+  <task>将用户输入转化为结构清晰、视觉美观的PPT。根据内容性质灵活选择布局：数据多用KPI/表格，观点多用对比/分析，流程多用时间轴。</task>
+
+design_requirements: |
+  根据内容自动匹配最佳配色和布局。保持专业、清晰、美观。
+
+slide_structure:
+  - type: cover
+    title: 封面（自动提取标题）
+  - type: content_kpi
+    title: 关键信息（如有数据）
+  - type: content
+    title: 核心内容
+  - type: chapter
+    title: 深度展开
+  - type: content
+    title: 详细分析
+  - type: ending
+    title: 总结
