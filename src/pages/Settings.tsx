@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Trash2, CheckCircle, Wifi, WifiOff, Loader2, RotateCcw, Save, Edit3 } from 'lucide-react'
 import { apiConfig } from '@/utils/api'
-import { getObject, setObject } from '@/utils/secureStore'
+import { getObject, setObject, getItem, setItem } from '@/utils/secureStore'
 import { useProjectStore } from '@/stores/projectStore'
 
 interface ProviderDef {
@@ -70,6 +70,7 @@ export function Settings() {
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const genConfig = useProjectStore((s) => s.generationConfig)
   const updateGenConfig = useProjectStore((s) => s.updateGenerationConfig)
+  const [imageProvider, setImageProvider] = useState('none')
 
   useEffect(() => {
     getObject<ModelEntry[]>(STORAGE_KEY).then((saved) => {
@@ -83,6 +84,10 @@ export function Settings() {
         setObject(STORAGE_KEY, defaultModels())
       }
       setStorageReady(true)
+    })
+
+    getItem('aippt_image_provider').then(v => {
+      if (v) setImageProvider(v)
     })
   }, [])
 
@@ -122,6 +127,11 @@ export function Settings() {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current)
     }
   }, [models, storageReady])
+
+  useEffect(() => {
+    if (!storageReady) return
+    setItem('aippt_image_provider', imageProvider)
+  }, [imageProvider, storageReady])
 
   const handleDeleteModel = (id: string) => {
     setModels(prev => prev.filter(m => m.id !== id))
@@ -671,6 +681,64 @@ export function Settings() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+      </section>
+
+      {/* 图片生成供应商 */}
+      <section className="card p-6 space-y-4 dark:bg-gray-800 dark:border-gray-700">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">AI 配图生成</h2>
+          <p className="text-xs text-gray-400 mt-0.5">生成PPT时可自动为封面/章节/KPI页配图。需配置所选供应商的API Key</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { id: 'none', name: '不使用配图', region: '', desc: '不自动生成图片', keyName: '' },
+            { id: 'openai', name: 'DALL·E 3', region: '国际', desc: 'OpenAI 出品，质量最高，约$0.04/张', keyName: 'OPENAI_API_KEY' },
+            { id: 'stability', name: 'Stable Diffusion', region: '国际', desc: 'Stability AI，风格多样，约$0.01/张', keyName: 'STABILITY_API_KEY' },
+            { id: 'tongyi', name: '通义万相', region: '国内 · 阿里云', desc: '阿里出品，中文理解好，支持1024×1024', keyName: 'DASHSCOPE_API_KEY' },
+            { id: 'cogview', name: 'CogView', region: '国内 · 智谱AI', desc: '智谱出品，与GLM模型同源，速度快', keyName: 'ZHIPU_API_KEY' },
+            { id: 'ernie', name: '文心一格', region: '国内 · 百度', desc: '百度出品，中文场景效果好，需API Key+Secret Key', keyName: 'BAIDU_API_KEY + BAIDU_SECRET_KEY' },
+            { id: 'spark', name: '讯飞星火', region: '国内 · 科大讯飞', desc: '讯飞出品，需APP_ID+API_KEY+API_SECRET', keyName: 'SPARK_API_KEY + SPARK_API_SECRET + SPARK_APP_ID' },
+          ].map(provider => {
+            const isSelected = imageProvider === provider.id
+            return (
+              <button
+                key={provider.id}
+                onClick={() => { setImageProvider(provider.id); setSavedIndicator(false) }}
+                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                  isSelected ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm font-medium ${isSelected ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                    {provider.name}
+                  </span>
+                  {provider.region && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                      provider.region.startsWith('国内') ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
+                    }`}>{provider.region}</span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 mt-1">{provider.desc}</p>
+                {isSelected && provider.keyName && (
+                  <p className="text-[10px] text-blue-500 mt-2 font-mono">需设置: {provider.keyName}</p>
+                )}
+              </button>
+            )
+          })}
+        </div>
+
+        {imageProvider !== 'none' && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
+            <p className="font-medium mb-1">使用说明</p>
+            <ul className="list-disc list-inside space-y-0.5 text-amber-600">
+              <li>所选供应商的API Key需通过环境变量或配置文件设置</li>
+              <li>编辑 .env 文件或系统环境变量，填入对应的 API Key</li>
+              <li>图片生成有成本，建议仅在封面和关键数据页使用</li>
+              <li>相同内容会自动缓存，不会重复计费</li>
+            </ul>
           </div>
         )}
       </section>

@@ -33,13 +33,20 @@ class ImageGenProvider:
             except Exception:
                 pass
 
-        if self.provider == "openai":
-            result = await self._generate_openai(prompt, size)
-        elif self.provider == "stability":
-            result = await self._generate_stability(prompt, style, size)
-        else:
+        providers = {
+            "openai": self._generate_openai,
+            "stability": self._generate_stability,
+            "tongyi": self._generate_tongyi,
+            "cogview": self._generate_cogview,
+            "ernie": self._generate_ernie,
+            "spark": self._generate_spark,
+        }
+        gen_func = providers.get(self.provider)
+        if not gen_func:
+            logger.warning(f"Unknown image provider: {self.provider}")
             return None
 
+        result = await gen_func(prompt, style, size)
         if result:
             try:
                 cache_file.write_text(result, encoding="utf-8")
@@ -112,3 +119,122 @@ class ImageGenProvider:
             "ending": f"Thank you and conclusion illustration. Warm, positive, forward-looking business aesthetic. Abstract celebration theme.",
         }
         return prompts.get(layout_type, prompts["content"])
+
+    # ---- 国内供应商 ----
+
+    async def _generate_tongyi(self, prompt: str, style: str, size: str) -> Optional[str]:
+        """阿里通义万相 (Tongyi Wanxiang)"""
+        try:
+            api_key = self.api_key or os.environ.get("DASHSCOPE_API_KEY", "")
+            import httpx
+            async with httpx.AsyncClient() as http:
+                resp = await http.post(
+                    "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json={
+                        "model": "wanx2.0-t2i-turbo",
+                        "input": {"prompt": f"Professional slide illustration: {prompt[:200]}"},
+                        "parameters": {"size": "1024*1024", "n": 1},
+                    },
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    results = data.get("output", {}).get("results", [])
+                    if results:
+                        url = results[0].get("url")
+                        if url:
+                            r = await http.get(url, timeout=30)
+                            if r.status_code == 200:
+                                return f"data:image/png;base64,{base64.b64encode(r.content).decode('utf-8')}"
+        except Exception as e:
+            logger.warning(f"通义万相 failed: {e}")
+        return None
+
+    async def _generate_cogview(self, prompt: str, style: str, size: str) -> Optional[str]:
+        """智谱 CogView"""
+        try:
+            api_key = self.api_key or os.environ.get("ZHIPU_API_KEY", "")
+            import httpx
+            async with httpx.AsyncClient() as http:
+                resp = await http.post(
+                    "https://open.bigmodel.cn/api/paas/v4/images/generations",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json={"model": "cogview-3", "prompt": f"Professional slide illustration: {prompt[:200]}"},
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    img_data = data.get("data", [{}])
+                    if img_data:
+                        url = img_data[0].get("url")
+                        if url:
+                            r = await http.get(url, timeout=30)
+                            if r.status_code == 200:
+                                return f"data:image/png;base64,{base64.b64encode(r.content).decode('utf-8')}"
+        except Exception as e:
+            logger.warning(f"智谱CogView failed: {e}")
+        return None
+
+    async def _generate_ernie(self, prompt: str, style: str, size: str) -> Optional[str]:
+        """百度文心一格 (ERNIE-ViLG)"""
+        try:
+            api_key = self.api_key or os.environ.get("BAIDU_API_KEY", "")
+            secret_key = os.environ.get("BAIDU_SECRET_KEY", "")
+            import httpx
+
+            # Get access token
+            async with httpx.AsyncClient() as http:
+                token_resp = await http.post(
+                    "https://aip.baidubce.com/oauth/2.0/token",
+                    data={"grant_type": "client_credentials", "client_id": api_key, "client_secret": secret_key},
+                    timeout=15,
+                )
+                if token_resp.status_code != 200:
+                    return None
+                token = token_resp.json().get("access_token", "")
+
+                resp = await http.post(
+                    f"https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/text2image/sd_xl?access_token={token}",
+                    headers={"Content-Type": "application/json"},
+                    json={"prompt": f"Professional slide illustration: {prompt[:200]}", "size": "1024x1024"},
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    img_data = data.get("data", [{}])
+                    if img_data:
+                        b64 = img_data[0].get("b64_image") or img_data[0].get("image")
+                        if b64:
+                            return f"data:image/png;base64,{b64}"
+        except Exception as e:
+            logger.warning(f"文心一格 failed: {e}")
+        return None
+
+    async def _generate_spark(self, prompt: str, style: str, size: str) -> Optional[str]:
+        """讯飞星火图像生成"""
+        try:
+            api_key = self.api_key or os.environ.get("SPARK_API_KEY", "")
+            api_secret = os.environ.get("SPARK_API_SECRET", "")
+            import httpx
+
+            async with httpx.AsyncClient() as http:
+                resp = await http.post(
+                    "https://spark-api.cn-huabei-1.xf-yun.com/v2.1/tti",
+                    headers={"Authorization": f"Bearer {api_key}:{api_secret}", "Content-Type": "application/json"},
+                    json={
+                        "header": {"app_id": os.environ.get("SPARK_APP_ID", "")},
+                        "payload": {"message": {"text": [{"content": f"Professional slide illustration: {prompt[:150]}"}]}},
+                    },
+                    timeout=60,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    content = data.get("payload", {}).get("choices", {}).get("image", [])
+                    if content:
+                        b64 = content[0].get("base64_image") or content[0].get("url")
+                        if b64 and not b64.startswith("http"):
+                            return f"data:image/png;base64,{b64}"
+        except Exception as e:
+            logger.warning(f"讯飞星火 failed: {e}")
+        return None
