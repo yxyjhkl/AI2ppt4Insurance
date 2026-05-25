@@ -46,6 +46,10 @@ CORS_ORIGINS = os.environ.get(
 if os.environ.get("APP_DEV_MODE", "0") == "1":
     CORS_ORIGINS.append("file://")
 
+# Web deployment mode: allow all origins when DEPLOY_MODE=web
+if os.environ.get("DEPLOY_MODE", "") == "web":
+    CORS_ORIGINS = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,

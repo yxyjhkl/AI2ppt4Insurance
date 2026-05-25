@@ -386,6 +386,65 @@ class RefreshPreviewResponse(BaseModel):
     svg: str
 
 
+class StylePreviewRequest(BaseModel):
+    title: str = "演示标题"
+    subtitle: str = "副标题"
+
+
+class StylePreviewResponse(BaseModel):
+    previews: list[dict]  # [{template_id, name, svg}]
+
+
+@router.post("/style-previews", response_model=StylePreviewResponse)
+async def generate_style_previews(req: StylePreviewRequest):
+    """Generate 3 style preview thumbnails for visual comparison."""
+    try:
+        from slide_builder.svg_filler import SVGFiller
+        from utils.theme_utils import load_theme, resolve_template_dir
+
+        base_dir = os.path.join(os.path.dirname(__file__), "..", "..")
+
+        # 三种对比风格
+        style_templates = [
+            {"id": "professional-blue", "name": "专业商务蓝"},
+            {"id": "editorial-magazine", "name": "杂志编辑风"},
+            {"id": "swiss-international", "name": "瑞士国际主义"},
+        ]
+
+        previews = []
+        for st in style_templates:
+            try:
+                template_dir = resolve_template_dir(st["id"], base_dir)
+                if not os.path.isdir(template_dir):
+                    continue
+                theme = load_theme(template_dir)
+                filler = SVGFiller(template_dir, theme)
+
+                slide_data = {
+                    "layout_type": "cover",
+                    "title": req.title[:20],
+                    "subtitle": req.subtitle[:30],
+                    "body_items": [],
+                    "tables": [],
+                    "images": [],
+                    "code_block": None,
+                    "notes": "",
+                }
+                filled = filler.fill("", slide_data, 1)
+                svg = f'<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">\n{filled}\n</svg>'
+                previews.append({
+                    "template_id": st["id"],
+                    "name": st["name"],
+                    "svg": svg,
+                })
+            except Exception as e:
+                logger.warning(f"Style preview failed for {st['id']}: {e}")
+
+        return StylePreviewResponse(previews=previews)
+    except Exception as e:
+        raise HTTPException(500, f"Style preview generation failed: {str(e)}")
+
+
 @router.post("/refresh-preview", response_model=RefreshPreviewResponse)
 async def refresh_preview(req: RefreshPreviewRequest):
     """Regenerate SVG preview for a single slide after editing."""

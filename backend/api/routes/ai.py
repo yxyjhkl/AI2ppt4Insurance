@@ -218,3 +218,80 @@ async def list_prompts():
             scene_id = os.path.splitext(fname)[0]
             scenes[scene_id] = []
     return {"scenes": scenes}
+
+
+# ---- Chat-based Slide Editing ----
+class ChatEditRequest(BaseModel):
+    instruction: str
+    slides: list[dict]
+
+
+class ChatEditResponse(BaseModel):
+    reply: str
+    updated_slides: Optional[list[dict]] = None
+
+
+@router.post("/chat-edit", response_model=ChatEditResponse)
+async def chat_edit_slides(req: ChatEditRequest):
+    """Natural language slide editing — AI understands intent and modifies slides."""
+    try:
+        from ai.provider import AIProviderFactory
+        from api.key_store import get_api_key, list_model_ids
+
+        model_id = "gpt-4o"
+        stored = get_api_key(model_id)
+        if not stored.get("api_key"):
+            all_ids = list_model_ids()
+            if all_ids:
+                model_id = all_ids[0]
+                stored = get_api_key(model_id)
+        if not stored.get("api_key"):
+            return ChatEditResponse(reply="请先在设置中配置 AI API Key")
+
+        provider = AIProviderFactory.create(model_id=model_id, api_key=stored.get("api_key"), base_url=stored.get("base_url"))
+
+        slides_snapshot = "\n".join(
+            f"P{s.get('page_number', i+1)} [{s.get('layout_type', 'content')}] title='{s.get('title', '')}' "
+            f"body='{'; '.join(b.get('text', '')[:40] for b in s.get('body_items', []) if isinstance(b, dict))[:120]}'"
+            for i, s in enumerate(req.slides[:20])
+        )
+
+        edit_prompt = f"""You are a slide editor. The user wants to modify a {len(req.slides)}-slide PPT.
+
+Current slides:
+{slides_snapshot}
+
+User instruction: "{req.instruction}"
+
+Your task:
+1. Understand what the user wants to change
+2. Return the FULL updated slides array (not just changed slides)
+3. Reply with a brief Chinese confirmation of what you changed
+
+Return ONLY valid JSON:
+{{"reply": "已将第3页标题改为...", "updated_slides": [{{"page_number": 1, "layout_type": "cover", "title": "...", "body_items": [...], "tables": [], "notes": ""}}]}}
+
+Rules:
+- Preserve all fields (layout_type, tables, images, code_block) that weren't mentioned
+- If user says "换成表格布局", change layout_type to content_table and restructure body_items
+- If user says "标题加数据", add a number to the title
+- If user says "精简", reduce body_items to 3-4 most important ones
+- Keep page_number and slide count the same unless user explicitly asks to add/remove"""
+
+        response = await provider.generate_outline(scene="report", content=edit_prompt, slide_count=3, language="zh-CN", temperature=0.3)
+
+        import json as _json
+        from utils.json_utils import extract_json as _extract_json
+        json_str = _extract_json(response)
+        if not json_str:
+            return ChatEditResponse(reply="AI 无法理解该指令，请换个说法试试")
+
+        data = _json.loads(json_str)
+        updated = data.get("updated_slides")
+        reply = data.get("reply", "已完成修改")
+
+        return ChatEditResponse(reply=reply, updated_slides=updated)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return ChatEditResponse(reply=f"修改失败: {str(e)}")

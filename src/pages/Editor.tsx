@@ -20,7 +20,7 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import {
   Download, Layout, FileText, FileOutput, Image, Mic, Database,
-  CheckSquare, Presentation, Undo2, Redo2, Eye, EyeOff, RefreshCw, X, Loader2
+  CheckSquare, Presentation, Undo2, Redo2, Eye, EyeOff, RefreshCw, X, Loader2, Sparkles
 } from 'lucide-react'
 import { OutlineEditor } from '@/components/slides/OutlineEditor'
 import { SlidePreview } from '@/components/slides/SlidePreview'
@@ -34,6 +34,7 @@ import { apiConfig, createAbortableFetch } from '@/utils/api'
 import { getObject } from '@/utils/secureStore'
 import { useProjectStore } from '@/stores/projectStore'
 import { downloadBase64 } from '@/utils/download'
+import { ChatEditor } from '@/components/editor/ChatEditor'
 import type { SlideData, CanvasElement, QAItem } from '@/types'
 
 export function Editor() {
@@ -66,6 +67,7 @@ export function Editor() {
   const [supplementType, setSupplementType] = useState('auto')
   const [supplementInstruction, setSupplementInstruction] = useState('')
   const [supplementing, setSupplementing] = useState(false)
+  const [showChatEditor, setShowChatEditor] = useState(false)
 
   const elementsHistory = useUndoRedo<CanvasElement[]>(
     slides[selectedIndex]?.elements || [],
@@ -848,6 +850,14 @@ export function Editor() {
               {supplementing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Database className="w-3 h-3" />}
               <span>{supplementing ? '补充中...' : '资料补充'}</span>
             </button>
+            <button
+              onClick={() => setShowChatEditor(v => !v)}
+              className={`text-xs px-2 py-1 flex items-center space-x-1 rounded ${showChatEditor ? 'bg-blue-100 text-blue-700' : 'btn-secondary'}`}
+              title="AI 对话式编辑"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>AI编辑</span>
+            </button>
             <button onClick={handleExport} disabled={exporting || slides.length === 0} className="btn-primary text-xs px-2 py-1 flex items-center space-x-1 disabled:opacity-50">
               {exporting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
               <span>{exporting ? '导出中...' : '导出 PPTX'}</span>
@@ -1032,6 +1042,84 @@ export function Editor() {
 
       {showSupplementDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-800">AI 资料补充</h3>
+              <button onClick={() => setShowSupplementDialog(false)} className="p-1 hover:bg-gray-100 rounded">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500">AI 将保留原有内容，在此基础上补充数据、案例、流程或对比分析。补充项将以【补充】标记。</p>
+
+            <div>
+              <label className="text-sm font-medium text-gray-600 block mb-2">补充类型</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: 'auto', label: '智能综合', desc: '自动判断缺什么补什么' },
+                  { id: 'data', label: '补充数据', desc: '添加指标、数字、统计' },
+                  { id: 'case', label: '补充案例', desc: '添加业务场景和实例' },
+                  { id: 'process', label: '补充流程', desc: '添加步骤、时间节点' },
+                  { id: 'compare', label: '补充对比', desc: '添加同比/环比/对标' },
+                  { id: 'custom', label: '自定义', desc: '自行描述补充需求' },
+                ].map(t => (
+                  <button key={t.id} onClick={() => setSupplementType(t.id)}
+                    className={`p-2.5 rounded-lg border-2 text-left transition-all ${
+                      supplementType === t.id ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-gray-300'
+                    }`}>
+                    <div className={`text-xs font-medium ${supplementType === t.id ? 'text-primary-700' : 'text-gray-700'}`}>{t.label}</div>
+                    <div className="text-[10px] text-gray-400 mt-0.5">{t.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {supplementType === 'custom' && (
+              <div>
+                <label className="text-sm font-medium text-gray-600 block mb-1">自定义指令</label>
+                <textarea className="input-field min-h-[80px] resize-y text-xs" value={supplementInstruction}
+                  onChange={(e) => setSupplementInstruction(e.target.value)}
+                  placeholder="例如：为每页补充近3年的趋势数据，加上行业平均水平做对比..." />
+              </div>
+            )}
+
+            <div className="flex justify-between items-center text-xs text-gray-400">
+              <span>将增强 {slides.length} 页幻灯片</span>
+              <span>原有内容不会被删除</span>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button onClick={() => setShowSupplementDialog(false)} className="btn-secondary text-sm px-4 py-2">取消</button>
+              <button onClick={handleSupplement} disabled={supplementing}
+                className="btn-primary text-sm px-4 py-2 flex items-center space-x-2 disabled:opacity-50">
+                {supplementing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
+                <span>{supplementing ? 'AI 补充中...' : '开始补充'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showChatEditor && (
+        <ChatEditor
+          slides={slides}
+          onSlidesUpdate={(updated) => {
+            setSlides(updated.map((s: any, i: number) => ({
+              page_number: s.page_number || i + 1,
+              layout_type: s.layout_type || 'content',
+              title: s.title || '',
+              subtitle: s.subtitle || null,
+              body_items: s.body_items || [],
+              images: s.images || [],
+              tables: s.tables || [],
+              code_block: s.code_block || null,
+              notes: s.notes || '',
+              svg_preview: slides[i]?.svg_preview || '',
+              elements: slides[i]?.elements || [],
+            })))
+          }}
+          onClose={() => setShowChatEditor(false)}
+        />
+      )}
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-800">AI 资料补充</h3>

@@ -8,9 +8,11 @@ import os
 import json
 import uuid
 import asyncio
+import logging
 import tempfile
 from utils.compat import to_thread
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -199,6 +201,100 @@ async def list_voices():
         return VoiceListResponse(voices=voices)
     except Exception as e:
         raise HTTPException(500, f"Failed to list voices: {str(e)}")
+
+
+# ---- Voice Cloning TTS ----
+class VoiceCloneRequest(BaseModel):
+    text: str
+    voice_provider: str = "elevenlabs"  # elevenlabs, minimax, edge
+    voice_id: Optional[str] = None  # ElevenLabs voice ID
+    stability: float = 0.5
+    similarity: float = 0.75
+
+
+class VoiceCloneResponse(BaseModel):
+    audio_base64: Optional[str] = None
+    provider: str
+    format: str = "mp3"
+
+
+@router.post("/tts-clone", response_model=VoiceCloneResponse)
+async def tts_voice_clone(req: VoiceCloneRequest):
+    """Generate TTS audio using ElevenLabs/MiniMax voice cloning or edge-tts."""
+    try:
+        import os as _os
+
+        if req.voice_provider == "elevenlabs":
+            api_key = _os.environ.get("ELEVENLABS_API_KEY", "")
+            if not api_key:
+                raise HTTPException(400, "请设置 ELEVENLABS_API_KEY 环境变量")
+            voice_id = req.voice_id or "21m00Tcm4TlvDq8ikWAM"  # default: Rachel
+
+            import httpx
+            async with httpx.AsyncClient() as http:
+                resp = await http.post(
+                    f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
+                    headers={"xi-api-key": api_key, "Content-Type": "application/json"},
+                    json={
+                        "text": req.text[:5000],
+                        "model_id": "eleven_multilingual_v2",
+                        "voice_settings": {"stability": req.stability, "similarity_boost": req.similarity},
+                    },
+                    timeout=30,
+                )
+                if resp.status_code == 200:
+                    return VoiceCloneResponse(
+                        audio_base64=base64.b64encode(resp.content).decode("utf-8"),
+                        provider="elevenlabs",
+                    )
+                else:
+                    logger.warning(f"ElevenLabs TTS failed: {resp.status_code} {resp.text[:200]}")
+                    raise HTTPException(500, f"ElevenLabs TTS 失败: HTTP {resp.status_code}")
+
+        elif req.voice_provider == "minimax":
+            api_key = _os.environ.get("MINIMAX_API_KEY", "")
+            group_id = _os.environ.get("MINIMAX_GROUP_ID", "")
+            if not api_key:
+                raise HTTPException(400, "请设置 MINIMAX_API_KEY 环境变量")
+
+            import httpx
+            async with httpx.AsyncClient() as http:
+                resp = await http.post(
+                    f"https://api.minimax.chat/v1/t2a_v2?GroupId={group_id}",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json={
+                        "model": "speech-01",
+                        "text": req.text[:3000],
+                        "voice_setting": {"voice_id": req.voice_id or "male-qn-qingse", "speed": 1.0, "vol": 1.0},
+                    },
+                    timeout=30,
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data.get("base_resp", {}).get("status_code") == 0:
+                        audio_hex = data.get("data", {}).get("audio")
+                        if audio_hex:
+                            import codecs
+                            audio_bytes = codecs.decode(audio_hex, "hex")
+                            return VoiceCloneResponse(
+                                audio_base64=base64.b64encode(audio_bytes).decode("utf-8"),
+                                provider="minimax",
+                            )
+                raise HTTPException(500, f"MiniMax TTS 失败: {resp.text[:200]}")
+
+        else:  # edge-tts fallback
+            from slide_builder.tts_engine import TTSEngine
+            engine = TTSEngine()
+            audio_bytes = await engine.synthesize(req.text, voice="zh-CN-XiaoxiaoNeural")
+            return VoiceCloneResponse(
+                audio_base64=base64.b64encode(audio_bytes).decode("utf-8"),
+                provider="edge",
+            )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, f"TTS voice clone failed: {str(e)}")
 
 
 # ---- Social Media Cover Generation ----
