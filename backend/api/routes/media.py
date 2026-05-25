@@ -373,3 +373,89 @@ async def generate_social_covers(req: SocialCoverRequest):
         return SocialCoverResponse(covers=covers)
     except Exception as e:
         raise HTTPException(500, f"Cover generation failed: {str(e)}")
+
+
+# ---- Image Generation Connectivity Test ----
+class ImageConnTestRequest(BaseModel):
+    provider: str  # openai, stability, tongyi, cogview, ernie, spark, modelscope, comfyui
+    api_key: str = ""
+
+
+class ImageConnTestResponse(BaseModel):
+    ok: bool
+    message: str
+    provider: str
+    latency_ms: float = 0
+
+
+PROVIDER_TEST_CONFIG = {
+    "openai": {"url": "https://api.openai.com/v1/models", "key_header": "Authorization", "key_prefix": "Bearer ", "name": "DALL·E 3 (OpenAI)"},
+    "stability": {"url": "https://api.stability.ai/v2beta/account/balance", "key_header": "Authorization", "key_prefix": "Bearer ", "name": "Stable Diffusion"},
+    "tongyi": {"url": "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis", "key_header": "Authorization", "key_prefix": "Bearer ", "name": "通义万相"},
+    "cogview": {"url": "https://open.bigmodel.cn/api/paas/v4/models", "key_header": "Authorization", "key_prefix": "Bearer ", "name": "CogView (智谱)"},
+    "ernie": {"url": "https://aip.baidubce.com/oauth/2.0/token", "key_header": "", "key_prefix": "", "name": "文心一格 (百度)", "extra": "需要 API Key + Secret Key"},
+    "spark": {"url": "https://spark-api.cn-huabei-1.xf-yun.com/v2.1/tti", "key_header": "Authorization", "key_prefix": "Bearer ", "name": "讯飞星火"},
+    "modelscope": {"url": "https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation", "key_header": "Authorization", "key_prefix": "Bearer ", "name": "魔搭 ModelScope"},
+    "comfyui": {"url": "", "key_header": "", "key_prefix": "", "name": "ComfyUI 本地部署", "extra": "本地服务，无需 API Key"},
+}
+
+
+@router.post("/image-conn-test", response_model=ImageConnTestResponse)
+async def test_image_connection(req: ImageConnTestRequest):
+    """Test connectivity to the selected image generation provider."""
+    config = PROVIDER_TEST_CONFIG.get(req.provider)
+    if not config:
+        return ImageConnTestResponse(ok=False, message=f"未知供应商: {req.provider}", provider=req.provider)
+
+    # ComfyUI 本地：检查服务是否可达
+    if req.provider == "comfyui":
+        import time
+        comfyui_url = os.environ.get("COMFYUI_URL", "http://127.0.0.1:8188")
+        try:
+            import httpx
+            t0 = time.time()
+            async with httpx.AsyncClient() as http:
+                resp = await http.get(f"{comfyui_url}/system_stats", timeout=5)
+                latency = (time.time() - t0) * 1000
+                if resp.status_code == 200:
+                    return ImageConnTestResponse(ok=True, message=f"ComfyUI 服务正常 ({comfyui_url})", provider=req.provider, latency_ms=latency)
+                return ImageConnTestResponse(ok=False, message=f"ComfyUI 返回 HTTP {resp.status_code}", provider=req.provider, latency_ms=latency)
+        except Exception as e:
+            return ImageConnTestResponse(ok=False, message=f"无法连接 ComfyUI ({comfyui_url}): {e}", provider=req.provider)
+
+    # 云端供应商：发一个轻量请求测试连通性
+    api_key = req.api_key or os.environ.get(f"{req.provider.upper()}_API_KEY", "") or os.environ.get("OPENAI_API_KEY", "")
+    if not api_key and req.provider not in ("comfyui",):
+        return ImageConnTestResponse(ok=False, message="未提供 API Key，请在设置中填入或设置环境变量", provider=req.provider)
+
+    try:
+        import httpx, time
+
+        headers = {"User-Agent": "InsurDeck/1.0"}
+        if config["key_header"] and api_key:
+            headers[config["key_header"]] = f"{config['key_prefix']}{api_key}"
+
+        t0 = time.time()
+        async with httpx.AsyncClient(timeout=15, follow_redirects=True) as http:
+            resp = await http.get(config["url"], headers=headers)
+            latency = (time.time() - t0) * 1000
+
+            if resp.status_code in (200, 401):
+                # 200 = 认证通过, 401 = API Key无效但网络可达
+                if resp.status_code == 200:
+                    return ImageConnTestResponse(ok=True, message=f"{config['name']} 连接成功 ✓", provider=req.provider, latency_ms=latency)
+                else:
+                    return ImageConnTestResponse(ok=False, message=f"API Key 无效（网络可达）。请检查 Key 是否正确", provider=req.provider, latency_ms=latency)
+            elif resp.status_code == 403:
+                return ImageConnTestResponse(ok=False, message="API Key 无权限 (403 Forbidden)", provider=req.provider, latency_ms=latency)
+            elif resp.status_code == 429:
+                return ImageConnTestResponse(ok=False, message="请求过于频繁 (429)，请稍后重试", provider=req.provider, latency_ms=latency)
+            else:
+                return ImageConnTestResponse(ok=False, message=f"服务器返回 HTTP {resp.status_code}", provider=req.provider, latency_ms=latency)
+
+    except httpx.ConnectError:
+        return ImageConnTestResponse(ok=False, message=f"无法连接到 {config['name']} 服务器，请检查网络/代理", provider=req.provider)
+    except httpx.ReadTimeout:
+        return ImageConnTestResponse(ok=False, message=f"{config['name']} 响应超时，请检查网络稳定性", provider=req.provider)
+    except Exception as e:
+        return ImageConnTestResponse(ok=False, message=f"连接失败: {str(e)[:200]}", provider=req.provider)

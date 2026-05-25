@@ -71,6 +71,9 @@ export function Settings() {
   const genConfig = useProjectStore((s) => s.generationConfig)
   const updateGenConfig = useProjectStore((s) => s.updateGenerationConfig)
   const [imageProvider, setImageProvider] = useState('none')
+  const [imageApiKeys, setImageApiKeys] = useState<Record<string, string>>({})
+  const [imageTesting, setImageTesting] = useState<string | null>(null)
+  const [imageTestResults, setImageTestResults] = useState<Record<string, { ok: boolean; message: string; latency_ms: number }>>({})
 
   useEffect(() => {
     getObject<ModelEntry[]>(STORAGE_KEY).then((saved) => {
@@ -375,6 +378,33 @@ export function Settings() {
       setTestResults(prev => ({ ...prev, [entry.id]: { ok: false, message: `${reason}\n${suggestion}` } }))
     } finally {
       setTestingId(null)
+    }
+  }
+
+  const testImageConnection = async () => {
+    if (!imageProvider || imageProvider === 'none' || imageProvider === 'comfyui') return
+    setImageTesting(imageProvider)
+    setImageTestResults(prev => ({ ...prev, [imageProvider]: { ok: false, message: '测试中...', latency_ms: 0 } }))
+
+    try {
+      const apiKey = imageApiKeys[imageProvider] || ''
+
+      const res = await fetch(await apiConfig.url('/api/v1/media/image-conn-test'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: imageProvider, api_key: apiKey }),
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setImageTestResults(prev => ({ ...prev, [imageProvider]: data }))
+      } else {
+        setImageTestResults(prev => ({ ...prev, [imageProvider]: { ok: false, message: `后端异常 HTTP ${res.status}`, latency_ms: 0 } }))
+      }
+    } catch (e: any) {
+      setImageTestResults(prev => ({ ...prev, [imageProvider]: { ok: false, message: `网络错误: ${e.message?.slice(0, 100)}`, latency_ms: 0 } }))
+    } finally {
+      setImageTesting(null)
     }
   }
 
@@ -731,6 +761,52 @@ export function Settings() {
             )
           })}
         </div>
+
+        {/* API Key 配置 + 连通测试 */}
+        {imageProvider !== 'none' && imageProvider !== 'comfyui' && (
+          <div className="flex items-end gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+            <div className="flex-1">
+              <label className="text-xs text-gray-500 block mb-1">
+                {imageProvider === 'ernie' ? 'API Key（百度文心）' :
+                 imageProvider === 'spark' ? 'API Key（讯飞星火）' :
+                 imageProvider === 'stability' ? 'API Key（Stability AI）' : 'API Key'}
+              </label>
+              <input type="password" className="input-field text-sm"
+                value={imageApiKeys[imageProvider] || ''}
+                onChange={(e) => setImageApiKeys(prev => ({ ...prev, [imageProvider]: e.target.value }))}
+                placeholder="输入 API Key..." />
+            </div>
+            {imageProvider === 'ernie' && (
+              <div className="flex-1">
+                <label className="text-xs text-gray-500 block mb-1">Secret Key</label>
+                <input type="password" className="input-field text-sm"
+                  value={imageApiKeys[`${imageProvider}_secret`] || ''}
+                  onChange={(e) => setImageApiKeys(prev => ({ ...prev, [`${imageProvider}_secret`]: e.target.value }))}
+                  placeholder="百度 Secret Key" />
+              </div>
+            )}
+            <button onClick={() => testImageConnection()}
+              disabled={imageTesting === imageProvider}
+              className="btn-secondary text-xs h-8 px-3 flex items-center gap-1 shrink-0">
+              {imageTesting === imageProvider ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wifi className="w-3 h-3" />}
+              连通测试
+            </button>
+            {imageTestResults[imageProvider] && imageTesting !== imageProvider && (
+              <span className={`text-xs shrink-0 ${imageTestResults[imageProvider].ok ? 'text-green-600' : 'text-red-500'}`}>
+                {imageTestResults[imageProvider].ok ? <CheckCircle className="w-4 h-4 inline" /> : <WifiOff className="w-4 h-4 inline" />}
+              </span>
+            )}
+          </div>
+        )}
+
+        {imageTestResults[imageProvider] && imageTesting !== imageProvider && (
+          <div className={`p-2 rounded text-xs ${imageTestResults[imageProvider].ok ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+            {imageTestResults[imageProvider].ok ? '✅ ' : '❌ '}{imageTestResults[imageProvider].message}
+            {imageTestResults[imageProvider].latency_ms > 0 && (
+              <span className="text-gray-400 ml-2">({imageTestResults[imageProvider].latency_ms.toFixed(0)}ms)</span>
+            )}
+          </div>
+        )}
 
         {imageProvider !== 'none' && (
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-700">
