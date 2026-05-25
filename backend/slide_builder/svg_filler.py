@@ -113,7 +113,7 @@ class SVGFiller:
     def fill(self, svg_path: str, slide_data: dict, page_num: int) -> str:
         layout = slide_data.get("layout_type", "content")
         title = str(slide_data.get("title", ""))
-        subtitle = str(slide_data.get("subtitle", ""))
+        subtitle = str(slide_data.get("subtitle") or "")
         body_items = slide_data.get("body_items", []) or []
         tables = slide_data.get("tables", []) or []
         code_block = str(slide_data.get("code_block") or "")

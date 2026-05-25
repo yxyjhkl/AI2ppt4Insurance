@@ -902,8 +902,8 @@ class PPTXGenerator:
             lt = sd.get("layout_type", "content")
             renderer = dispatch.get(lt, self._render_content)
             renderer(slide,
-                     sd.get("title", ""),
-                     sd.get("subtitle", ""),
+                     sd.get("title", "") or "",
+                     sd.get("subtitle") or "",
                      sd.get("body_items", []),
                      sd.get("tables", []),
                      sd.get("code_block", ""))
