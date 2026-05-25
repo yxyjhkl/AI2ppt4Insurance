@@ -1,5 +1,5 @@
 ﻿import {
-  Download, Monitor, Zap, FileUp, Globe, Keyboard, Shield,
+  Download, Monitor, Zap, FileUp, Globe, Keyboard, Shield, List,
   Briefcase, Settings, Edit3, Play, Rocket, Target, Handshake,
   Sparkles, Mic, Image, Database, RefreshCw,
 } from 'lucide-react'
@@ -40,22 +40,88 @@ export function Help() {
           三种工作模式
         </h2>
         <p className="text-sm text-gray-500 mb-4">根据你的时间和控制需求，选择不同深度的工作模式：</p>
+
+        {/* 模式对比表格 */}
+        <div className="card p-4 mb-4 overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-2 px-2 font-semibold text-gray-600 w-24"></th>
+                <th className="text-left py-2 px-2 font-semibold text-blue-700"><Rocket className="w-3.5 h-3.5 inline mr-1" />AI 替我做</th>
+                <th className="text-left py-2 px-2 font-semibold text-green-700"><Target className="w-3.5 h-3.5 inline mr-1" />AI 帮我做</th>
+                <th className="text-left py-2 px-2 font-semibold text-purple-700"><Handshake className="w-3.5 h-3.5 inline mr-1" />AI 陪我做</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600">
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">场景选择</td>
+                <td className="py-2 px-2">AI 自动识别<span className="text-[10px] text-gray-400 ml-1">（含中文关键词）</span></td>
+                <td className="py-2 px-2">用户手动选择</td>
+                <td className="py-2 px-2">用户手动选择</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">需求面板</td>
+                <td className="py-2 px-2 text-gray-400">隐藏（自动推断）</td>
+                <td className="py-2 px-2">完整展开</td>
+                <td className="py-2 px-2">完整展开</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">模板选择</td>
+                <td className="py-2 px-2 text-gray-400">AI 自动匹配</td>
+                <td className="py-2 px-2">用户选择</td>
+                <td className="py-2 px-2">用户选择</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">大纲审核</td>
+                <td className="py-2 px-2 text-gray-400">跳过</td>
+                <td className="py-2 px-2">手动点击「生成大纲」→ 审核 → 确认</td>
+                <td className="py-2 px-2">手动点击「生成大纲」→ 逐页编辑 → 确认</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">确认后</td>
+                <td className="py-2 px-2 text-gray-400">—</td>
+                <td className="py-2 px-2">用户手动点击「生成PPT」</td>
+                <td className="py-2 px-2"><span className="text-purple-600 font-medium">自动触发生成</span> → 进入编辑器</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">生成过程</td>
+                <td className="py-2 px-2">一键生成 + 自动美化</td>
+                <td className="py-2 px-2">完整生成（使用选定场景/模板）</td>
+                <td className="py-2 px-2">完整生成 → 编辑器逐页微调</td>
+              </tr>
+              <tr className="border-b border-gray-100">
+                <td className="py-2 px-2 font-medium text-gray-500">需求传递</td>
+                <td className="py-2 px-2 text-gray-400">内容中拼接</td>
+                <td className="py-2 px-2">结构化字段 → AI prompt</td>
+                <td className="py-2 px-2">结构化字段 → AI prompt</td>
+              </tr>
+              <tr>
+                <td className="py-2 px-2 font-medium text-gray-500">适合场景</td>
+                <td className="py-2 px-2 text-gray-500">赶时间 / 材料完整 / 信任AI</td>
+                <td className="py-2 px-2 text-gray-500">有明确需求 / 重要汇报</td>
+                <td className="py-2 px-2 text-gray-500">精细打磨 / 完全掌控</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
         <div className="grid sm:grid-cols-3 gap-3">
           <ModeCard icon={Rocket} title="AI 替我做" subtitle="全自动出稿" color="blue"
-            desc="给一份材料或一个主题，AI 全程自动生成精美 PPT，中间无需任何人工干涉。"
-            steps={['输入主题/材料', '点击「一键生成」', '自动生成 → 进入编辑器']}
+            desc="给一份材料或一个主题，AI 全程自动生成精美 PPT，中间无需任何人工干涉。支持上传文件后自动触发。"
+            steps={['输入主题或上传文件', 'AI 自动分析内容类型', '自动选场景/模板/页数', '点击「一键生成」', '进入编辑器']}
             suitable="赶时间 / 材料完整 / 信任 AI" />
-          <ModeCard icon={Target} title="AI 帮我做" subtitle="按需定制" color="green"
-            desc="设定受众、风格、时长等要求，AI 先出大纲让你确认，确认后再生成完整 PPT。"
-            steps={['输入材料 + 设定需求', 'AI 生成大纲 → 审核确认', '生成完整 PPT → 编辑']}
+          <ModeCard icon={Target} title="AI 帮我做" subtitle="先大纲后生成" color="green"
+            desc="设定受众、风格、时长等需求，AI 先出大纲让你逐页审核和编辑，确认后手动点击生成完整 PPT。"
+            steps={['输入材料 + 填写需求面板', '点击「生成大纲」', '审核大纲，逐页编辑标题', '确认大纲 → 点击「生成PPT」', '进入编辑器调整']}
             suitable="有明确需求 / 重要汇报" />
-          <ModeCard icon={Handshake} title="AI 陪我做" subtitle="逐步共创" color="purple"
-            desc="每一步都暴露给你：大纲可逐页编辑、内容可逐页微调、模板可切换。你是导演。"
-            steps={['输入内容', '大纲逐页编辑确认', '内容逐页微调', '选模板 → 生成']}
+          <ModeCard icon={Handshake} title="AI 陪我做" subtitle="确认即生成+逐页微调" color="purple"
+            desc="审核大纲并逐页编辑确认后，自动触发生成进入编辑器。在编辑器中可逐页微调标题、正文、布局和画布元素。"
+            steps={['输入材料 + 填写需求', '生成大纲 → 逐页编辑', '确认大纲 → 自动生成', '进入编辑器逐页微调', '导出']}
             suitable="精细打磨 / 完全掌控" />
         </div>
         <p className="text-xs text-gray-400 mt-3">
-          三种模式共享同一个 AI 引擎选择（云端 AI / 本地 Ollama / 离线规则），在选择模式后可以随时切换。
+          三种模式共享同一个 AI 引擎选择（云端 AI / 本地 Ollama / 离线规则）。<br />
+          <span className="text-gray-400">提示：</span>「AI帮我做」和「AI陪我做」的需求面板（受众/风格/必含/避免）会作为结构化字段传给 AI，而非简单拼接，效果更好。
         </p>
       </section>
 
@@ -66,18 +132,22 @@ export function Help() {
           快速入门（3 步出 PPT）
         </h2>
         <div className="space-y-3">
-          <StepCard num={1} title="选择工作模式 + 场景" icon={Target}>
-            在仪表盘选择三种模式之一，然后选择场景：报告/教育/提案/转换/研讨/保险/润色。
-            保险场景需进一步选择会议类型（如业务复盘会、产品说明会等10种）。
+          <StepCard num={1} title="选择工作模式 + AI 引擎" icon={Target}>
+            在仪表盘选择三种模式之一：<strong>AI替我做</strong>（全自动）、<strong>AI帮我做</strong>（先大纲后生成）、<strong>AI陪我做</strong>（确认即生成+逐页微调）。
+            然后选择 AI 引擎：云端大模型 / 本地 Ollama / 离线规则。
           </StepCard>
-          <StepCard num={2} title="输入内容 + 设定需求（可选）" icon={FileUp}>
-            直接粘贴文字/Markdown，或上传 PDF/DOCX/MD/TXT/PPTX 文件，或输入网页 URL 抓取。
-            在「AI帮我做」或「AI陪我做」模式下，可展开需求面板设定受众、时长、风格等偏好。
+          <StepCard num={2} title="输入内容 + 设定需求" icon={FileUp}>
+            直接粘贴文字/Markdown，或上传 PDF/DOCX/MD/TXT/PPTX/XMind 文件，或输入网页 URL 抓取，或上传 Excel。
+            在「AI帮我做」或「AI陪我做」模式下，可展开需求面板设定受众、时长、风格、必含/避免内容（这些需求会以结构化方式传给AI）。
           </StepCard>
-          <StepCard num={3} title="生成 → 审核 → 编辑 → 导出" icon={Download}>
-            点击「生成PPT」（自动模式为「一键生成」）。在 guided/cocreate 模式下先审核大纲再生成。
-            进入编辑器后可以：修改标题/正文、调整布局、添加画布元素（图片/文字/形状/表格）。
-            完成后导出为 PPTX / PDF / 分页 PNG 文件。
+          <StepCard num={3} title="审核大纲（guided/cocreate）" icon={List}>
+            在 guided/cocreate 模式下，点击「生成大纲」→ AI 生成大纲 → 逐页审核编辑标题。
+            Cocreate 确认后自动生成；Guided 确认后需手动点击「生成PPT」。
+            <span className="text-gray-400">（自动模式下此步骤跳过）</span>
+          </StepCard>
+          <StepCard num={4} title="编辑 → 导出" icon={Download}>
+            进入编辑器后可以：修改标题/正文、切换17种布局、添加画布元素（图片/文字/形状/表格）、AI资料补充。
+            编辑后 SVG 预览 0.8 秒自动刷新，所见即所得。完成后导出为 PPTX / PDF / 分页 PNG。
           </StepCard>
         </div>
       </section>
@@ -296,7 +366,14 @@ export function Help() {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">常见问题</h2>
         <div className="space-y-3 text-sm">
           <FAQ q="三种模式有什么区别？"
-            a="AI替我做：给材料→自动出稿，无人工介入。AI帮我做：给材料+设定要求→审核大纲→生成。AI陪我做：每一步都暴露给你，可逐页编辑大纲和内容再生成。" />
+            a={
+              <span>
+                <strong>AI替我做</strong>：给材料→一键自动出稿，场景/模板/页数全自动识别。<br/>
+                <strong>AI帮我做</strong>：给材料+设需求→生成大纲→逐页审核→手动点击生成PPT。<br/>
+                <strong>AI陪我做</strong>：给材料+设需求→生成大纲→逐页审核→确认后自动生成→编辑器逐页微调。<br/>
+                详见上方对比表格。
+              </span> as any
+            } />
           <FAQ q="生成失败怎么办？"
             a="AI 解析失败会自动重试一次（降低温度提高稳定性）。若仍失败，自动回退到离线规则引擎。也可直接选择离线模式。" />
           <FAQ q="API Key 安全吗？"
