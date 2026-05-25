@@ -68,6 +68,11 @@ export function Editor() {
   const [supplementInstruction, setSupplementInstruction] = useState('')
   const [supplementing, setSupplementing] = useState(false)
   const [showChatEditor, setShowChatEditor] = useState(false)
+  const [showTTSDialog, setShowTTSDialog] = useState(false)
+  const [ttsProvider, setTtsProvider] = useState('edge')
+  const [ttsVoiceId, setTtsVoiceId] = useState('')
+  const [ttsStability, setTtsStability] = useState(0.5)
+  const [ttsSimilarity, setTtsSimilarity] = useState(0.75)
 
   const elementsHistory = useUndoRedo<CanvasElement[]>(
     slides[selectedIndex]?.elements || [],
@@ -613,8 +618,9 @@ export function Editor() {
     }
   }, [slides, projectTitle])
 
-  const handleTTS = useCallback(async () => {
+  const handleTTSGenerate = useCallback(async () => {
     if (slides.length === 0 || exporting) return
+    setShowTTSDialog(false)
     setExporting(true)
     try {
       const notes = slides.map(s => s.notes || '').filter(n => n.trim())
@@ -624,10 +630,25 @@ export function Editor() {
         setExporting(false)
         return
       }
-      const res = await fetch(await apiConfig.url('/api/v1/media/tts-narrate'), {
+
+      const endpoint = ttsProvider === 'edge'
+        ? '/api/v1/media/tts-narrate'
+        : '/api/v1/media/tts-clone'
+
+      const body = ttsProvider === 'edge'
+        ? JSON.stringify({ notes })
+        : JSON.stringify({
+            text: notes.join('\n\n'),
+            voice_provider: ttsProvider,
+            voice_id: ttsVoiceId || undefined,
+            stability: ttsStability,
+            similarity: ttsSimilarity,
+          })
+
+      const res = await fetch(await apiConfig.url(endpoint), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes }),
+        body,
       })
       if (!res.ok) throw new Error(`TTS 生成失败 (HTTP ${res.status})`)
       const data = await res.json()
@@ -651,7 +672,17 @@ export function Editor() {
     } finally {
       setExporting(false)
     }
-  }, [slides, projectTitle])
+  }, [slides, projectTitle, ttsProvider, ttsVoiceId, ttsStability, ttsSimilarity])
+
+  const handleTTS = useCallback(async () => {
+    const notes = slides.map(s => s.notes || '').filter(n => n.trim())
+    if (notes.length === 0) {
+      setExportError('没有可用的演讲备注，请先在编辑器中添加备注')
+      setTimeout(() => setExportError(''), 5000)
+      return
+    }
+    setShowTTSDialog(true)
+  }, [slides])
 
   const handleSupplement = useCallback(async () => {
     if (slides.length === 0) return
@@ -1122,6 +1153,99 @@ export function Editor() {
           }}
           onClose={() => setShowChatEditor(false)}
         />
+      )}
+
+      {showTTSDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setShowTTSDialog(false)}>
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">语音旁白生成</h3>
+              <button onClick={() => setShowTTSDialog(false)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* 供应商选择 */}
+            <div>
+              <label className="text-xs text-gray-500 block mb-2">语音引擎</label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'edge', name: 'Edge TTS', desc: '免费·系统自带', icon: '🆓' },
+                  { id: 'elevenlabs', name: 'ElevenLabs', desc: '克隆·最自然', icon: '🎙️' },
+                  { id: 'minimax', name: 'MiniMax', desc: '克隆·中文好', icon: '🇨🇳' },
+                ].map(p => (
+                  <button key={p.id} onClick={() => setTtsProvider(p.id)}
+                    className={`p-3 rounded-xl border-2 text-left transition-all ${
+                      ttsProvider === p.id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                    }`}>
+                    <div className="text-lg">{p.icon}</div>
+                    <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1">{p.name}</div>
+                    <div className="text-[10px] text-gray-400">{p.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ElevenLabs/MiniMax 高级设置 */}
+            {ttsProvider !== 'edge' && (
+              <div className="space-y-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <div>
+                  <label className="text-xs text-gray-500 block mb-1">
+                    音色 ID（{ttsProvider === 'elevenlabs' ? 'ElevenLabs' : 'MiniMax'}）
+                  </label>
+                  <input className="input-field text-sm" value={ttsVoiceId}
+                    onChange={(e) => setTtsVoiceId(e.target.value)}
+                    placeholder={ttsProvider === 'elevenlabs' ? '21m00Tcm4TlvDq8ikWAM (Rachel)' : 'male-qn-qingse'} />
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    {ttsProvider === 'elevenlabs'
+                      ? '留空使用默认女声 Rachel。可在 elevenlabs.io 创建自定义音色'
+                      : '留空使用默认男声。可在 minimax.chat 创建克隆音色'}
+                  </p>
+                </div>
+                {ttsProvider === 'elevenlabs' && (
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="text-[10px] text-gray-500 block mb-1">稳定性: {ttsStability}</label>
+                      <input type="range" min="0" max="1" step="0.1" value={ttsStability}
+                        onChange={(e) => setTtsStability(parseFloat(e.target.value))} className="w-full" />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-gray-500 block mb-1">相似度: {ttsSimilarity}</label>
+                      <input type="range" min="0" max="1" step="0.1" value={ttsSimilarity}
+                        onChange={(e) => setTtsSimilarity(parseFloat(e.target.value))} className="w-full" />
+                    </div>
+                  </div>
+                )}
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 text-[10px] text-amber-700">
+                  {ttsProvider === 'elevenlabs' ? (
+                    <>需设置环境变量 <code className="bg-amber-100 px-1 rounded">ELEVENLABS_API_KEY</code>，约 $0.015/千字</>
+                  ) : (
+                    <>需设置环境变量 <code className="bg-amber-100 px-1 rounded">MINIMAX_API_KEY</code> + <code className="bg-amber-100 px-1 rounded">MINIMAX_GROUP_ID</code></>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {ttsProvider === 'edge' && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-2 text-[10px] text-green-700">
+                ✅ 完全免费，无需任何配置，使用系统自带微软晓晓语音
+              </div>
+            )}
+
+            <div className="flex justify-between items-center text-xs text-gray-400">
+              <span>将生成 {slides.map(s => s.notes || '').filter(n => n.trim()).length} 段备注的语音</span>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button onClick={() => setShowTTSDialog(false)} className="btn-secondary text-sm px-4 py-2">取消</button>
+              <button onClick={handleTTSGenerate} disabled={exporting}
+                className="btn-primary text-sm px-4 py-2 flex items-center space-x-2 disabled:opacity-50">
+                <Mic className="w-4 h-4" />
+                <span>生成并下载 MP3</span>
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
