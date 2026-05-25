@@ -1,0 +1,61 @@
+{
+  "name": "Swiss International",
+  "category": "Business",
+  "description": "Swiss International Style — rigid grid, all sans-serif, single accent color, sharp corners, pure color blocks. Inspired by Josef Müller-Brockmann and frontend-slides' Swiss Modern.",
+  "design_language": "swiss",
+  "colors": {
+    "primary": "#0052cc",
+    "secondary": "#0065ff",
+    "accent": "#ff5630",
+    "background": "#ffffff",
+    "text": "#172b4d",
+    "light-bg": "#f4f5f7",
+    "stripe": "#ebecf0"
+  },
+  "fonts": {
+    "title": "Helvetica Neue",
+    "body": "Helvetica Neue",
+    "title_cn": "PingFang SC",
+    "body_cn": "PingFang SC"
+  },
+  "spacing": {
+    "margin-x": 48,
+    "margin-y": 36,
+    "title-size": 34,
+    "body-size": 16,
+    "line-height": 1.35
+  },
+  "visual_rules": {
+    "title_size": 34,
+    "subtitle_size": 18,
+    "body_size": 15,
+    "caption_size": 11,
+    "margin": { "top": 48, "bottom": 36, "left": 48, "right": 48 },
+    "line_spacing": 1.3,
+    "corner_radius": 0,
+    "shadow_enabled": false,
+    "gradient_bg": false,
+    "section_divider": false,
+    "page_number": true,
+    "header_enabled": true,
+    "icon_set": "geometric"
+  },
+  "anti_ai_rules": {
+    "no_gradient": true,
+    "no_emoji_icons": true,
+    "no_center_align_body": true,
+    "no_rounded_corners": true,
+    "no_shadows": true,
+    "max_colors": 3,
+    "strict_grid": true,
+    "all_sans_serif": true
+  },
+  "animation": { "type": "none", "title_animation": "none", "duration": 0 },
+  "elements": {
+    "bullet_style": "square",
+    "table_stripe": true,
+    "chart_colors": ["#0052cc", "#00b8d9", "#36b37e", "#ff5630"],
+    "progress_bar": true,
+    "kpi_card_style": "flat"
+  }
+}

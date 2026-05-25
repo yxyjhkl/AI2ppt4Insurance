@@ -199,3 +199,81 @@ async def list_voices():
         return VoiceListResponse(voices=voices)
     except Exception as e:
         raise HTTPException(500, f"Failed to list voices: {str(e)}")
+
+
+# ---- Social Media Cover Generation ----
+class SocialCoverRequest(BaseModel):
+    title: str
+    subtitle: Optional[str] = None
+    template: str = "professional-blue"
+    platforms: list[str] = ["wechat", "xiaohongshu", "share"]
+
+
+class SocialCoverResponse(BaseModel):
+    covers: dict
+
+
+PLATFORM_SPECS = {
+    "wechat": {"width": 900, "height": 383, "label": "公众号头图"},
+    "xiaohongshu": {"width": 720, "height": 960, "label": "小红书竖图"},
+    "share": {"width": 720, "height": 720, "label": "分享卡片"},
+}
+
+
+def _svg_esc(text: str) -> str:
+    if not text:
+        return ""
+    text = str(text).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    text = text.replace('"', "&quot;").replace("'", "&apos;")
+    return text
+
+
+@router.post("/social-covers", response_model=SocialCoverResponse)
+async def generate_social_covers(req: SocialCoverRequest):
+    """Generate social media cover images (wechat, xiaohongshu, share card)."""
+    try:
+        from utils.theme_utils import load_theme, resolve_template_dir
+
+        base_dir = os.path.join(os.path.dirname(__file__), "..", "..")
+        template_dir = resolve_template_dir(req.template, base_dir)
+        theme = load_theme(template_dir)
+        colors = theme.get("colors", {})
+        primary = colors.get("primary", "#1e40af")
+        accent = colors.get("accent", "#f59e0b")
+
+        covers = {}
+        for platform in req.platforms:
+            spec = PLATFORM_SPECS.get(platform)
+            if not spec:
+                continue
+            w, h = spec["width"], spec["height"]
+            title = req.title or "演示文稿"
+            subtitle = req.subtitle or ""
+
+            title_size = 48 if platform == "xiaohongshu" else (40 if platform == "wechat" else 36)
+            sub_size = 22 if platform == "xiaohongshu" else (18 if platform == "wechat" else 16)
+            decor_r = min(w, h) * 0.5
+
+            svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{primary}" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="{primary}" stop-opacity="0.75"/>
+    </linearGradient>
+  </defs>
+  <rect width="{w}" height="{h}" fill="url(#bg)"/>
+  <rect x="0" y="0" width="8" height="{h}" fill="{accent}"/>
+  <rect x="0" y="0" width="{w}" height="4" fill="{accent}" opacity="0.5"/>
+  <circle cx="{w - 80}" cy="{h - 80}" r="{decor_r}" fill="{accent}" opacity="0.06"/>
+  <circle cx="{w - 60}" cy="{h - 60}" r="{decor_r * 0.6}" fill="{accent}" opacity="0.04"/>
+  <text x="48" y="{h // 2 - 10}" font-family="Microsoft YaHei" font-size="{title_size}" font-weight="bold" fill="#ffffff">{_svg_esc(title[:30])}</text>
+  <rect x="48" y="{h // 2 + 16}" width="180" height="4" rx="2" fill="{accent}"/>"""
+            if subtitle:
+                svg += f'\n  <text x="48" y="{h // 2 + 56}" font-family="Microsoft YaHei" font-size="{sub_size}" fill="#cbd5e1">{_svg_esc(subtitle[:50])}</text>'
+            svg += f'\n  <rect x="0" y="{h - 4}" width="{w}" height="4" fill="{accent}" opacity="0.4"/>\n</svg>'
+
+            covers[platform] = base64.b64encode(svg.encode("utf-8")).decode("utf-8")
+
+        return SocialCoverResponse(covers=covers)
+    except Exception as e:
+        raise HTTPException(500, f"Cover generation failed: {str(e)}")

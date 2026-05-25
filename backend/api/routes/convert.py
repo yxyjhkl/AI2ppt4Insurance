@@ -28,7 +28,7 @@ class ExcelUploadResponse(BaseModel):
 @router.post("/file")
 async def convert_file(file: UploadFile = File(...), output_format: str = "md"):
     suffix = os.path.splitext(file.filename or "")[1].lower()
-    supported = {".pdf", ".docx", ".doc", ".md", ".txt", ".pptx", ".html", ".htm", ".epub", ".xmind"}
+    supported = {".pdf", ".docx", ".doc", ".md", ".txt", ".pptx", ".html", ".htm", ".epub", ".xmind", ".tex", ".latex"}
 
     if suffix not in supported:
         raise HTTPException(400, f"不支持的文件格式: {suffix}")
@@ -145,5 +145,8 @@ def convert_to_markdown(filepath: str, suffix: str) -> str:
     elif suffix == ".xmind":
         from converters.xmind_converter import xmind_to_markdown
         return xmind_to_markdown(filepath)
+    elif suffix in (".tex", ".latex"):
+        from converters.latex_converter import latex_to_markdown
+        return latex_to_markdown(filepath)
     else:
         raise ValueError(f"No converter for {suffix}")

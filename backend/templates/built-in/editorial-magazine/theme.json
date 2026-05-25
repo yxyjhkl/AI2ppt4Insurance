@@ -1,0 +1,59 @@
+{
+  "name": "Editorial Magazine",
+  "category": "Creative",
+  "description": "Editorial magazine style inspired by Monocle and The Guardian. Serif titles, generous whitespace, asymmetrical layouts, muted palette.",
+  "design_language": "magazine",
+  "colors": {
+    "primary": "#1a1a1a",
+    "secondary": "#4a4a4a",
+    "accent": "#c9a96e",
+    "background": "#faf8f5",
+    "text": "#2d2d2d",
+    "light-bg": "#f5f0e8",
+    "stripe": "#ede4d3"
+  },
+  "fonts": {
+    "title": "Georgia",
+    "body": "Georgia",
+    "title_cn": "Noto Serif CJK SC",
+    "body_cn": "Noto Serif CJK SC"
+  },
+  "spacing": {
+    "margin-x": 60,
+    "margin-y": 40,
+    "title-size": 38,
+    "body-size": 18,
+    "line-height": 1.7
+  },
+  "visual_rules": {
+    "title_size": 38,
+    "subtitle_size": 20,
+    "body_size": 16,
+    "caption_size": 12,
+    "margin": { "top": 60, "bottom": 50, "left": 60, "right": 60 },
+    "line_spacing": 1.7,
+    "corner_radius": 0,
+    "shadow_enabled": false,
+    "gradient_bg": false,
+    "section_divider": true,
+    "page_number": true,
+    "header_enabled": false,
+    "icon_set": "editorial"
+  },
+  "anti_ai_rules": {
+    "no_gradient": true,
+    "no_emoji_icons": true,
+    "no_center_align_body": true,
+    "max_colors": 3,
+    "prefer_asymmetry": true,
+    "serif_titles": true
+  },
+  "animation": { "type": "none", "title_animation": "fade_in", "duration": 0.5 },
+  "elements": {
+    "bullet_style": "emdash",
+    "table_stripe": false,
+    "chart_colors": ["#1a1a1a", "#c9a96e", "#8b7355", "#d4c5a9"],
+    "progress_bar": false,
+    "kpi_card_style": "flat"
+  }
+}
