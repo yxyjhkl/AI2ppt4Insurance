@@ -777,9 +777,75 @@ Only flag pages with actual issues. Return ONLY valid JSON, no explanation."""
             "content_kpi", "content_timeline", "content_ranking",
             "content_waterfall", "content_gauge", "content_funnel", "content_matrix",
         }
-        layout_types_used = set()
+        REQUIRES_TABLE = {"content_table"}
+        REQUIRES_CODE = {"content_code"}
+
         for s in slides:
-            layout_types_used.add(s.layout_type)
+            # 表格页必须有表格数据
+            if s.layout_type in REQUIRES_TABLE:
+                if not s.tables or len(s.tables) == 0:
+                    # 尝试从 body_items 构建表格
+                    if s.body_items:
+                        items_text = [b.get("text", "") if isinstance(b, dict) else str(b) for b in s.body_items]
+                        header = "| 项目 | 内容 |"
+                        sep = "|---|---|"
+                        rows = [f"| {t.split(':')[0].strip() if ':' in t else t[:20]} | {t.split(':', 1)[1].strip() if ':' in t else t[20:40]} |" for t in items_text[:8]]
+                        md = header + "\n" + sep + "\n" + "\n".join(rows)
+                        s.tables = [{"markdown": md}]
+                    else:
+                        # 生成占位表格
+                        s.tables = [{"markdown": f"| 项目 | 详情 |\n|---|---|\n| {s.title[:15]} | 待补充 |\n| 指标 | 待补充 |"}]
+                        s.body_items = []
+                    logger.warning(f"P{s.page_number} [{s.layout_type}]: 表格为空，已自动生成")
+
+            # 代码页必须有代码
+            if s.layout_type in REQUIRES_CODE:
+                if not s.code_block:
+                    if s.body_items:
+                        code_lines = [b.get("text", "") if isinstance(b, dict) else str(b) for b in s.body_items]
+                        s.code_block = "\n".join(code_lines)
+                        s.body_items = []
+                    else:
+                        s.code_block = f"// {s.title}\n// 代码待补充"
+                    logger.warning(f"P{s.page_number} [{s.layout_type}]: 代码为空，已自动填充")
+
+            # 双栏/对比页必须左右都有内容
+            if s.layout_type in ("content_compare", "content_two_col"):
+                left_count = sum(1 for b in (s.body_items or [])
+                    if isinstance(b, dict) and b.get("column") != "right")
+                right_count = sum(1 for b in (s.body_items or [])
+                    if isinstance(b, dict) and b.get("column") == "right")
+                if left_count == 0 and right_count == 0:
+                    s.body_items = [
+                        {"type": "list_item", "text": f"当前状态: {s.title}", "level": 0, "column": "left"},
+                        {"type": "list_item", "text": "详情待补充", "level": 0, "column": "left"},
+                        {"type": "list_item", "text": "目标状态: 待设定", "level": 0, "column": "right"},
+                        {"type": "list_item", "text": "改进方向", "level": 0, "column": "right"},
+                    ]
+                    logger.warning(f"P{s.page_number} [{s.layout_type}]: 左右栏均为空，已自动填充")
+                elif right_count == 0:
+                    # 只有左边有内容，从左边分一半到右边
+                    items = [b for b in (s.body_items or []) if isinstance(b, dict)]
+                    mid = max(1, len(items) // 2)
+                    for j in range(mid, len(items)):
+                        items[j]["column"] = "right"
+                    s.body_items = items
+                    logger.warning(f"P{s.page_number} [{s.layout_type}]: 右侧为空，已自动从左侧分配")
+
+            # 三栏同样检查
+            if s.layout_type == "content_three_col":
+                cols = {"left": 0, "center": 0, "right": 0}
+                for b in (s.body_items or []):
+                    if isinstance(b, dict):
+                        col = b.get("column", "left")
+                        cols[col] = cols.get(col, 0) + 1
+                if cols.get("right", 0) == 0:
+                    items = [b for b in (s.body_items or []) if isinstance(b, dict)]
+                    if items:
+                        items[-1]["column"] = "right"
+                        logger.warning(f"P{s.page_number} [content_three_col]: 右列空，已自动分配")
+
+            # 普通内容页检查
             if s.layout_type in REQUIRES_CONTENT:
                 body_count = len([b for b in (s.body_items or [])
                                   if isinstance(b, dict) and b.get("text", "").strip()])

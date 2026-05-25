@@ -14,24 +14,36 @@
 === 布局多样性 ===
 至少5种不同布局。推荐: cover → chapter → content_kpi → content_table/content_compare → content → chapter → content_timeline → ending
 
-=== 布局格式 ===
-content_kpi: "指标名: 数值 单位"
-content_table: tables=[{"markdown":"| 列 | 列 |\n|---|---|\n| a | b |"}]
-content_compare/two_col: column:"left"/"right"
-content_three_col: column:"left"/"center"/"right"
-content_timeline: "时间: 事项"
-content_ranking: "名称: 数值"
-content_waterfall: "阶段: +/-数值"
-content_gauge: "指标: 0-100 %"
-content_matrix: 4条="象限: 描述"
-content_funnel: "阶段: 数量"(从大到小)
-content_quote: 引用内容, 作者以"— 姓名"开头
-content_code: code_block="代码"
-content: 3-7条要点句
-cover: title+subtitle, body_items=[]
-chapter: 编号+主题+简述
-ending: 总结/致谢, body_items=3-5条行动项
-toc: 目录条目, 每条可加"— 描述"
+=== 布局格式（严格 — 格式错误会导致页面空白） ===
+
+【content_table 表格页 — 最高优先级检查】
+❌ 常见错误：layout_type="content_table" 但 tables=[] → 页面空白！
+✅ 正确做法：
+- body_items=[] 留空（表格页不需要正文）
+- tables 必须包含 markdown 表格，最少2列3行：
+  tables=[{"markdown":"| 列A | 列B |\n|---|---|\n| 值1 | 值2 |\n| 值3 | 值4 |"}]
+
+【content_compare / content_two_col 对比双栏 — 最高优先级检查】
+❌ 常见错误：只填了左边，右边为空 → 半边空白！
+✅ 正确做法：每项 body_item 必须标注 column
+  {"type":"list_item","text":"当前：保费890万","level":0,"column":"left"}
+  {"type":"list_item","text":"目标：保费1000万","level":0,"column":"right"}
+  左右数量可以不等，但每侧至少2条
+
+【content_kpi】"指标名: 数值 单位"（6-8个指标）
+【content_timeline】"时间: 事项描述"
+【content_ranking】"名称: 数值"
+【content_waterfall】"阶段: +/-数值"
+【content_gauge】"指标: 0-100 %"
+【content_matrix】4条="象限名: 描述"
+【content_funnel】"阶段: 数量"（从大到小排列）
+【content_quote】body_items=引用内容, body_items最后一条以"— 姓名"开头
+【content_code】code_block="代码内容"
+【content】3-7条要点句(15-60字/条)
+【cover】title+subtitle, body_items=[]
+【chapter】title="编号 主题"(如"01 核心指标概览"), subtitle=简述, body_items=[]
+【ending】title=总结/致谢, body_items=3-5条行动项
+【toc】body_items=目录条目
 
 === 生成 ===
 页数灵活调整(6-18页)。只返回纯JSON，不要markdown标记。

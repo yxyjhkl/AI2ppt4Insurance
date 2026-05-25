@@ -337,12 +337,12 @@ class SVGFiller:
         section_title = title[num_match.end():].strip() if num_match else title
 
         if section_num:
-            # 大号数字 — 左侧
-            lines.append(f'<text x="80" y="420" font-family="Arial Black" font-size="160" font-weight="bold" fill="{accent}" opacity="0.25">{section_num}</text>')
+            # 大号数字 — 上方
+            lines.append(f'<text x="80" y="280" font-family="Arial Black" font-size="160" font-weight="bold" fill="{accent}" opacity="0.25">{section_num}</text>')
             # 分割线
-            lines.append(f'<rect x="100" y="370" width="4" height="80" rx="2" fill="{accent}"/>')
-            # 标题
-            lines.append(f'<text x="130" y="420" font-family="{font_body}" font-size="48" font-weight="bold" fill="#ffffff">{self._esc(section_title or title)}</text>')
+            lines.append(f'<rect x="100" y="340" width="4" height="60" rx="2" fill="{accent}"/>')
+            # 标题 — 下方
+            lines.append(f'<text x="130" y="385" font-family="{font_body}" font-size="48" font-weight="bold" fill="#ffffff">{self._esc(section_title or title)}</text>')
         else:
             lines.append(f'<rect x="80" y="340" width="8" height="80" rx="4" fill="{accent}"/>')
             lines.append(f'<text x="110" y="395" font-family="{font_body}" font-size="48" font-weight="bold" fill="#ffffff">{self._esc(title)}</text>')
