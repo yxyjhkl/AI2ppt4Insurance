@@ -21,6 +21,7 @@ export function Presenter() {
   const [elapsed, setElapsed] = useState(0)
   const [timerRunning, setTimerRunning] = useState(true)
   const [speakerView, setSpeakerView] = useState(false)
+  const [showThumbnails, setShowThumbnails] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const [recording, setRecording] = useState(false)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -65,8 +66,13 @@ export function Presenter() {
         e.preventDefault()
         setCurrentIndex(i => Math.max(0, i - 1))
       } else if (e.key === 'Escape') {
-        exitPresenter()
-      } else if (e.key === 'n' || e.key === 'N') {
+        if (showThumbnails) {
+          setShowThumbnails(false)
+        } else {
+          exitPresenter()
+        }
+      } else if (e.key === 'g' || e.key === 'G') {
+        setShowThumbnails(v => !v) else if (e.key === 'n' || e.key === 'N') {
         setShowNotes(s => !s)
       } else if (e.key === 'f' || e.key === 'F') {
         toggleFullscreen()
@@ -310,6 +316,40 @@ export function Presenter() {
           style={{ width: `${((currentIndex + 1) / slides.length) * 100}%` }}
         />
       </div>
+
+      {/* 缩略图索引 (ESC/G键) */}
+      {showThumbnails && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col" onClick={() => setShowThumbnails(false)}>
+          <div className="flex items-center justify-between px-6 py-3 bg-gray-900 shrink-0">
+            <span className="text-sm text-gray-400">所有幻灯片 · 点击跳转 · 按G或ESC关闭</span>
+            <span className="text-xs text-gray-500">{slides.length} 页</span>
+          </div>
+          <div className="flex-1 overflow-auto p-6">
+            <div className="grid grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4 max-w-7xl mx-auto">
+              {slides.map((s, i) => (
+                <div
+                  key={i}
+                  onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); setShowThumbnails(false) }}
+                  className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all hover:scale-105 ${
+                    i === currentIndex ? 'border-blue-500 ring-2 ring-blue-400 shadow-lg' : 'border-gray-700 hover:border-gray-400'
+                  }`}
+                >
+                  <div className="bg-gray-800 aspect-video flex items-center justify-center overflow-hidden">
+                    {s.svg_preview ? (
+                      <iframe srcDoc={s.svg_preview} className="w-full h-full pointer-events-none" style={{ border: 'none', transform: 'scale(0.3)', transformOrigin: 'top left', width: '333%', height: '333%' }} title={`缩略图 ${i + 1}`} sandbox="allow-same-origin" />
+                    ) : (
+                      <span className="text-gray-600 text-xs">{s.title || `第${i + 1}页`}</span>
+                    )}
+                  </div>
+                  <div className="px-2 py-1.5 bg-gray-900">
+                    <div className="text-[10px] text-gray-400 truncate">{i + 1}. {s.title || '无标题'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -38,6 +38,7 @@ import { StyleSelector } from '@/components/dashboard/StyleSelector'
 import { PromptSelector } from '@/components/dashboard/PromptSelector'
 import { ModelSelector } from '@/components/dashboard/ModelSelector'
 import { GenerateBar } from '@/components/dashboard/GenerateBar'
+import { QuickAsk, type QuickAnswers } from '@/components/dashboard/QuickAsk'
 
 type GenerationMode = 'ai_network' | 'local_ollama' | 'rule_engine' | null
 
@@ -89,6 +90,9 @@ export function Dashboard() {
   })
 
   const originalContentRef = useRef('')
+
+  const [showQuickAsk, setShowQuickAsk] = useState(false)
+  const [quickAnswers, setQuickAnswers] = useState<QuickAnswers | null>(null)
 
   useEffect(() => {
     mountedRef.current = true
@@ -584,6 +588,30 @@ export function Dashboard() {
                   高级选项（可选：设定受众/风格偏好）
                 </summary>
                 <div className="mt-4 space-y-4">
+                  {!quickAnswers && (
+                    <button
+                      onClick={() => setShowQuickAsk(true)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 hover:bg-blue-100 border-2 border-dashed border-blue-300 rounded-xl text-sm text-blue-600 font-medium transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4" /> 快速问答：帮我了解你的需求（4题，30秒）
+                    </button>
+                  )}
+                  {showQuickAsk && !quickAnswers && (
+                    <QuickAsk
+                      onComplete={(qa) => {
+                        setQuickAnswers(qa)
+                        setShowQuickAsk(false)
+                        setRequirements({
+                          audience: qa.audience,
+                          duration: qa.duration,
+                          tone: qa.tone,
+                          mustInclude: qa.focus,
+                          avoidTopics: requirements.avoidTopics,
+                        })
+                      }}
+                      onSkip={() => setShowQuickAsk(false)}
+                    />
+                  )}
                   <RequirementsPanel value={requirements} onChange={setRequirements} />
                   <StyleSelector customStyle={customStyle} onChange={setCustomStyle} />
                 </div>

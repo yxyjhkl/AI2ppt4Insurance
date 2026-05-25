@@ -69,6 +69,10 @@ class DeckQA:
         self._check_p1_layout_diversity(slides, reports)
         self._check_p1_content_rhythm(slides, reports)
 
+        # 5维设计评审
+        design_reports = self._check_design_quality(slides)
+        reports.extend(design_reports)
+
         return [r.__dict__ if hasattr(r, '__dict__') else r for r in reports]
 
     def get_p0_count(self, reports: list[dict]) -> int:
@@ -197,7 +201,78 @@ class DeckQA:
             reports.append(QAReport("info", "P2", "low_density", page,
                                      f"内容仅{total_chars}字符——建议补充数据或案例"))
 
-    # ===== P3: POLISH =====
+    # ===== 5维设计评审 =====
+
+    def _check_design_quality(self, slides) -> list[QAReport]:
+        """5-dimension design quality review: information hierarchy, color harmony,
+        typography rhythm, visual focus, brand consistency. Inspired by huashu-design."""
+        reports: list[QAReport] = []
+        if len(slides) < 3:
+            return reports
+
+        layouts = [self._safe(s, "layout_type", "content") for s in slides]
+
+        # 维度1：信息层级 — 检查是否有清晰的封面→内容→结尾层级
+        has_cover = layouts[0] == "cover"
+        has_ending = layouts[-1] == "ending"
+        has_chapter = any(lt == "chapter" for lt in layouts)
+        hierarchy_score = sum([has_cover, has_ending, has_chapter])
+        if hierarchy_score < 2:
+            reports.append(QAReport("info", "P2", "design_hierarchy", 0,
+                f"信息层级评分: {hierarchy_score}/3。建议增加章节分隔页来建立清晰的叙事节奏。",
+                detail="封面/章节/结尾三层结构是专业PPT的基础框架"))
+
+        # 维度2：配色协调 — 检查布局多样性是否暗示了颜色使用
+        layout_types = set(layouts)
+        color_heavy = {"content_kpi", "content_gauge", "content_waterfall"}
+        has_color_layouts = bool(layout_types & color_heavy)
+        if len(layout_types) >= 6 and not has_color_layouts:
+            reports.append(QAReport("info", "P3", "design_color", 0,
+                "建议增加KPI仪表盘或瀑布图等带颜色编码的布局，丰富视觉层次",
+                detail="使用content_kpi/content_gauge/content_waterfall可为数据赋予颜色语义"))
+
+        # 维度3：排版节奏 — 检查content布局是否过度连续
+        content_run = 0
+        max_content_run = 0
+        for lt in layouts:
+            if lt == "content":
+                content_run += 1
+                max_content_run = max(max_content_run, content_run)
+            else:
+                content_run = 0
+        if max_content_run >= 3:
+            reports.append(QAReport("warning", "P1", "design_rhythm", 0,
+                f"排版节奏警告：连续{max_content_run}页使用纯文本布局，建议穿插表格/对比/KPI/时间轴打破单调",
+                detail="理想节奏：每2页content插入1页非content布局"))
+
+        # 维度4：视觉焦点 — 检查每页是否有明确的视觉焦点
+        low_density_count = 0
+        for i, s in enumerate(slides):
+            body = self._safe(s, "body_items", [])
+            total_chars = sum(len(self._safe(b, "text", "")) for b in body)
+            lt = self._safe(s, "layout_type")
+            if total_chars < 30 and lt not in ("cover", "ending", "chapter", "toc"):
+                low_density_count += 1
+        if low_density_count > len(slides) * 0.3:
+            reports.append(QAReport("warning", "P1", "design_focus", 0,
+                f"视觉焦点不足：{low_density_count}/{len(slides)}页内容密度过低（<30字），缺乏信息焦点",
+                detail="每页至少应有30字以上正文，或使用表格/KPI等数据布局"))
+
+        # 维度5：品牌一致 — 检查布局类型使用是否合理
+        entity_count = sum(1 for lt in layouts if lt in ("cover", "ending", "chapter", "toc"))
+        if entity_count < 2 and len(slides) >= 5:
+            reports.append(QAReport("info", "P2", "design_consistency", 0,
+                "建议增加封面/结尾/章节页等结构性页面，提升演示文稿的品牌感和完整性",
+                detail=f"当前仅{entity_count}页结构性页面，推荐至少2页"))
+
+        # 综合评分
+        total_issues = sum(1 for r in reports if r.category.startswith("design_"))
+        if total_issues == 0 and len(slides) >= 5:
+            reports.append(QAReport("info", "P3", "design_score", 0,
+                "🎨 设计评审通过！信息层级、配色、排版节奏、视觉焦点、品牌一致性均达标",
+                detail="5维评审: ★★★★★"))
+
+        return reports
 
     def _check_p3_content_format(self, slide, page: int, reports: list[QAReport]):
         body = self._safe(slide, "body_items", [])
