@@ -183,18 +183,21 @@ class SVGFiller:
         sub_line = ""
         if subtitle:
             sub_line = (
-                f'<text x="640" y="52" font-family="{font_body}" font-size="13" fill="#94a3b8" text-anchor="middle">'
+                f'<text x="640" y="54" font-family="{font_body}" font-size="12" fill="#94a3b8" text-anchor="middle">'
                 f'{self._esc(subtitle)}</text>'
             )
-        # 使用 visual_rules 中的标题大小
         header_height = 64
         title_y = 38
         if self.title_size and self.title_size > 32:
             header_height = 72
             title_y = 42
         return (
-            f'<rect width="1280" height="{header_height}" fill="{primary}"/>'
-            f'<rect y="0" width="6" height="{header_height}" fill="{accent}"/>'
+            f'<defs><linearGradient id="hdrGrad" x1="0" y1="0" x2="1" y2="0">'
+            f'<stop offset="0%" stop-color="{primary}"/><stop offset="100%" stop-color="{primary}" stop-opacity="0.85"/>'
+            f'</linearGradient></defs>'
+            f'<rect width="1280" height="{header_height}" fill="url(#hdrGrad)"/>'
+            f'<rect y="0" width="8" height="{header_height}" fill="{accent}"/>'
+            f'<rect y="{header_height - 3}" width="1280" height="3" fill="{accent}" opacity="0.3"/>'
             f'<text x="640" y="{title_y}" font-family="{font_body}" font-size="{title_size}" font-weight="bold" fill="#ffffff" text-anchor="middle">'
             f'{self._esc(title)}</text>'
             f'{sub_line}'
@@ -209,23 +212,53 @@ class SVGFiller:
 
     def _render_cover(self, title: str, subtitle: str, primary: str, accent: str, bg: str) -> str:
         lines = []
-        lines.append(f'<rect width="1280" height="720" fill="{primary}" opacity="0.95"/>')
-        lines.append(f'<rect y="0" width="8" height="720" fill="{accent}"/>')
-        lines.append(f'<rect y="0" width="1280" height="4" fill="{accent}" opacity="0.4"/>')
+        # 渐变背景
+        lines.append(f'<defs>')
+        lines.append(f'<linearGradient id="coverGrad" x1="0" y1="0" x2="1" y2="1">')
+        lines.append(f'<stop offset="0%" stop-color="{primary}" stop-opacity="0.95"/>')
+        lines.append(f'<stop offset="100%" stop-color="{primary}" stop-opacity="0.75"/>')
+        lines.append(f'</linearGradient>')
+        lines.append(f'<linearGradient id="coverShine" x1="0" y1="0" x2="0.3" y2="1">')
+        lines.append(f'<stop offset="0%" stop-color="#ffffff" stop-opacity="0.08"/>')
+        lines.append(f'<stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>')
+        lines.append(f'</linearGradient>')
+        lines.append(f'</defs>')
+        lines.append(f'<rect width="1280" height="720" fill="url(#coverGrad)"/>')
+        lines.append(f'<rect width="1280" height="720" fill="url(#coverShine)"/>')
+
+        # 左侧装饰竖条
+        lines.append(f'<rect x="0" y="0" width="10" height="720" fill="{accent}"/>')
+        # 顶部装饰线
+        lines.append(f'<rect x="0" y="0" width="1280" height="5" fill="{accent}" opacity="0.6"/>')
+
+        # 几何装饰 - 右下角大圆
+        lines.append(f'<circle cx="1150" cy="650" r="300" fill="{accent}" opacity="0.08"/>')
+        lines.append(f'<circle cx="1180" cy="680" r="180" fill="{accent}" opacity="0.06"/>')
+
+        # 左上角装饰元素组
+        for i in range(3):
+            cx = 1100 - i * 80
+            cy = 100 + i * 70
+            r = 18 - i * 4
+            lines.append(f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{accent}" opacity="{0.35 - i * 0.1}"/>')
+
+        # 主标题区域
+        lines.append(f'<rect x="72" y="180" width="8" height="80" rx="4" fill="{accent}"/>')
         lines.append(
-            f'<text x="72" y="200" font-family="Microsoft YaHei" font-size="52" font-weight="bold" fill="#ffffff">'
+            f'<text x="100" y="210" font-family="Microsoft YaHei" font-size="54" font-weight="bold" fill="#ffffff" letter-spacing="2">'
             f'{self._esc(title)}</text>'
         )
-        lines.append(f'<rect x="72" y="230" width="200" height="5" fill="{accent}" rx="2"/>')
+        # 标题下划线
+        lines.append(f'<rect x="100" y="248" width="260" height="5" rx="2.5" fill="{accent}"/>')
+
         if subtitle:
             lines.append(
-                f'<text x="72" y="285" font-family="Microsoft YaHei" font-size="22" fill="#cbd5e1">'
+                f'<text x="100" y="310" font-family="Microsoft YaHei" font-size="24" fill="#cbd5e1" letter-spacing="1">'
                 f'{self._esc(subtitle)}</text>'
             )
-        # footer removed
-        for i in range(4):
-            cy = 120 + i * 60
-            lines.append(f'<circle cx="1120" cy="{cy}" r="{15 - i * 2.5}" fill="{accent}" opacity="{0.5 - i * 0.1}"/>')
+
+        # 底部装饰条
+        lines.append(f'<rect x="0" y="715" width="1280" height="5" fill="{accent}" opacity="0.4"/>')
         return "\n".join(lines)
 
     def _render_toc(self, title: str, body_items: list, primary: str, text_color: str, font_body: str, body_size: int = 17) -> str:
@@ -279,23 +312,46 @@ class SVGFiller:
 
     def _render_chapter_svg(self, title: str, primary: str, accent: str, font_body: str) -> str:
         lines = []
-        lines.append(f'<rect width="1280" height="720" fill="{primary}" opacity="0.95"/>')
-        lines.append(f'<rect y="0" width="1280" height="3" fill="{accent}"/>')
-        lines.append(f'<rect y="717" width="1280" height="3" fill="{accent}"/>')
+        # 渐变背景
+        lines.append(f'<defs>')
+        lines.append(f'<linearGradient id="chGrad" x1="0" y1="0" x2="1" y2="1">')
+        lines.append(f'<stop offset="0%" stop-color="{primary}" stop-opacity="0.95"/>')
+        lines.append(f'<stop offset="100%" stop-color="{primary}" stop-opacity="0.7"/>')
+        lines.append(f'</linearGradient>')
+        lines.append(f'</defs>')
+        lines.append(f'<rect width="1280" height="720" fill="url(#chGrad)"/>')
+
+        # 顶部+底部装饰线
+        lines.append(f'<rect y="0" width="1280" height="4" fill="{accent}"/>')
+        lines.append(f'<rect y="716" width="1280" height="4" fill="{accent}"/>')
+
+        # 左侧大装饰条
+        lines.append(f'<rect x="0" y="0" width="12" height="720" fill="{accent}" opacity="0.6"/>')
+
+        # 背景几何装饰
+        lines.append(f'<circle cx="1100" cy="600" r="250" fill="{accent}" opacity="0.04"/>')
+        lines.append(f'<circle cx="1150" cy="300" r="120" fill="{accent}" opacity="0.03"/>')
+
         num_match = re.match(r'^(\d{2})\s+', title or "")
         section_num = num_match.group(1) if num_match else ""
         section_title = title[num_match.end():].strip() if num_match else title
 
         if section_num:
-            lines.append(f'<text x="60" y="260" font-family="Arial Black" font-size="80" font-weight="bold" fill="{accent}">{section_num}</text>')
-            tx = 180
+            # 大号数字 — 左侧
+            lines.append(f'<text x="80" y="420" font-family="Arial Black" font-size="160" font-weight="bold" fill="{accent}" opacity="0.25">{section_num}</text>')
+            # 分割线
+            lines.append(f'<rect x="100" y="370" width="4" height="80" rx="2" fill="{accent}"/>')
+            # 标题
+            lines.append(f'<text x="130" y="420" font-family="{font_body}" font-size="48" font-weight="bold" fill="#ffffff">{self._esc(section_title or title)}</text>')
         else:
-            tx = 60
+            lines.append(f'<rect x="80" y="340" width="8" height="80" rx="4" fill="{accent}"/>')
+            lines.append(f'<text x="110" y="395" font-family="{font_body}" font-size="48" font-weight="bold" fill="#ffffff">{self._esc(title)}</text>')
+            lines.append(f'<rect x="110" y="420" width="180" height="4" rx="2" fill="{accent}"/>')
 
-        lines.append(f'<text x="{tx}" y="290" font-family="{font_body}" font-size="44" font-weight="bold" fill="#ffffff">{self._esc(section_title or title)}</text>')
-        lines.append(f'<rect x="{tx}" y="320" width="200" height="5" fill="{accent}" rx="2"/>')
-        for cx in [1100, 40]:
-            lines.append(f'<rect x="{cx}" y="20" width="60" height="2" fill="{accent}" opacity="0.6"/>')
+        # 右下角装饰
+        for cx in [1050, 1150]:
+            lines.append(f'<rect x="{cx}" y="40" width="50" height="3" rx="1.5" fill="{accent}" opacity="0.5"/>')
+
         return "\n".join(lines)
 
     def _render_pro_table(self, tables: list, primary: str, accent: str, text_color: str, font_body: str) -> str:
@@ -336,6 +392,10 @@ class SVGFiller:
 
         lines.append(
             f'<rect x="50" y="{table_y}" width="{sum(col_widths)}" height="{header_h}" rx="6" fill="{primary}"/>'
+        )
+        # 表头底部阴影效果
+        lines.append(
+            f'<rect x="50" y="{table_y + header_h - 3}" width="{sum(col_widths)}" height="3" fill="{primary}" opacity="0.2"/>'
         )
         for ci, h in enumerate(headers):
             cx = x_offsets[ci] + col_widths[ci] // 2
@@ -401,10 +461,12 @@ class SVGFiller:
             cc = card_colors[(idx - 1) % len(card_colors)]
 
             lines.append(
-                f'<rect x="40" y="{y}" width="1200" height="{card_h}" rx="8" fill="#ffffff" '
-                f'stroke="#e2e8f0" stroke-width="1.5"/>'
+                f'<rect x="40" y="{y}" width="1200" height="{card_h}" rx="10" fill="#ffffff" '
+                f'stroke="#e5e7eb" stroke-width="1"/>'
             )
-            lines.append(f'<rect x="40" y="{y}" width="6" height="{card_h}" rx="3" fill="{cc}"/>')
+            # 投影效果
+            lines.append(f'<rect x="42" y="{y + 2}" width="1200" height="{card_h}" rx="10" fill="#000000" opacity="0.04"/>')
+            lines.append(f'<rect x="40" y="{y}" width="8" height="{card_h}" rx="4" fill="{cc}"/>')
 
             circle_r = 16
             cy = y + card_h // 2
@@ -947,7 +1009,7 @@ class SVGFiller:
             if m:
                 lbl = m.group(1).strip()
                 vp = m.group(2).strip()
-                nm = _re.search(r'([\d,.]+)\s*(%|万|亿|元|人|个)?', vp)
+                nm = _re.search(r'([\d,.]+)\s*(%|万|亿|元|人|个|倍|‰)?', vp)
                 if nm:
                     kpis.append({"label": lbl, "value": nm.group(1), "unit": nm.group(2) or ""})
 
@@ -956,68 +1018,105 @@ class SVGFiller:
 
         cols = min(len(kpis), 4)
         rows = (len(kpis) + cols - 1) // cols
-        card_w = 300
-        card_h = min(230, int(540 / rows))
-        gap_x = 25
-        gap_y = 20
-        total_w = card_w * cols + gap_x * (cols - 1)
-        total_h = card_h * rows + gap_y * (rows - 1)
+        card_w = 280
+        card_h = 180
+        gap = 20
+        total_w = card_w * cols + gap * (cols - 1)
+        total_h = card_h * rows + gap * (rows - 1)
         start_x = (1280 - total_w) // 2
-        available_h = 580 if self.header_enabled else 640
+        available_h = 560 if self.header_enabled else 620
         start_y = (90 if self.header_enabled else 20) + (available_h - total_h) // 2
 
         lines = []
-        card_colors = [primary, accent, "#6366f1", "#0891b2", "#059669", "#7c3aed", "#dc2626", "#d97706"]
+        card_colors = [
+            (primary, accent),
+            ("#6366f1", "#818cf8"), ("#0891b2", "#22d3ee"),
+            ("#059669", "#34d399"), ("#7c3aed", "#a78bfa"),
+            ("#dc2626", "#f87171"), ("#d97706", "#fbbf24"),
+            ("#2563eb", "#60a5fa"),
+        ]
 
         for idx, kpi in enumerate(kpis):
             row = idx // cols
             col = idx % cols
-            cx = start_x + col * (card_w + gap_x)
-            cy = start_y + row * (card_h + gap_y)
-            cc = card_colors[idx % len(card_colors)]
+            cx = start_x + col * (card_w + gap)
+            cy = start_y + row * (card_h + gap)
+            bg_c, acc_c = card_colors[idx % len(card_colors)]
 
-            lines.append(f'<rect x="{cx}" y="{cy}" width="{card_w}" height="{card_h}" rx="12" fill="#ffffff" stroke="#e5e7eb" stroke-width="2"/>')
-            lines.append(f'<rect x="{cx}" y="{cy}" width="{card_w}" height="8" rx="4" fill="{cc}"/>')
-            lines.append(f'<text x="{cx+16}" y="{cy+36}" font-family="{font_body}" font-size="15" fill="#64748b">{self._esc(kpi["label"])}</text>')
+            # 卡片背景
+            lines.append(f'<rect x="{cx}" y="{cy}" width="{card_w}" height="{card_h}" rx="14" fill="#ffffff" stroke="#e5e7eb" stroke-width="1.5"/>')
+            # 顶部色条
+            lines.append(f'<rect x="{cx}" y="{cy}" width="{card_w}" height="6" rx="3" fill="{bg_c}"/>')
+            # 标签
+            label_size = "13" if len(kpi["label"]) <= 6 else "12"
+            lines.append(f'<text x="{cx + 16}" y="{cy + 36}" font-family="{font_body}" font-size="{label_size}" fill="#64748b">{self._esc(kpi["label"])}</text>')
 
-            val_size = "40" if len(kpi["value"]) <= 4 else "34"
+            # 大号数值
+            val_size = "44" if len(kpi["value"]) <= 4 else "36" if len(kpi["value"]) <= 6 else "28"
+            val_display = f'{self._esc(kpi["value"])}'
+            unit_display = kpi["unit"]
+            unit_x = cx + 16 + len(kpi["value"]) * int(val_size) * 0.55
+
             if kpi["unit"] == "%":
                 try:
                     pct = float(kpi["value"].replace(",", ""))
                     bar_color = "#059669" if pct >= 80 else ("#d97706" if pct >= 60 else "#dc2626")
-                    lines.append(f'<text x="{cx+16}" y="{cy+100}" font-family="{font_body}" font-size="{val_size}" font-weight="bold" fill="{bar_color}">{self._esc(kpi["value"])}%</text>')
-                    bar_y = cy + 150
+                    lines.append(f'<text x="{cx + 16}" y="{cy + 90}" font-family="{font_body}" font-size="{val_size}" font-weight="bold" fill="{bar_color}">{val_display}%</text>')
+                    # 进度条
+                    bar_y = cy + 108
                     bar_w = card_w - 32
-                    lines.append(f'<rect x="{cx+16}" y="{bar_y}" width="{bar_w}" height="14" rx="7" fill="#e5e7eb"/>')
+                    bar_h = 10
+                    lines.append(f'<rect x="{cx + 16}" y="{bar_y}" width="{bar_w}" height="{bar_h}" rx="5" fill="#e5e7eb"/>')
                     fill_w = int(bar_w * min(pct / 100, 1.0))
                     if fill_w > 0:
-                        lines.append(f'<rect x="{cx+16}" y="{bar_y}" width="{fill_w}" height="14" rx="7" fill="{bar_color}"/>')
+                        lines.append(f'<rect x="{cx + 16}" y="{bar_y}" width="{fill_w}" height="{bar_h}" rx="5" fill="{bar_color}"/>')
+                    lines.append(f'<text x="{cx + card_w - 16}" y="{bar_y + bar_h + 14}" font-family="{font_body}" font-size="11" fill="#9ca3af" text-anchor="end">达成率</text>')
                 except (ValueError, TypeError):
-                    lines.append(f'<text x="{cx+16}" y="{cy+100}" font-family="{font_body}" font-size="{val_size}" font-weight="bold" fill="{cc}">{self._esc(kpi["value"])}%</text>')
+                    lines.append(f'<text x="{cx + 16}" y="{cy + 90}" font-family="{font_body}" font-size="{val_size}" font-weight="bold" fill="{bg_c}">{val_display}%</text>')
             else:
-                lines.append(f'<text x="{cx+16}" y="{cy+100}" font-family="{font_body}" font-size="{val_size}" font-weight="bold" fill="{cc}">{self._esc(kpi["value"])}</text>')
-                if kpi["unit"]:
-                    lines.append(f'<text x="{cx+16}" y="{cy+150}" font-family="{font_body}" font-size="16" fill="#64748b">{self._esc(kpi["unit"])}</text>')
+                lines.append(f'<text x="{cx + 16}" y="{cy + 90}" font-family="{font_body}" font-size="{val_size}" font-weight="bold" fill="{bg_c}">{val_display}</text>')
+                if unit_display:
+                    lines.append(f'<text x="{cx + 16}" y="{cy + 125}" font-family="{font_body}" font-size="16" fill="#64748b">{self._esc(unit_display)}</text>')
 
         return "\n".join(lines)
 
     def _render_ending(self, title: str, subtitle: str, primary: str, accent: str, bg: str) -> str:
         lines = []
-        y_center = 340
-        lines.append(f'<rect width="1280" height="720" fill="{primary}" opacity="0.95"/>')
-        lines.append(f'<rect y="0" width="8" height="720" fill="{accent}"/>')
-        lines.append(f'<rect y="0" width="1280" height="4" fill="{accent}" opacity="0.4"/>')
+        # 浅色背景为主，不像封面用深色
+        lines.append(f'<defs>')
+        lines.append(f'<linearGradient id="endGrad" x1="0" y1="0" x2="0" y2="1">')
+        lines.append(f'<stop offset="0%" stop-color="#ffffff"/>')
+        lines.append(f'<stop offset="100%" stop-color="{self.colors.get("light-bg", "#f0f4ff")}"/>')
+        lines.append(f'</linearGradient>')
+        lines.append(f'</defs>')
+        lines.append(f'<rect width="1280" height="720" fill="url(#endGrad)"/>')
+
+        # 顶部装饰条
+        lines.append(f'<rect y="0" width="1280" height="120" fill="{primary}" opacity="0.06"/>')
+        lines.append(f'<rect y="0" width="1280" height="5" fill="{primary}"/>')
+
+        # 中心内容区
+        y_center = 320
+        # 装饰圆环
+        lines.append(f'<circle cx="640" cy="{y_center - 20}" r="70" fill="none" stroke="{primary}" stroke-width="3" opacity="0.15"/>')
+        lines.append(f'<circle cx="640" cy="{y_center - 20}" r="55" fill="none" stroke="{accent}" stroke-width="2" opacity="0.2"/>')
+
+        # 主标题
         lines.append(
-            f'<text x="72" y="{y_center - 20}" font-family="Microsoft YaHei" font-size="52" '
-            f'font-weight="bold" fill="#ffffff">{self._esc(title or "感谢聆听")}</text>'
+            f'<text x="640" y="{y_center - 20}" font-family="Microsoft YaHei" font-size="42" '
+            f'font-weight="bold" fill="{primary}" text-anchor="middle" letter-spacing="2">{self._esc(title or "感谢聆听")}</text>'
         )
-        lines.append(f'<rect x="72" y="{y_center + 15}" width="200" height="5" fill="{accent}" rx="2"/>')
+        # 装饰线
+        lines.append(f'<rect x="540" y="{y_center + 10}" width="200" height="4" rx="2" fill="{accent}"/>')
+
         if subtitle:
             lines.append(
-                f'<text x="72" y="{y_center + 70}" font-family="Microsoft YaHei" font-size="22" '
-                f'fill="#cbd5e1">{self._esc(subtitle)}</text>'
+                f'<text x="640" y="{y_center + 55}" font-family="Microsoft YaHei" font-size="18" '
+                f'fill="#64748b" text-anchor="middle">{self._esc(subtitle)}</text>'
             )
-        # footer removed
+
+        # 底部装饰
+        lines.append(f'<rect y="700" width="1280" height="20" fill="{primary}" opacity="0.08"/>')
         return "\n".join(lines)
 
     def _replace_basic(self, svg: str, slide: dict, page_num: int) -> str:
